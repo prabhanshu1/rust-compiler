@@ -1,9 +1,21 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ println( "A keyword:", txt()) }		
+/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ KEYWORD++; tokens[txt()] = "KEYWORD" }		
+/[0-9]+/          { println("An integer:", txt()) }
+/[0-9]+\.[0-9]*/  { println("A float:", txt()) }
+/if|then|begin|end|procedure|function/
+                  { println( "A keyword:", txt()) }
+/\+|-|\*|\//      { println("An operator:", txt()) }
+/[ \t\n]+/        { /* eat up whitespace */ }
+/./               { println("Unrecognized character:", txt()) }
+/{[^\{\}\n]*}/    { /* eat up one-line comments */ }
+//
 
 package main
-import "os"
+import ("fmt";"os")
 func main() {
+  var KEYWORD int
+  tokens := make(map[string]string)
   lex := NewLexer(os.Stdin)
   txt := func() string { return lex.Text() }
   NN_FUN(lex)
+ fmt.Println(tokens,KEYWORD)
 }
