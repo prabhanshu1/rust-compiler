@@ -1,21 +1,26 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ KEYWORD++; tokens[txt()] = "KEYWORD" }		
-/[0-9]+/          { println("An integer:", txt()) }
-/[0-9]+\.[0-9]*/  { println("A float:", txt()) }
-/if|then|begin|end|procedure|function/
-                  { println( "A keyword:", txt()) }
-/\+|-|\*|\//      { println("An operator:", txt()) }
+/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ KEYWORD++; tokens[txt()] = "KEYWORD" }	
+/[0-9]+/          { INTEGER++; tokens[txt()] = "INTEGER" }
+/[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ FLOAT++; tokens[txt()] = "FLOAT" }
 /[ \t\n]+/        { /* eat up whitespace */ }
-/./               { println("Unrecognized character:", txt()) }
-/{[^\{\}\n]*}/    { /* eat up one-line comments */ }
+/[+&|^\/\*-<>(<<)(>>)(+=)(-=)(\*=)(\/=)(%=)%(<<=)(>>=)]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
 //
-
 package main
 import ("fmt";"os")
 func main() {
   var KEYWORD int
+  var INTEGER int
+  var FLOAT int
+  var OPERATOR int
+  /*var WHITESPACE int
+  var SYMBOL int
+  var IDENTIFIER int
+  var COMMENT int*/
   tokens := make(map[string]string)
   lex := NewLexer(os.Stdin)
   txt := func() string { return lex.Text() }
   NN_FUN(lex)
- fmt.Println(tokens,KEYWORD)
+  fmt.Println(tokens,KEYWORD)
+  fmt.Println(INTEGER)
+  fmt.Println(FLOAT)
+  fmt.Println(OPERATOR)
 }
