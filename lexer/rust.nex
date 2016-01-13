@@ -1,6 +1,8 @@
 /abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ KEYWORD++; tokens[txt()] = "KEYWORD" }	
+/=[-+]?[0-9]+/          { INTEGER++; OPERATOR++; tokens[strings.Split(txt(), "=")[1]] = "INTEGER"; tokens["="]="OPERATOR" }
 /[0-9]+/          { INTEGER++; tokens[txt()] = "INTEGER" }
-/[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ FLOAT++; tokens[txt()] = "FLOAT" }
+/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { FLOAT++;OPERATOR++; tokens[strings.Split(txt(), "=")[1]] = "FLOAT";tokens["="] = "OPERATOR" }
+/[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ FLOAT++; tokens[txt()] = "FLOAT" }
 /[ \t\n]+/        { /* eat up whitespace */ }
 /[\+&|^\/\*-><\%]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
 /(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
