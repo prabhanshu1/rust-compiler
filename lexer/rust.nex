@@ -1,15 +1,23 @@
 /abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield/	{ KEYWORD++; tokens[txt()] = "KEYWORD" }	
-/=[-+]?[0-9]+/          { INTEGER++; OPERATOR++; tokens[strings.Split(txt(), "=")[1]] = "INTEGER"; tokens["="]="OPERATOR" }
+/=[-+]?[0-9]+/          { INTEGER++; OPERATOR++; tokens[txt()[1:len(txt())]] = "INTEGER"; tokens["="]="OPERATOR" }
 /[0-9]+/          { INTEGER++; tokens[txt()] = "INTEGER" }
-/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { FLOAT++;OPERATOR++; tokens[strings.Split(txt(), "=")[1]] = "FLOAT";tokens["="] = "OPERATOR" }
+/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { FLOAT++;OPERATOR++; tokens[txt()[1:len(txt())]] = "FLOAT";tokens["="] = "OPERATOR" }
 /[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ FLOAT++; tokens[txt()] = "FLOAT" }
-/[ \t\n]+/        { /* eat up whitespace */ }
-/[\+&|^\/\*-><\%]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
-/(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
+/[\n]/ {line++}
+/[ \t]+/        { /* eat up whitespace */ }
+/(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
+/(\"([^\"])*\")|(\'([^\'])*\')/        { LITERAL++;tokens[txt()] = "LITERAL" }
+/\*\// {fmt.Println("Hag dia maadarchod!! yahan haga hai tunen",line); return;}
+/[\-\+\&\|\^\/\*\>\<\%]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
+/(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)|(->)/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
+/(::)|\#|\[|\]|\(|\)|\{|\}|\,|\;/ {SYMBOL++;tokens[txt()] = "SYMBOL"}
+/./ {fmt.Println("Hag dia maadarchod!! yahan haga hai tunen",line); return;}
 //
 package main
 import ("fmt";"os")
 func main() {
+  line := 0
+  LITERAL := 0
   var KEYWORD int
   var INTEGER int
   var FLOAT int
@@ -27,3 +35,4 @@ func main() {
   fmt.Println(FLOAT)
   fmt.Println(OPERATOR)
 }
+

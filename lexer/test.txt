@@ -2,10 +2,12 @@
 3-2.1
 a=-2+3
 a+=-2
-if as if else 76.56E4
-5
-8976.56
-78e-23
-.45e+45
-45+56-90.2
-/[+&|^/\*-<>(<<)(>>)(+=)(-=)(\*=)(/=)(%=)%(<<=)(>>=)]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
+/*s**hksdghyw43
+ddsf
+/*dfgdfgsd*/
+
+//s sdfdsf
+if
+"sdfsdf"
+'sdf';(XSDS){}&<<->
+::
