@@ -7,11 +7,11 @@
 /[ \t]+/        { /* eat up whitespace */ }
 /(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
 /(\"([^\"])*\")|(\'([^\'])*\')/        { LITERAL++;tokens[txt()] = "LITERAL" }
-/\*\// {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
+/\*\// {fmt.Println("Hag dia maadarchod!! yahan haga hai tunen",line); return;}
 /[\-\+\&\|\^\/\*\>\<\%]/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
 /(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)|(->)/ { OPERATOR++; tokens[txt()] = "OPERATOR" }
 /(::)|\#|\[|\]|\(|\)|\{|\}|\,|\;/ {SYMBOL++;tokens[txt()] = "SYMBOL"}
-/./ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
+/./ {fmt.Println("Hag dia maadarchod!! yahan haga hai tunen",line); return;}
 //
 package main
 import ("fmt";"os")
