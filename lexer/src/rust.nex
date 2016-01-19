@@ -7,7 +7,7 @@
 /[\n]/ {line++}
 /[ \t]+/        { /* eat up whitespace */ }
 /(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
-/(\"([^\"])*\")|(\'([^\'])*\')/        { tokens_count["LITERAL"]++;tokens[txt()] = "LITERAL" }
+/(\"([^\"])*\")|(\'([^\'])\')/        { tokens_count["LITERAL"]++;tokens[txt()] = "LITERAL" }
 /\*\// {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
 /[\-\+\&\|\^\/\!\:\*\>\<\%\=\.]/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
 /(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)|(->)|(==)|(!=)|(\.\.)/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
