@@ -5,8 +5,8 @@
 /0x[0-9a-f]+/          { tokens_count["HEX"]++; tokens[txt()] = "HEX" }
 /0o[0-7]+/          { tokens_count["OCTAL"]++; tokens[txt()] = "OCTAL" }
 /0b[0-1]+/          { tokens_count["BINARY"]++; tokens[txt()] = "BINARY" }
-/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++;tokens_count["OPERATOR"]++; tokens[txt()[1:]] = "FLOAT";tokens["="] = "OPERATOR" }
-/[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ tokens_count["FLOAT"]++; tokens[txt()] = "FLOAT" }
+/=[-+]?[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++;tokens_count["OPERATOR"]++; tokens[txt()[1:]] = "FLOAT";tokens["="] = "OPERATOR" }
+/[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/	{ tokens_count["FLOAT"]++; tokens[txt()] = "FLOAT" }
 /[\n]/ {line++}
 /[ \t]+/        { /* eat up whitespace */ }
 /(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
@@ -16,7 +16,6 @@
 /(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)|(->)|(==)|(!=)|(\.\.)/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
 /(::)|\#|\[|\]|\(|\)|\{|\}|\,|\;/ {tokens_count["SYMBOL"]++;tokens[txt()] = "SYMBOL"}
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}
-/[\_a-zA-Z]+\.[0-9]+/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}
 /[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
 /./ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
 //
