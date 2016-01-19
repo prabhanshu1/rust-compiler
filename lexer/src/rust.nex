@@ -17,6 +17,7 @@
 /(::)|\#|\[|\]|\(|\)|\{|\}|\,|\;/ {tokens_count["SYMBOL"]++;tokens[txt()] = "SYMBOL"}
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}
 /[\_a-zA-Z]+\.[0-9]+/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}
+/[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
 /./ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
 //
 package main
