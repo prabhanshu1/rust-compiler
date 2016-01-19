@@ -1,4 +1,8 @@
 all:
 	echo "Required packages - nex at https://github.com/blynn/nex and GOlang"
-	nex -s rust.nex
-	go build -o lexer rust.nn.go
+	nex -s src/rust.nex
+	go build -o bin/lexer src/rust.nn.go
+clean:
+	rm bin/lexer
+	rm src/rust.nn.go
+
