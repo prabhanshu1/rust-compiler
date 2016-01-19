@@ -24,7 +24,7 @@ mod my {
             println!("called `my::nested::private_function()`");
         }
     }
-
+/*xcvxvsdfgv2349u23fhckd0x'sdfdsf' */
     // Nested modules follow the same rules for visibility
     mod private_nested {
         #[allow(dead_code)]
