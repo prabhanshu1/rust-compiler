@@ -1,45 +1,71 @@
-// Pipes and processes in Rust
+struct Fibonacci {
+    curr: u32,
+    next: u32,
+}
 
+// Implement 'Iterator' for 'Fibonacci'
+impl Iterator for Fibonacci {
+    type Item = u32;
+    // The 'Iterator' trait only requires the 'next' method to be defined. The
+    // return type is 'Option<T>', 'None' is returned when the 'Iterator' is
+    // over, otherwise the next value is returned wrapped in 'Some'
+    fn next(&mut self) -> Option<u32> {
+        let new_next = self.curr + self.next;
 
-use std::error::Error;
-use std::io::prelude::*;
-use std::process::{Command, Stdio};
+        self.curr = self.next;
+        self.next = new_next;
 
-static PANGRAM: &'static str =
-"the quick brown fox jumped over the lazy dog\n";
-
-fn main() {
-    // Spawn the `wc` command
-    let process = match Command::new("wc")
-                                .stdin(Stdio::piped())
-                                .stdout(Stdio::piped())
-                                .spawn() {
-        Err(why) => panic!("couldn't spawn wc: {}", Error::description(&why)),
-        Ok(process) => process,
-    };
-
-    {
-        // Write a string to the `stdin` of `wc`.
-        //
-        // `stdin` has type `Option<ChildStdin>`, but since we know this instance
-        // must have one, we can directly `unwrap` it.
-        match process.stdin.unwrap().write_all(PANGRAM.as_bytes()) {
-            Err(why) => panic!("couldn't write to wc stdin: {}",
-                               Error::description(&why)),
-            Ok(_) => println!("sent pangram to wc"),
-        }
-
-        // `stdin` gets `drop`ed here, and the pipe is closed.
-        //
-        // This is very important, otherwise `wc` wouldn't start processing the
-        // input we just sent.
-    }
-
-    // The `stdout` field also has type `Option<ChildStdout>` so must be unwrapped.
-    let mut s = String::new();
-    match process.stdout.unwrap().read_to_string(&mut s) {
-        Err(why) => panic!("couldn't read wc stdout: {}",
-                           Error::description(&why)),
-        Ok(_) => print!("wc responded with:\n{}", s),
+        // 'Some' is always returned, this is an infinite value generator
+        Some(self.curr)
     }
 }
+
+// Returns a fibonacci sequence generator
+fn fibonacci() -> Fibonacci {
+    Fibonacci { curr: 1, next: 1 }
+}
+
+fn main() {
+    // Iterator that generates: 0, 1 and 2
+    let mut sequence = 0..3;
+
+    println!("Four consecutive `next` calls on 0..3");
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+    println!("> {:?}", sequence.next());
+
+    // The for construct will iterate an 'Iterator' until it returns 'None'.
+    // Every 'Some' value is unwrapped and bound to a variable.
+    println!("Iterate over 0..3 using for");
+    for i in 0..3 {
+        println!("> {}", i);
+    }
+
+    // The 'take(n)' method will reduce an iterator to its first 'n' terms,
+    // which is pretty useful for infinite value generators
+    println!("The first four terms of the Fibonacci sequence are: ");
+    for i in fibonacci().take(4) {
+        println!("> {}", i);
+    }
+
+    // The 'skip(n)' method will shorten an iterator by dropping its first 'n'
+    // terms
+    println!("The next four terms of the Fibonacci sequence are: ");
+    for i in fibonacci().skip(4).take(4) {
+        println!("> {}", i);
+    }
+
+    let array = [1u32, 3, 3, 7];
+
+    // The 'iter' method produces an 'Iterator' over an array/slice
+    println!("Iterate the following array {:?}", &array);
+    for i in array.iter() {
+        println!("> {}", i);
+    }
+}
+
+
+
+
+
