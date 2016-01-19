@@ -1,15 +1,18 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println/	{ tokens_count["KEYWORD"]++; tokens[txt()] = "KEYWORD" }	
+/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/	{ tokens_count["KEYWORD"]++; tokens[txt()] = "KEYWORD" }	
 /i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {tokens_count["VAR_TYPE"]++;tokens[txt()] = "VAR_TYPE"}
-/=[-+]?[0-9]+/          { tokens_count["INTEGER"]++; tokens_count["OPERATOR"]++; tokens[txt()[1:len(txt())]] = "INTEGER"; tokens["="]="OPERATOR" }
+/=[-+]?[0-9]+/          { tokens_count["INTEGER"]++; tokens_count["OPERATOR"]++; tokens[txt()[1:]] = "INTEGER"; tokens["="]="OPERATOR" }
 /[0-9]+/          { tokens_count["INTEGER"]++; tokens[txt()] = "INTEGER" }
-/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++;tokens_count["OPERATOR"]++; tokens[txt()[1:len(txt())]] = "FLOAT";tokens["="] = "OPERATOR" }
+/0x[0-9a-f]+/          { tokens_count["HEX"]++; tokens[txt()] = "HEX" }
+/0o[0-7]+/          { tokens_count["OCTAL"]++; tokens[txt()] = "OCTAL" }
+/0b[0-1]+/          { tokens_count["BINARY"]++; tokens[txt()] = "BINARY" }
+/=[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++;tokens_count["OPERATOR"]++; tokens[txt()[1:]] = "FLOAT";tokens["="] = "OPERATOR" }
 /[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?/	{ tokens_count["FLOAT"]++; tokens[txt()] = "FLOAT" }
 /[\n]/ {line++}
 /[ \t]+/        { /* eat up whitespace */ }
 /(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
 /(\"([^\"])*\")|(\'([^\'])\')/        { tokens_count["LITERAL"]++;tokens[txt()] = "LITERAL" }
-/\*\// {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
-/[\-\+\&\|\^\/\!\:\*\>\<\%\=\.]/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
+/\*\/|(\'([^\'])*\')/ {fmt.Println("Syntax Error \n",txt(),"is not a valid syntax\n","at line number",line); return;}
+/[\-\+\&\|\^\/\!\:\*\>\<\%\=\.\']/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
 /(<<)|(>>)|(\+=)|(-=)|(\*=)|(\/=)|(%=)|(<<=)|(>>=)|(->)|(==)|(!=)|(\.\.)/ { tokens_count["OPERATOR"]++; tokens[txt()] = "OPERATOR" }
 /(::)|\#|\[|\]|\(|\)|\{|\}|\,|\;/ {tokens_count["SYMBOL"]++;tokens[txt()] = "SYMBOL"}
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}

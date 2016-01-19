@@ -15,14 +15,14 @@ fn is_divisible_by(lhs: u32, rhs: u32) -> bool {
     lhs % rhs == 0
 }
 
-/* Functions that "don't" return a value,        /*  
+/* Functions that "don't" return a value,          
  xxxxxxxxx actually return the unit type `()`
 */
 fn fizzbuzz(n: u32) -> () {
     if is_divisible_by(n, 15) {
         println!("fizz 'ddddddd' buzz");
     } else if is_divisible_by(n, 3) {
-        println!('fizz');
+        println!('f');
     } else if is_divisible_by(n, 5) {
         println!("buzz");
     } else {
@@ -36,3 +36,5 @@ fn fizzbuzz_to(n: u32) {
         fizzbuzz(n);
     }
 }
+
+macro_rules! 
