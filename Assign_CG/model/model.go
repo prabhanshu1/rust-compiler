@@ -8,6 +8,18 @@ type Instr_struct struct {
 	Jmp  string
 }
 
+var Registers = map[int]string{
+        1 : "eax"
+        2 : "ebx"
+}
+
+var Arithmetic = map[string]string{
+        "+" : "add"
+        "-" : "sub"
+        "*" : "mul"
+        "/" : "div"
+}
+
 func RemoveDuplicates(a []int) []int { 
         result := []int{} 
         seen := map[int]int{} 
