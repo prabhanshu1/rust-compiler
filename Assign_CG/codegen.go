@@ -15,7 +15,10 @@ var assembly = make([]string,0,5)
 func main() {
 
 	cg_parser.Parser(os.Args[1],&instructions,&leader)
-	//fmt.Println(leader,instructions[0])
+
 	translator.Translate(&assembly,&instructions,&leader)
+
+	fmt.Println(leader,instructions[0])
+
 	return
 }

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sort"
-	"../model" 
+	"../InstructionStruct" 
 )
 
 
