@@ -15,7 +15,7 @@ func Tranlate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]i
 		table := cg_getreg.Preprocess(instructions,leader[i],leader[i+1]-1)
 		for j := leader[i]; j < leader[i+1]; j++ {
 			switch instructions[j].Op{
-				
+
 			case "+", "-", "*", "/":
 				r1,fresh = cg_getreg.Getreg(instructions[j].Dest,&table)
 				if fresh {
@@ -48,7 +48,7 @@ func Tranlate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]i
 					*assembly=append(*assembly,"load " + r1 + instructions[j].Src2)
 				}
 				*assembly=append(*assembly,"cmp $" + instructions[j].Src1 + " " + model.Registers[r1])
-				*assembly=append(*assembly,instructions[j].Dest + " " + instructions[j].jmp)
+				*assembly=append("j" + *assembly,instructions[j].Dest + " " + instructions[j].jmp)
 
 			case "label" : 
 				*assembly=append(*assembly,"label " instructions[j].Src1)
