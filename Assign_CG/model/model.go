@@ -9,15 +9,15 @@ type Instr_struct struct {
 }
 
 var Registers = map[int]string{
-        1 : "eax"
-        2 : "ebx"
+        1 : "eax",
+        2 : "ebx",
 }
 
 var Arithmetic = map[string]string{
-        "+" : "add"
-        "-" : "sub"
-        "*" : "mul"
-        "/" : "div"
+        "+" : "add",
+        "-" : "sub",
+        "*" : "mul",
+        "/" : "div",
 }
 
 func RemoveDuplicates(a []int) []int { 
