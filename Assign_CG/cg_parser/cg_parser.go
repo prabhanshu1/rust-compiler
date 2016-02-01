@@ -40,8 +40,10 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct,leader
 		*leader=append(*leader,s-1);
 	case "call":
 		model.Initialize_instr(instr, s[1], "", "", "", s[2])
+		*leader=append(*leader,line-1);
 	case "ret":
 		model.Initialize_instr(instr, s[1], "", "", "", "-1")
+		*leader=append(*leader,line);
 	case "print":
 		model.Initialize_instr(instr, s[1], "", s[2], "", "-2")
 	case "label":
