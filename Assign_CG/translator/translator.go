@@ -15,6 +15,7 @@ func Tranlate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]i
 		table := cg_getreg.Preprocess(instructions,leader[i],leader[i+1]-1)
 		for j := leader[i]; j < leader[i+1]; j++ {
 			switch instructions[j].Op{
+				
 			case "+", "-", "*", "/":
 				r1,fresh = cg_getreg.Getreg(instructions[j].Dest,&table)
 				if fresh {
@@ -22,13 +23,42 @@ func Tranlate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]i
 				}
 				r2,fresh = cg_getreg.Getreg(instructions[j].Src1,&table)
 				if fresh {
-					*assembly=append(*assembly,"load " + r1 + instructions[j].Src1)
+					*assembly=append(*assembly,"load " + r2 + instructions[j].Src1)
 				}
 				r3,fresh = cg_getreg.Getreg(instructions[j].Src2,&table)
 				if fresh {
-					*assembly=append(*assembly,"load " + r1 + instructions[j].Src2)
+					*assembly=append(*assembly,"load " + r3 + instructions[j].Src2)
 				}
 				*assembly=append(*assembly,model.Arithmetic[instructions[j].Op] + model.Registers[r1] + "," + model.Registers[r2] + "," + model.Registers[r3])
+
+			case "=" :
+				r1,fresh = cg_getreg.Getreg(instructions[j].Dest,&table)
+				if fresh {
+					*assembly=append(*assembly,"load " + r1 + instructions[j].Dest)
+				}
+				r2,fresh = cg_getreg.Getreg(instructions[j].Src1,&table)
+				if fresh {
+					*assembly=append(*assembly,"load " + r2 + instructions[j].Src1)
+				}
+				*assembly=append(*assembly,"mov " + model.Registers[r1] + "," + model.Registers[r2])
+
+			case "ifgoto" :
+				r1,fresh = cg_getreg.Getreg(instructions[j].Src2,&table)
+				if fresh {
+					*assembly=append(*assembly,"load " + r1 + instructions[j].Src2)
+				}
+				*assembly=append(*assembly,"cmp $" + instructions[j].Src1 + " " + model.Registers[r1])
+				*assembly=append(*assembly,instructions[j].Dest + " " + instructions[j].jmp)
+
+			case "label" : 
+				*assembly=append(*assembly,"label " instructions[j].Src1)
+
+			case "ret" : 
+				*assembly=append(*assembly,"ret")
+
+			case "call" :
+				*assembly=append(*assembly,"call " + instructions[j].Jmp)
+
 			default :
 			}			
 		}
