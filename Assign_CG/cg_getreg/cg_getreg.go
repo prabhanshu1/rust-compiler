@@ -11,8 +11,9 @@ import (
 func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*model.Ref_Table) {
 	size := end - start + 1
 	var tables = make([]*model.Ref_Table, size+1)
-	vars := model.VariableFind(instructions, start, end)
+	vars,array_vars := model.VariableFind(instructions, start, end)
 	fmt.Println(vars)
+
 
 	base_table := new(model.Ref_Table)
 	for _, v := range vars{
@@ -59,16 +60,16 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int){
 		case "=":
 			table.Dead(dest)
 			UseCheck(src1, table, i)
-			UseCheck(src2, table, i)
+			//UseCheck(src2, table, i)
 			//fmt.Println(src1, src2)
-		case "+", "-", "*", "/":
+		case "+", "-", "*", "/", "%":
+			table.Dead(dest)
 			UseCheck(src1, table, i)
 			UseCheck(src2, table, i)
-			UseCheck(dest, table, i)
 			//fmt.Println(src1, src2, dest)
 		case "print":
 			UseCheck(src1, table, i)
-		case "leq", "geq":
+		case "ifgoto":
 			UseCheck(src1, table, i)
 			UseCheck(src2, table, i)
 			//fmt.Println(src1, src2)

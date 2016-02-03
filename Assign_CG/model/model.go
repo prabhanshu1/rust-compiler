@@ -30,6 +30,18 @@ type Ref_Table struct{
         Ref_t []Ref_Table_row
 }
 
+
+//Variable to register
+//Register variable
+
+//getreg freereg wrong wrong wrong wrong
+type Ref_Maps struct{
+        VtoR:= make(map[string]string)
+        RtoV:=make(map[string]string)       
+}
+
+// can be wrong
+
 func (table *Ref_Table) Use(s string, instr int){
         for i, flag:= 0, 0; flag == 0 && i<len(table.Ref_t); i++{
                 if (*table).Ref_t[i].Variable == s {
