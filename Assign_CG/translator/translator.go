@@ -71,13 +71,13 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 			case "+", "-" :
 	
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,dest)
+				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
-				Load_and_Store(fresh,Old_Variable,Code,r2,src1)
+				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
 				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
-				Load_and_Store(fresh,Old_Variable,Code,r3,src2)
+				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				(data=append((data,"movl" + " " + r2 + "," + r1 )
 				(data=append((data,model.Arithmetic[op] + " " + r1 + "," + r3)
@@ -87,18 +87,18 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				// a=b/c or a=b*c
 				// edx for a and then set it to 0 
 				r4,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,4)
-				Free_Store(fresh,Old_Variable,Code,r4,dest)
+				Free_Store(fresh,Old_Variable,Code,r4,dest,Ref_Map)
 
 				(data=append((data,"movl" + "$0" + "," + r4 )
 				// eax for a
 				r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,1)
-				Load_and_Store(fresh,Old_Variable,Code,r1,dest)
+				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
-				Load_and_Store(fresh,Old_Variable,Code,r2,src1)
+				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
 				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
-				Load_and_Store(fresh,Old_Variable,Code,r3,src2)
+				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				// move b to eax
 				(data=append((data,"movl" + " " + r2 + "," + r1 )
@@ -107,44 +107,44 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				if op=="%" {
 					(data=append((data,"movl" + " " + r4 + "," + r1 )
 				}
-				cg_getreg.Free_Reg(r4)
+				model.Set_Reg_Map(Ref_Map,r4,"")
 
 			case "=" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,dest)
+				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 				// remove $
 
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
-				Load_and_Store(fresh,Old_Variable,Code,r2,src1)
+				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
 				(data=append((data,"mov " + r1 + "," + r2)
 
 			case "=[]" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,dest)
+				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
 				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
-				Load_and_Store(fresh,Old_Variable,Code,r3,src2)
+				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				/// specifically for int 
 				(data=append((data,"movl " + src1 + "(," + r3 ",4)" + "," + r1)
 
 			case "[]=" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,src2)
+				Load_and_Store(fresh,Old_Variable,Code,r1,src2,Ref_Map)
 
 				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
-				Load_and_Store(fresh,Old_Variable,Code,r3,dest)
+				Load_and_Store(fresh,Old_Variable,Code,r3,dest,Ref_Map)
 
 				/// specifically for int 
 				(data=append((data,"movl " + r1 + "," + src1 + "(," + r3 ",4)" )
 
 			case "ifgoto" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,src1)
+				Load_and_Store(fresh,Old_Variable,Code,r1,src1,Ref_Map)
 
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
-				Load_and_Store(fresh,Old_Variable,Code,r1,src2)
+				Load_and_Store(fresh,Old_Variable,Code,r1,src2,Ref_Map)
 				
 				(data=append((data,"cmp " + r1 + "," + r2 )
 				(data=append((data, dest + " " + jmp)
@@ -155,7 +155,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 			case "ret" : 
 				if src1!=""{
 					r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],src1,table,1)
-					Free_Store(fresh,Old_Variable,Code,r1,src1)
+					Free_Store(fresh,Old_Variable,Code,r1,src1,Ref_Map)
 
 				}
 				
@@ -173,22 +173,25 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 }
 
 
-func Load_and_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg *string,New_Variable string) {
+func Load_and_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg *string,New_Variable string,Ref_Map *model.Ref_Maps) {
 	if fresh==1 {
 		if Old_Variable!="" {
 			((*Code).Main_Code=append(((*Code).Main_Code,"Store " + *reg + " " + Old_Variable)
+			model.Set_Var_Map(Ref_Map,Old_Variable,"");
 		}
 		((*Code).Main_Code=append(((*Code).Main_Code,"load " + *reg + " " + New_Variable)
+		model.Set_Var_Map(Ref_Map,New_Variable,*reg);
 	}else if fresh == 2 {
 		*reg = "$" + New_Variable
 	}
 }
 
 // used while dumping values in case of freeing a register
-func Free_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg string,New_Variable string) {
+func Free_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg string,New_Variable string,Ref_Map *model.Ref_Maps) {
 	if fresh==1 {
 		if Old_Variable!="" {
 			((*Code).Main_Code=append(((*Code).Main_Code,"Store " + *reg + " " + Old_Variable)
+			model.Set_Var_Map(Ref_Map,Old_Variable,"");
 		}
 	}else if fresh == 2 {
 		*reg = "$" + New_Variable

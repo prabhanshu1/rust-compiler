@@ -12,11 +12,7 @@ type Instr_struct struct {
 	Jmp  string
 }
 
-type Ref_Table_row struct{
-        Variable string
-        Last int
-        Next int
-}
+
 
 type Final_Code struct{
         Libraries []string
@@ -27,7 +23,7 @@ type Final_Code struct{
 }
 
 type Ref_Table struct{
-        Ref_t []Ref_Table_row
+        Ref_t map[string]int
 }
 
 
@@ -36,35 +32,27 @@ type Ref_Table struct{
 
 //getreg freereg wrong wrong wrong wrong
 type Ref_Maps struct{
-        VtoR:= make(map[string]string)
-        RtoV:=make(map[string]string)       
+        VtoR make(map[string]string)
+        RtoV make(map[string]string)       
 }
 
+func Set_Reg_Map(Ref_Map *Ref_Maps,Reg string, Val string){
+        Ref_Map[Reg]=Val
+}
+
+func Set_Var_Map(Ref_Map *Ref_Maps,Var string, Val string){
+        Ref_Map[Var]=Val
+}
 // can be wrong
 
 func (table *Ref_Table) Use(s string, instr int){
-        for i, flag:= 0, 0; flag == 0 && i<len(table.Ref_t); i++{
-                if (*table).Ref_t[i].Variable == s {
-                        if((*table).Ref_t[i].Last == -1){(*table).Ref_t[i].Last = instr}
-                        (*table).Ref_t[i].Next = instr
-                        //fmt.Println("Here use")
-                        flag = 1
-                }
-                //fmt.Println("Here no use use")
-        }   
+        (*table).Ref_t[s] = instr
         return    
 }
 
 
 func (table *Ref_Table) Dead(s string){
-        for i, flag := 0, 0; flag == 0; i++{
-                if (*table).Ref_t[i].Variable == s {
-                        (*table).Ref_t[i].Last = -1
-                        (*table).Ref_t[i].Next = -1
-                        flag = 1
-                        //fmt.Println("Here Dead")
-                }
-        }
+        (*table).Ref_t[s] = -1
         return
 }
 
@@ -110,13 +98,13 @@ func Initialize_instr(instr *Instr_struct, Op, Dest, Src1, Src2, Jmp string) {
         //fmt.Println(instr, "parsed")
 }
 
-func Initialize_table_row(entry *Ref_Table_row, Variable string){
+/*func Initialize_table_row(entry *Ref_Table_row, Variable string){
         entry.Variable = Variable
         entry.Last = -1                   //-1 corresponds to dead state
         entry.Next = -1                   //-1 corresponds to dead state                                                                      
 }
-
-func Copy(input []Ref_Table_row) []Ref_Table_row{
+*/
+/*func Copy(input []Ref_Table_row) []Ref_Table_row{
         output:= make([]Ref_Table_row, len(input))
         for i,v:=range input{
                 output[i].Variable = v.Variable
@@ -124,7 +112,7 @@ func Copy(input []Ref_Table_row) []Ref_Table_row{
                 output[i].Last = v.Last
         }
         return output
-}
+}*/
 
 
 func VariableFind(instructions []*Instr_struct, start int, end int)([]string,[]string){
@@ -165,3 +153,4 @@ func AppendCheck(s string, m map[string]bool, vars *[]string){
         //fmt.Println(*vars, len(*vars))
         }
 }
+
