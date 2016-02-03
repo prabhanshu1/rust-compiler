@@ -6,28 +6,6 @@ import (
 	"strconv"
 )
 
-func Getreg(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps) {
-	var max string = ""
-	var max_val string
-	var max_prev string
-	_, ok := *Ref_Map.VtoR[str]
-
-	if !ok {
-		return str, 2, ""
-	} else if *Ref_Map.VtoR[str] != "" {
-		return *Ref_Map.VtoR[str], 0, ""
-	} else {
-		for key, value := range table[pos] {
-			if value > max {
-				max = value
-				max_val = key
-			}
-		}
-
-	}
-	return *Ref_Map.VtoR[max_val], 1, max_val
-}
-
 //Called at every Basic Block
 func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *[]model.Ref_Table) {
 	size := end - start + 1
@@ -53,6 +31,40 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 		fmt.Println(*v)
 	}
 	return
+}
+
+func Getreg(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps) {
+	var max string = ""
+	var max_val string
+	_, ok := (*Ref_Map).VtoR[str]
+
+	if !ok {
+		return str, 2, ""
+	} else if (*Ref_Map).VtoR[str] != "" {
+		return (*Ref_Map).VtoR[str], 0, ""
+	} else {
+		for key, value := range table[pos] {
+			if value > max {
+				max = value
+				max_val = key
+			}
+		}
+		return (*Ref_Map).VtoR[max_val], 1, max_val
+	}
+
+}
+
+func Getreg_Force(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps, reg int) {
+	_, ok := (*Ref_Map).VtoR[str]
+
+	if !ok {
+		return str, 2, ""
+	} else if (*Ref_Map).VtoR[str] == model.Registers[reg] {
+		return (*Ref_Map).VtoR[str], 0, ""
+	} else {
+		return model.Registers[reg], 1, (*Ref_Map).RtoV[model.Registers[reg]]
+	}
+
 }
 
 func UseCheck(s string, table *model.Ref_Table, instr int) {
