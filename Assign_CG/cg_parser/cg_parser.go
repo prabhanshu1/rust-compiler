@@ -31,6 +31,10 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct,leader
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
 	case "=":
 		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
+	case "[]=": // a[i] = b , dest =i , src1 =a ,src2 = b
+		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
+	case "=[]": // b=a[i] , dest =b , src1 =a ,src2 = i
+		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
 	case "ifgoto":
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
 		s,err := strconv.Atoi(s[5])

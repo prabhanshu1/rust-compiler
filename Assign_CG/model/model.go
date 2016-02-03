@@ -18,6 +18,14 @@ type Ref_Table_row struct{
         Next int
 }
 
+type Final_Code struct{
+        Libraries []string
+        Main_Code []string
+        Data_Section []string
+        Text_Section []string
+        Global_Section []string
+}
+
 type Ref_Table struct{
         Ref_t []Ref_Table_row
 }
@@ -107,18 +115,29 @@ func Copy(input []Ref_Table_row) []Ref_Table_row{
 }
 
 
-func VariableFind(instructions []*Instr_struct, start int, end int)([]string){
+func VariableFind(instructions []*Instr_struct, start int, end int)([]string,[]string){
         m:= make(map[string]bool)   //To keep track of what has already been inserted
         vars := make([]string, 0);
 
+        array_m:= make(map[string]bool)   //To keep track of what has already been inserted
+        array_vars := make([]string, 0);
+
         for i:=start; i <= end; i++{
-                if(instructions[i].Op != "call" && instructions[i].Op != "label"){
+                if (instructions[i].Op == "=[]" ) {
+                        AppendCheck(instructions[i].Dest, m, &vars)
+                        AppendCheck(instructions[i].Src1, array_m, &array_vars)
+                        AppendCheck(instructions[i].Src2, m, &vars)
+                }else if (instructions[i].Op == "[]=" ) {
+                        AppendCheck(instructions[i].Dest, m, &vars)
+                        AppendCheck(instructions[i].Src1, array_m, &array_vars)
+                        AppendCheck(instructions[i].Src2, m, &vars)
+                }else if(instructions[i].Op != "call" && instructions[i].Op != "label"){
                         AppendCheck(instructions[i].Dest, m, &vars)
                         AppendCheck(instructions[i].Src1, m, &vars)
                         AppendCheck(instructions[i].Src2, m, &vars)
                 }
         }
-        return vars
+        return vars,array_vars
 }
 
 func AppendCheck(s string, m map[string]bool, vars *[]string){
