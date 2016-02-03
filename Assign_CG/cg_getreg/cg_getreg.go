@@ -8,9 +8,8 @@ import (
 
 
 //Called at every Basic Block
-func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*model.Ref_Table) {
+func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *[]model.Ref_Table)  {
 	size := end - start + 1
-	var tables = make([]*model.Ref_Table, size+1)
 	vars,array_vars := model.VariableFind(instructions, start, end)
 	fmt.Println(vars)
 
@@ -20,21 +19,20 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*mod
 		base_table.Dead[v]
 	}
 
-	tables[size] = base_table
+	(*tables)[size] = base_table
 	//fmt.Println(*base_table)
 
 	for i:=size-1; i >= 0; i-- {
-		tables[i] = new(model.Ref_Table) 
-		(*(tables[i])).Ref_t = (*(tables[i+1])).Ref_t
+		(*tables)[i].Ref_t = (*tables)[i+1].Ref_t
 		//fmt.Println(*tables[i], *tables[i+1])
-		ModifyTable(*instructions[i], tables[i], i)
+		ModifyTable(*instructions[i], &((*tables)[i]), i)
 		//fmt.Println(*tables[i], *tables[i+1])
 	}
 	//fmt.Println("Here")
 	for _, v:= range tables{
 		fmt.Println(*v)
 	}
-	return &tables
+	return 
 }
 
 

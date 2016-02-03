@@ -57,7 +57,8 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 	data=append((data,"_start")
 
 	for i := 0; i < leader_count; i++ {
-		table := cg_getreg.Preprocess(instructions,leader[i],leader[i+1]-1)
+		table := make([]model.Ref_Table, leader[i+1] - leader[i] + 2)
+		cg_getreg.Preprocess(instructions,leader[i],leader[i+1]-1,&table)
 		for j := leader[i]; j < leader[i+1]; j++ {
 
 			dest := instructions[j].Dest
@@ -79,8 +80,8 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
-				(data=append((data,"movl" + " " + r2 + "," + r1 )
-				(data=append((data,model.Arithmetic[op] + " " + r1 + "," + r3)
+				data=append(data,"movl" + " " + r2 + "," + r1 )
+				data=append(data,model.Arithmetic[op] + " " + r1 + "," + r3)
 	
 
 			case "*", "/", "%":
@@ -89,7 +90,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				r4,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,4)
 				Free_Store(fresh,Old_Variable,Code,r4,dest,Ref_Map)
 
-				(data=append((data,"movl" + "$0" + "," + r4 )
+				data=append(data,"movl" + "$0" + "," + r4 )
 				// eax for a
 				r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,1)
 				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
@@ -101,11 +102,11 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				// move b to eax
-				(data=append((data,"movl" + " " + r2 + "," + r1 )
+				data=append(data,"movl" + " " + r2 + "," + r1 )
 				// divl %(c waala register)
-				(data=append((data,model.Arithmetic[op] + " " + r3)
+				data=append(data,model.Arithmetic[op] + " " + r3)
 				if op=="%" {
-					(data=append((data,"movl" + " " + r4 + "," + r1 )
+					data=append(data,"movl" + " " + r4 + "," + r1 )
 				}
 				model.Set_Reg_Map(Ref_Map,r4,"")
 
@@ -117,7 +118,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
 				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
-				(data=append((data,"mov " + r1 + "," + r2)
+				data=append(data,"mov " + r1 + "," + r2)
 
 			case "=[]" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
@@ -127,7 +128,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				/// specifically for int 
-				(data=append((data,"movl " + src1 + "(," + r3 ",4)" + "," + r1)
+				data=append(data,"movl " + src1 + "(," + r3 ",4)" + "," + r1)
 
 			case "[]=" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
@@ -137,7 +138,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				Load_and_Store(fresh,Old_Variable,Code,r3,dest,Ref_Map)
 
 				/// specifically for int 
-				(data=append((data,"movl " + r1 + "," + src1 + "(," + r3 ",4)" )
+				data=append(data,"movl " + r1 + "," + src1 + "(," + r3 ",4)" )
 
 			case "ifgoto" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
@@ -146,11 +147,11 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,src2,Ref_Map)
 				
-				(data=append((data,"cmp " + r1 + "," + r2 )
-				(data=append((data, dest + " " + jmp)
+				data=append(data,"cmp " + r1 + "," + r2 )
+				data=append(data, dest + " " + jmp)
 
 			case "label" : 
-				(data=append((data,"label " src1)
+				data=append(data,"label " src1)
 
 			case "ret" : 
 				if src1!=""{
@@ -159,10 +160,10 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 
 				}
 				
-				(data=append((data,"ret")
+				data=append(data,"ret")
 
 			case "call" :
-				(data=append((data,"call " + " " + jmp)
+				data=append(data,"call " + " " + jmp)
 
 			default :
 			}			
