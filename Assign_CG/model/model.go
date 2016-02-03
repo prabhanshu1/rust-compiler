@@ -1,5 +1,8 @@
 package model
 
+import (
+    "strconv"
+)
 
 type Instr_struct struct {
 	Op   string
@@ -98,4 +101,33 @@ func Copy(input []Ref_Table_row) []Ref_Table_row{
                 output[i].Last = v.Last
         }
         return output
+}
+
+
+func VariableFind(instructions []*Instr_struct, start int, end int)([]string){
+        m:= make(map[string]bool)   //To keep track of what has already been inserted
+        vars := make([]string, 0);
+
+        for i:=start; i <= end; i++{
+                if(instructions[i].Op != "call" && instructions[i].Op != "label"){
+                        AppendCheck(instructions[i].Dest, m, &vars)
+                        AppendCheck(instructions[i].Src1, m, &vars)
+                        AppendCheck(instructions[i].Src2, m, &vars)
+                }
+        }
+        return vars
+}
+
+func AppendCheck(s string, m map[string]bool, vars *[]string){
+        if s!=""{
+                _, err:= strconv.Atoi(s)  
+                if err != nil {        // error indicates NAN, hence it is a variable
+                        _, ok:= m[s]       //OK = true indicates already in map
+                        if !ok {
+                                m[s] = true
+                                *vars = append(*vars, s)
+                        }
+                }
+        //fmt.Println(*vars, len(*vars))
+        }
 }

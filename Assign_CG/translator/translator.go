@@ -5,7 +5,7 @@ import (
 	"../cg_getreg"
 )
 
-func Tranlate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]int) {
+func Translate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]int) {
 	leader_count = len(leader) -1 ;
 
 	var fresh bool

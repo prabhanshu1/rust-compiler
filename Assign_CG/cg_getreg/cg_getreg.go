@@ -11,7 +11,7 @@ import (
 func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*model.Ref_Table) {
 	size := end - start + 1
 	var tables = make([]*model.Ref_Table, size+1)
-	vars := VariableFind(instructions, start, end)
+	vars := model.VariableFind(instructions, start, end)
 	fmt.Println(vars)
 
 	base_table := new(model.Ref_Table)
@@ -38,33 +38,7 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*mod
 	return &tables
 }
 
-func VariableFind(instructions []*model.Instr_struct, start int, end int)([]string){
-	m:= make(map[string]bool)   //To keep track of what has already been inserted
-	vars := make([]string, 0);
 
-	for i:=start; i <= end; i++{
-		if(instructions[i].Op != "call" && instructions[i].Op != "label"){
-			AppendCheck(instructions[i].Dest, m, &vars)
-			AppendCheck(instructions[i].Src1, m, &vars)
-			AppendCheck(instructions[i].Src2, m, &vars)
-		}
-	}
-	return vars
-}
-
-func AppendCheck(s string, m map[string]bool, vars *[]string){
-	if s!=""{
-		_, err:= strconv.Atoi(s)  
-		if err != nil {        // error indicates NAN, hence it is a variable
-			_, ok:= m[s]       //OK = true indicates already in map
-			if !ok {
-				m[s] = true
-				*vars = append(*vars, s)
-			}
-		}
-	//fmt.Println(*vars, len(*vars))
-	}
-}
 
 func UseCheck(s string, table *model.Ref_Table, instr int){
 	if s!=""{
