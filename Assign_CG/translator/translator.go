@@ -60,7 +60,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				// a=b/c or a=b*c
 				// edx for a and then set it to 0 
 				r4,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],instructions[j].Dest,table,4)
-				Load_and_Store(fresh,Old_Variable,Code,r4,instructions[j].Dest)
+				Free_Store(fresh,Old_Variable,Code,r4,instructions[j].Dest)
 
 				((*Code).Main_Code=append(((*Code).Main_Code,"movl" + "$0" + "," + r4 )
 				// eax for a
@@ -126,6 +126,12 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				((*Code).Main_Code=append(((*Code).Main_Code,"label " instructions[j].Src1)
 
 			case "ret" : 
+				if instructions[j].Src1!=""{
+					r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],instructions[j].Src1,table,1)
+					Free_Store(fresh,Old_Variable,Code,r1,instructions[j].Src1)
+
+				}
+				
 				((*Code).Main_Code=append(((*Code).Main_Code,"ret")
 
 			case "call" :
@@ -139,13 +145,24 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 }
 
 
-func Load_and_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg string,New_Variable string) {
+func Load_and_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg *string,New_Variable string) {
 	if fresh==1 {
 		if Old_Variable!="" {
-			((*Code).Main_Code=append(((*Code).Main_Code,"Store " + reg + " " + Old_Variable)
+			((*Code).Main_Code=append(((*Code).Main_Code,"Store " + *reg + " " + Old_Variable)
 		}
-		((*Code).Main_Code=append(((*Code).Main_Code,"load " + reg + " " + New_Variable)
+		((*Code).Main_Code=append(((*Code).Main_Code,"load " + *reg + " " + New_Variable)
 	}else if fresh == 2 {
-		reg = "$" + New_Variable
+		*reg = "$" + New_Variable
+	}
+}
+
+// used while dumping values in case of freeing a register
+func Free_Store(fresh bool, Old_Variable string,Code *model.Final_Code,reg string,New_Variable string) {
+	if fresh==1 {
+		if Old_Variable!="" {
+			((*Code).Main_Code=append(((*Code).Main_Code,"Store " + *reg + " " + Old_Variable)
+		}
+	}else if fresh == 2 {
+		*reg = "$" + New_Variable
 	}
 }
