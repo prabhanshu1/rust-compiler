@@ -49,15 +49,18 @@ func (table *Ref_Table) Dead(s string){
 }
 
 var Registers = map[int]string{
-        1 : "eax",
-        2 : "ebx",
+        1 : "%eax",
+        2 : "%ebx",
+        3 : "%ecx",
+        4 : "%edx",
 
 }
 var Arithmetic = map[string]string{
-        "+" : "add",
-        "-" : "sub",
-        "*" : "mul",
-        "/" : "div",
+        "+" : "addl",
+        "-" : "subl",
+        "*" : "mull",
+        "/" : "divl",
+        "%" : "divl",
 }
 /*var Registers = map[int]string{
         1 : "eax"

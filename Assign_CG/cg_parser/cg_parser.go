@@ -27,7 +27,7 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct,leader
 	}
 
 	switch s[1] {
-	case "+", "-", "*", "/":
+	case "+", "-", "*", "/", "%":
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
 	case "=":
 		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
