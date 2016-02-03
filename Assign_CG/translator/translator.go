@@ -13,6 +13,8 @@ func Translate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]
 	var Old_Variable string
 	var r1,r2,r3 string
 
+	
+	
 	for i := 0; i < leader_count; i++ {
 		table := cg_getreg.Preprocess(instructions,leader[i],leader[i+1]-1)
 		for j := leader[i]; j < leader[i+1]; j++ {
@@ -40,7 +42,7 @@ func Translate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]
 					}
 					*assembly=append(*assembly,"load " + r3 + " " + instructions[j].Src2)
 				}
-				*assembly=append(*assembly,model.Arithmetic[instructions[j].Op] + r1 + "," + r2 + "," + r3)
+				*assembly=append(*assembly,model.Arithmetic[instructions[j].Op] + " " + r1 + "," + r2 + "," + r3)
 
 			case "=" :
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],instructions[j].Dest,table)

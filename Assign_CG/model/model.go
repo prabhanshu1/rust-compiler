@@ -53,17 +53,17 @@ var Registers = map[int]string{
         2 : "ebx",
 
 }
-/*var Registers = map[int]string{
-        1 : "eax"
-        2 : "ebx"
-
-
 var Arithmetic = map[string]string{
         "+" : "add",
         "-" : "sub",
         "*" : "mul",
         "/" : "div",
 }
+/*var Registers = map[int]string{
+        1 : "eax"
+        2 : "ebx"
+
+
 */
 func RemoveDuplicates(a []int) []int { 
         result := []int{} 
