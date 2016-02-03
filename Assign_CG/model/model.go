@@ -32,8 +32,8 @@ type Ref_Table struct{
 
 //getreg freereg wrong wrong wrong wrong
 type Ref_Maps struct{
-        VtoR make(map[string]string)
-        RtoV make(map[string]string)       
+        VtoR map[string]string
+        RtoV map[string]string
 }
 
 func Set_Reg_Map(Ref_Map *Ref_Maps,Reg string, Val string){
