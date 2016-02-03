@@ -71,13 +71,13 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 
 			case "+", "-" :
 	
-				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
+				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
-				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
+				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
-				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
+				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				data=append(data,"movl" + " " + r2 + "," + r1 )
@@ -87,18 +87,18 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 			case "*", "/", "%":
 				// a=b/c or a=b*c
 				// edx for a and then set it to 0 
-				r4,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,4)
+				r4,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,&table,4)
 				Free_Store(fresh,Old_Variable,Code,r4,dest,Ref_Map)
 
 				data=append(data,"movl" + "$0" + "," + r4 )
 				// eax for a
-				r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,table,1)
+				r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],dest,&table,1)
 				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
-				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
+				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
-				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
+				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				// move b to eax
@@ -111,40 +111,40 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 				model.Set_Reg_Map(Ref_Map,r4,"")
 
 			case "=" :
-				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
+				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 				// remove $
 
-				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
+				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r2,src1,Ref_Map)
 
 				data=append(data,"mov " + r1 + "," + r2)
 
 			case "=[]" :
-				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
+				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,dest,Ref_Map)
 
-				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
+				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r3,src2,Ref_Map)
 
 				/// specifically for int 
 				data=append(data,"movl " + src1 + "(," + r3 ",4)" + "," + r1)
 
 			case "[]=" :
-				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
+				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,src2,Ref_Map)
 
-				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,table)
+				r3,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r3,dest,Ref_Map)
 
 				/// specifically for int 
 				data=append(data,"movl " + r1 + "," + src1 + "(," + r3 ",4)" )
 
 			case "ifgoto" :
-				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,table)
+				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,src1,Ref_Map)
 
-				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,table)
+				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src2,&table)
 				Load_and_Store(fresh,Old_Variable,Code,r1,src2,Ref_Map)
 				
 				data=append(data,"cmp " + r1 + "," + r2 )
@@ -155,7 +155,7 @@ func Translate((*Code) *model.Final_Code,instructions *[]*model.Instr_struct,lea
 
 			case "ret" : 
 				if src1!=""{
-					r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],src1,table,1)
+					r1,fresh,Old_Variable = cg_getreg.Getreg_Force(j-leader[i],src1,&table,1)
 					Free_Store(fresh,Old_Variable,Code,r1,src1,Ref_Map)
 
 				}
