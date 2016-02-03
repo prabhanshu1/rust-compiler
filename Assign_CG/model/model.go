@@ -89,3 +89,13 @@ func Initialize_table_row(entry *Ref_Table_row, Variable string){
         entry.Last = -1                   //-1 corresponds to dead state
         entry.Next = -1                   //-1 corresponds to dead state                                                                      
 }
+
+func Copy(input []Ref_Table_row) []Ref_Table_row{
+        output:= make([]Ref_Table_row, len(input))
+        for i,v:=range input{
+                output[i].Variable = v.Variable
+                output[i].Next = v.Next
+                output[i].Last = v.Last
+        }
+        return output
+}

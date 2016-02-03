@@ -26,7 +26,7 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int) (*[]*mod
 
 	for i:=size-1; i >= 0; i-- {
 		tables[i] = new(model.Ref_Table) 
-		(*tables[i]).Ref_t = copy((*tables[i+1]).Ref_t)
+		(*tables[i]).Ref_t = model.Copy((*tables[i+1]).Ref_t)
 		//fmt.Println(*tables[i], *tables[i+1])
 		ModifyTable(*instructions[i], tables[i], i)
 		//fmt.Println(*tables[i], *tables[i+1])
@@ -102,12 +102,3 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int){
 	//fmt.Println(*table)
 }
 
-func copy(input []model.Ref_Table_row) []model.Ref_Table_row{
-	output:= make([]model.Ref_Table_row, len(input))
-	for i,v:=range input{
-		output[i].Variable = v.Variable
-		output[i].Next = v.Next
-		output[i].Last = v.Last
-	}
-	return output
-}
