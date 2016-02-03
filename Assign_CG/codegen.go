@@ -5,7 +5,8 @@ import (
 	"os"
 	"./model"
 	"./cg_parser"
-	"./translator"
+	"./cg_getreg"
+	//"./translator"
 )
 
 var instructions = make([]*model.Instr_struct, 0, 5)
@@ -14,11 +15,18 @@ var assembly = make([]string,0,5)
 
 func main() {
 
-	cg_parser.Parser(os.Args[1],&instructions,&leader)
+	cg_parser.Parser(os.Args[1], &instructions, &leader)
 
-	translator.Translate(&assembly,&instructions,&leader)
+	//translator.Translate(&assembly,&instructions,&leader)
 
-	fmt.Println(leader,instructions[0])
+	cg_getreg.Preprocess(instructions, 0, 10)
+	
+
+	fmt.Println(leader, *instructions[0])
+
+	for key := range instructions {
+		fmt.Println(leader,key, instructions[key])
+	}
 
 	return
 }

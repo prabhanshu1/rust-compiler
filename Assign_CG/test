@@ -8,4 +8,4 @@
 8, print, a
 9, ret
 10, -, a, a, b
-11, /, a, a, b
+11, /, a, c, b
