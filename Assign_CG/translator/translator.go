@@ -9,7 +9,7 @@ import (
 func Translate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]int) {
 	leader_count = len(leader) -1 ;
 
-	var fresh bool
+	var fresh int
 	var Old_Variable string
 	var r1,r2,r3,r4 string
 
@@ -108,10 +108,12 @@ func Translate(assembly *[]string,instructions *[]*model.Instr_struct,leader *[]
 
 
 func Load_and_Store(fresh bool, Old_Variable string,assembly *[]string,reg string,New_Variable string) {
-	if fresh {
+	if fresh==1 {
 		if Old_Variable!="" {
 			*assembly=append(*assembly,"Store " + reg + " " + Old_Variable)
 		}
 		*assembly=append(*assembly,"load " + reg + " " + New_Variable)
+	}else if fresh == 2 {
+		reg = "$" + reg
 	}
 }
