@@ -2,7 +2,7 @@ package cg_getreg
 
 import (
 	"../model"
-	//"fmt"
+	"fmt"
 	"strconv"
 )
 
@@ -44,7 +44,7 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
-
+	
 	if !ok {
 		return str, 2, ""
 	} else if (*Ref_Map).VtoR[str] != "" {

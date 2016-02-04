@@ -4,7 +4,7 @@ import (
 	"../model"
 	"../cg_getreg"
 	"strconv"
-	//"fmt"
+	"fmt"
 )
 
 func Translate(Code *model.Final_Code,instructions []*model.Instr_struct,leader []int) {
@@ -28,10 +28,10 @@ func Translate(Code *model.Final_Code,instructions []*model.Instr_struct,leader 
 		Ref_Map.VtoR[Non_Array_Variables[i]]="";
 	}
 
-	for i :=0 ;i<len(Array_Variables); i++{
+/*	for i :=0 ;i<len(Array_Variables); i++{
 		Ref_Map.VtoR[Array_Variables[i]]="";
 	}
-
+*/
 
 	len_reg:=6
 	for i:=0;i<len_reg;i++{
@@ -80,7 +80,9 @@ func Translate(Code *model.Final_Code,instructions []*model.Instr_struct,leader 
 			case "+", "-" :
 	
 				r1,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],dest,&table,&Ref_Map)
+				fmt.Println("FUCK",r1,fresh,Old_Variable)
 				Load_and_Store(fresh,Old_Variable,&data,&r1,dest,&Ref_Map)
+				fmt.Println("FUCK2",r1,fresh,Old_Variable)
 
 				r2,fresh,Old_Variable = cg_getreg.Getreg(j-leader[i],src1,&table,&Ref_Map)
 				Load_and_Store(fresh,Old_Variable,&data,&r2,src1,&Ref_Map)
