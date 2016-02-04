@@ -192,6 +192,7 @@ func Load_and_Store(fresh int, Old_Variable string,data *[]string,reg *string,Ne
 		}
 		*data=append(*data,"load " + *reg + " " + New_Variable)
 		model.Set_Var_Map(Ref_Map,New_Variable,*reg);
+		model.Set_Reg_Map(Ref_Map,*reg,New_Variable)
 	}else if fresh == 2 {
 		*reg = "$" + New_Variable
 	}
