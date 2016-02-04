@@ -37,11 +37,11 @@ type Ref_Maps struct{
 }
 
 func Set_Reg_Map(Ref_Map *Ref_Maps,Reg string, Val string){
-        Ref_Map[Reg]=Val
+        (*Ref_Map).RtoV[Reg]=Val
 }
 
 func Set_Var_Map(Ref_Map *Ref_Maps,Var string, Val string){
-        Ref_Map[Var]=Val
+        (*Ref_Map).VtoR[Var]=Val
 }
 // can be wrong
 

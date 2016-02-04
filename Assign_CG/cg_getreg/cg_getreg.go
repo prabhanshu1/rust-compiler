@@ -12,9 +12,11 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	vars, array_vars := model.VariableFind(instructions, start, end)
 	fmt.Println(vars)
 
+	vars=append(vars,array_vars...)
+
 	var base_table model.Ref_Table
 	for _, v := range vars {
-		base_table.Dead[v]
+		base_table.Dead(v)
 	}
 
 	(*tables)[size] = base_table
@@ -27,14 +29,17 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 		//fmt.Println(*tables[i], *tables[i+1])
 	}
 	//fmt.Println("Here")
-	for _, v := range tables {
-		fmt.Println(*v)
+	for _, v := range *tables {
+		fmt.Println(v)
 	}
 	return
 }
 
-func Getreg(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps) {
-	var max string = ""
+//Return Values:
+//The allocated register
+//The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
+func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps)(string, int, string) {
+	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
 
@@ -43,7 +48,7 @@ func Getreg(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps) {
 	} else if (*Ref_Map).VtoR[str] != "" {
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
-		for key, value := range table[pos] {
+		for key, value := range (*table)[pos].Ref_t {
 			if value > max {
 				max = value
 				max_val = key
@@ -54,7 +59,7 @@ func Getreg(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps) {
 
 }
 
-func Getreg_Force(pos int, str string, table *[]*model.Ref_Table, Ref_Map *Ref_Maps, reg int) {
+func Getreg_Force(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string){
 	_, ok := (*Ref_Map).VtoR[str]
 
 	if !ok {
