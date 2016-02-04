@@ -29,7 +29,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 	}
 
 	len_reg := 6
-	for i := 0; i < len_reg; i++ {
+	for i := 1; i <= len_reg; i++ {
 		Ref_Map.RtoV[model.Registers[i]] = ""
 	}
 
@@ -91,12 +91,12 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 			case "*", "/", "%":
 				// a=b/c or a=b*c
 				// edx for a and then set it to 0
-				r4, fresh, Old_Variable = cg_getreg.Getreg_Force(&data,j-leader[i], dest, &table, &Ref_Map, 4)
+				r4, fresh, Old_Variable = cg_getreg.Getreg_Force(&data, j-leader[i], dest, &table, &Ref_Map, 4)
 				Free_Store(fresh, Old_Variable, &data, &r4, dest, &Ref_Map)
 
 				data = append(data, "movl"+"$0"+","+r4)
 				// eax for a
-				r1, fresh, Old_Variable = cg_getreg.Getreg_Force(&data,j-leader[i], dest, &table, &Ref_Map, 1)
+				r1, fresh, Old_Variable = cg_getreg.Getreg_Force(&data, j-leader[i], dest, &table, &Ref_Map, 1)
 				Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
 
 				r2, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
@@ -160,7 +160,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			case "ret":
 				if src1 != "" {
-					r1, fresh, Old_Variable = cg_getreg.Getreg_Force(&data,j-leader[i], src1, &table, &Ref_Map, 1)
+					r1, fresh, Old_Variable = cg_getreg.Getreg_Force(&data, j-leader[i], src1, &table, &Ref_Map, 1)
 					Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
 
 				}
@@ -173,7 +173,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 			default:
 			}
 		}
-		Free_reg_at_end(&data,&Ref_Map)
+		Free_reg_at_end(&data, &Ref_Map)
 	}
 	(*Code).Main_Code = data
 
@@ -204,7 +204,7 @@ func Free_Store(fresh int, Old_Variable string, data *[]string, reg *string, New
 		*reg = "$" + New_Variable
 	}
 }
-func Free_reg_at_end(data *[]string,Ref_Map *model.Ref_Maps) {
+func Free_reg_at_end(data *[]string, Ref_Map *model.Ref_Maps) {
 	for key, value := range (*Ref_Map).RtoV {
 		*data = append(*data, "Store "+key+" "+value)
 		model.Set_Reg_Map(Ref_Map, key, "")
