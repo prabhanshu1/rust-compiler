@@ -70,6 +70,10 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 //The allocated register
 //The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
 func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps) (string, int, string) {
+		fmt.Println((*Ref_Map).VtoR[str])
+		fmt.Println((*table)[pos].Ref_t)
+	
+
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
@@ -79,15 +83,21 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	} else if (*Ref_Map).VtoR[str] != "" {
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
-		for key, value := range (*table)[pos].Ref_t {
-			if value > max {
-				max = value
-				max_val = key
+		for key, value := range (*Ref_Map).RtoV {
+			if value == "" {
+				return key, 1, ""
 			}
 		}
+
+		for _, value := range (*Ref_Map).RtoV {
+			if (*table)[pos].Ref_t[value] > max {
+				max = (*table)[pos].Ref_t[value]
+				max_val = value
+			}
+		}
+
 		return (*Ref_Map).VtoR[max_val], 1, max_val
 	}
-
 }
 
 func Getreg_Force(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
