@@ -100,7 +100,7 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	}
 }
 
-func Getreg_Force(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
+func Getreg_Force(data *[]string,pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
 	_, ok := (*Ref_Map).VtoR[str]
 
 	if !ok {
@@ -108,6 +108,10 @@ func Getreg_Force(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.
 	} else if (*Ref_Map).VtoR[str] == model.Registers[reg] {
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
+		if (*Ref_Map).VtoR[str] != ""{
+			*data = append(*data, "Store "+(*Ref_Map).VtoR[str]+" "+str)
+			model.Set_Reg_Map(Ref_Map, (*Ref_Map).VtoR[str], "")
+		}
 		return model.Registers[reg], 1, (*Ref_Map).RtoV[model.Registers[reg]]
 	}
 
