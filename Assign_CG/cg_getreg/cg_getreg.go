@@ -2,7 +2,7 @@ package cg_getreg
 
 import (
 	"../model"
-	"fmt"
+	//"fmt"
 	"strconv"
 )
 
@@ -10,11 +10,12 @@ import (
 func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *[]model.Ref_Table) {
 	size := end - start + 1
 	vars, array_vars := model.VariableFind(instructions, start, end)
-	fmt.Println(vars)
+	//fmt.Println(vars)
 
 	vars=append(vars,array_vars...)
 
 	var base_table model.Ref_Table
+	base_table.Ref_t = make(map[string]int)
 	for _, v := range vars {
 		base_table.Dead(v)
 	}
@@ -23,15 +24,16 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	//fmt.Println(*base_table)
 
 	for i := size - 1; i >= 0; i-- {
+		(*tables)[i].Ref_t = make(map[string]int)
 		(*tables)[i].Ref_t = (*tables)[i+1].Ref_t
 		//fmt.Println(*tables[i], *tables[i+1])
 		ModifyTable(*instructions[i], &((*tables)[i]), i)
 		//fmt.Println(*tables[i], *tables[i+1])
 	}
 	//fmt.Println("Here")
-	for _, v := range *tables {
+	/*for _, v := range *tables {
 		fmt.Println(v)
-	}
+	}*/
 	return
 }
 

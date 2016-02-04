@@ -13,6 +13,8 @@ func Translate(Code *model.Final_Code,instructions []*model.Instr_struct,leader 
 	var Old_Variable string
 	var r1,r2,r3,r4 string
 	var Ref_Map model.Ref_Maps
+	Ref_Map.VtoR = make(map[string]string)
+	Ref_Map.RtoV = make(map[string]string)
 
 	((*Code).Libraries)=append(((*Code).Libraries),"#include <asm/unistd.h>")
 	((*Code).Libraries)=append(((*Code).Libraries),"#include <syscall.h>")
