@@ -2,6 +2,7 @@ package model
 
 import (
     "strconv"
+    "fmt"
 )
 
 type Instr_struct struct {
@@ -16,10 +17,10 @@ type Instr_struct struct {
 
 type Final_Code struct{
         Libraries []string
-        Main_Code []string
+        Global_Section []string
         Data_Section []string
         Text_Section []string
-        Global_Section []string
+        Main_Code []string
 }
 
 type Ref_Table struct{
@@ -131,6 +132,9 @@ func VariableFind(instructions []*Instr_struct, start int, end int)([]string,[]s
                         AppendCheck(instructions[i].Dest, m, &vars)
                         AppendCheck(instructions[i].Src1, array_m, &array_vars)
                         AppendCheck(instructions[i].Src2, m, &vars)
+                }else if (instructions[i].Op == "ifgoto" ) {
+                        AppendCheck(instructions[i].Src1, m, &vars)
+                        AppendCheck(instructions[i].Src2, m, &vars)                      
                 }else if(instructions[i].Op != "call" && instructions[i].Op != "label"){
                         AppendCheck(instructions[i].Dest, m, &vars)
                         AppendCheck(instructions[i].Src1, m, &vars)
@@ -154,3 +158,7 @@ func AppendCheck(s string, m map[string]bool, vars *[]string){
         }
 }
 
+func FormattedStringPrint(s []string){
+        for _, b:= range s{fmt.Println(b)}
+        fmt.Println("\n")
+}

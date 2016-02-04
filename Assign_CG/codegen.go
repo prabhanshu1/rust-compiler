@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"os"
 	"./model"
 	"./cg_parser"
@@ -20,8 +20,11 @@ func main() {
 
 	translator.Translate(&assembly,instructions,leader)
 
-	
-	fmt.Println(assembly)
+	model.FormattedStringPrint(assembly.Libraries)
+	model.FormattedStringPrint(assembly.Global_Section)
+	model.FormattedStringPrint(assembly.Data_Section)
+	model.FormattedStringPrint(assembly.Text_Section)
+	model.FormattedStringPrint(assembly.Main_Code)
 
 	/*for key := range instructions {
 		fmt.Println(leader,key, instructions[key])
