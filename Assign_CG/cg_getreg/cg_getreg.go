@@ -3,6 +3,7 @@ package cg_getreg
 import (
 	"../model"
 	"fmt"
+	//	"reflect"
 	"strconv"
 )
 
@@ -13,7 +14,7 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	//fmt.Println(vars)
 
 	vars = append(vars, array_vars...)
-
+	fmt.Println(end, "  e  s  ", start, "\n")
 	var base_table model.Ref_Table
 	base_table.Ref_t = make(map[string]int)
 	for _, v := range vars {
@@ -21,19 +22,18 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	}
 
 	(*tables)[size] = base_table
-	//	fmt.Println(end, " end  start ", start, "\n")
 
 	for i := size - 1; i >= 0; i-- {
 		(*tables)[i].Ref_t = make(map[string]int)
-		(*tables)[i].Ref_t = (*tables)[i+1].Ref_t
-		//fmt.Println(i, "  i  ", (*tables)[i], (*tables)[i+1])
+		for key, value := range (*tables)[i+1].Ref_t {
+			(*tables)[i].Ref_t[key] = value
+		}
 		ModifyTable(*instructions[i+start], &((*tables)[i]), i)
-		//fmt.Println(i, "  ", (*tables)[i], (*tables)[i+1], "\n")
+		// fmt.Println(i, "  ", (*tables)[i].Ref_t, (*tables)[i+1].Ref_t, "\n")
+		// fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i].Ref_t)).Pointer())
+		// fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i+1].Ref_t)).Pointer())
+
 	}
-	//fmt.Println("Here")
-	/*for _, v := range *tables {
-		fmt.Println(v)
-	}*/
 	return
 }
 
@@ -42,7 +42,7 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 	dest := instruction.Dest
 	src1 := instruction.Src1
 	src2 := instruction.Src2
-	//fmt.Println("oper dest s1 s2", oper, " ", dest, " ", src1, " ", src2)
+	//	fmt.Println("oper dest s1 s2", oper, " ", dest, " ", src1, " ", src2)
 	switch oper {
 	case "call", "ret", "label":
 		return
@@ -70,14 +70,14 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 //The allocated register
 //The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
 func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps) (string, int, string) {
-		fmt.Println((*Ref_Map).VtoR[str])
-		fmt.Println((*table)[pos].Ref_t)
-	
+	fmt.Println(pos, " position  ")
+	fmt.Println((*Ref_Map).VtoR[str])
+	fmt.Println((*table)[pos].Ref_t)
 
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
-	
+
 	if !ok {
 		return str, 2, ""
 	} else if (*Ref_Map).VtoR[str] != "" {
@@ -85,6 +85,7 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	} else {
 		for key, value := range (*Ref_Map).RtoV {
 			if value == "" {
+				fmt.Println(key, "in getreg key", value)
 				return key, 1, ""
 			}
 		}

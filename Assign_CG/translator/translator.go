@@ -28,11 +28,6 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 		Ref_Map.VtoR[Non_Array_Variables[i]] = ""
 	}
 
-	/*	for i :=0 ;i<len(Array_Variables); i++{
-			Ref_Map.VtoR[Array_Variables[i]]="";
-		}
-	*/
-
 	len_reg := 6
 	for i := 0; i < len_reg; i++ {
 		Ref_Map.RtoV[model.Registers[i]] = ""
@@ -122,6 +117,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			case "=":
 				r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], dest, &table, &Ref_Map)
+				fmt.Println(r1, " r1  ", fresh, "  old var", Old_Variable)
 				Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
 				// remove $
 

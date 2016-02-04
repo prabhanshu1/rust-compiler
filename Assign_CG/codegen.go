@@ -1,14 +1,13 @@
 package main
 
 import (
+	"./cg_parser"
+	"./model"
 	//"fmt"
 	"os"
-	"./model"
-	"./cg_parser"
 	//"./cg_getreg"
 	"./translator"
 )
-
 
 func main() {
 
@@ -17,8 +16,10 @@ func main() {
 	var assembly model.Final_Code
 
 	cg_parser.Parser(os.Args[1], &instructions, &leader)
-
-	translator.Translate(&assembly,instructions,leader)
+	// for i := 0; i < len(instructions); i++ {
+	// 	fmt.Println(i, "   ", instructions[i])
+	// }
+	translator.Translate(&assembly, instructions, leader)
 
 	model.FormattedStringPrint(assembly.Libraries)
 	model.FormattedStringPrint(assembly.Global_Section)
