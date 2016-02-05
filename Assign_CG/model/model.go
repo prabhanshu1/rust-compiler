@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	//"math"
 	"strconv"
 )
 
@@ -23,6 +24,11 @@ type Final_Code struct {
 
 type Ref_Table struct {
 	Ref_t map[string]int
+}
+
+func (table *Ref_Table) Initialize(s string) {
+	(*table).Ref_t[s] = 99999999
+	return
 }
 
 //Variable to register

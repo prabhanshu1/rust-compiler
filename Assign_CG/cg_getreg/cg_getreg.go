@@ -2,7 +2,7 @@ package cg_getreg
 
 import (
 	"../model"
-	//"fmt"
+	"fmt"
 	//	"reflect"
 	"strconv"
 )
@@ -18,7 +18,7 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	var base_table model.Ref_Table
 	base_table.Ref_t = make(map[string]int)
 	for _, v := range vars {
-		base_table.Dead(v)
+		base_table.Initialize(v)
 	}
 	base_table.Dead("@@@@")
 
@@ -27,7 +27,11 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	for i := size - 1; i >= 0; i-- {
 		(*tables)[i].Ref_t = make(map[string]int)
 		for key, value := range (*tables)[i+1].Ref_t {
-			(*tables)[i].Ref_t[key] = value
+			if value == -1 {
+				(*tables)[i].Ref_t[key] = 999999
+			} else {
+				(*tables)[i].Ref_t[key] = value
+			}
 		}
 		ModifyTable(*instructions[i+start], &((*tables)[i]), i)
 		// fmt.Println(i, "  ", (*tables)[i].Ref_t, (*tables)[i+1].Ref_t, "\n")
@@ -71,10 +75,9 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 //The allocated register
 //The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
 func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps) (string, int, string) {
-/*	fmt.Println(pos, " position  ")
-	fmt.Println((*Ref_Map).VtoR,str)
+	fmt.Println(pos, " position  ")
+	fmt.Println((*Ref_Map).VtoR[str], str)
 	fmt.Println((*table)[pos].Ref_t)
-*/
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
@@ -87,7 +90,7 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	} else {
 		for key, value := range (*Ref_Map).RtoV {
 			if value == "" {
-			//	fmt.Println(key, "in getreg key", value)
+				//	fmt.Println(key, "in getreg key", value)
 				return key, 1, ""
 			}
 		}
@@ -103,7 +106,7 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	}
 }
 
-func Getreg_Force(data *[]string,pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
+func Getreg_Force(data *[]string, pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
 	_, ok := (*Ref_Map).VtoR[str]
 
 	if !ok {
@@ -111,7 +114,7 @@ func Getreg_Force(data *[]string,pos int, str string, table *[]model.Ref_Table, 
 	} else if (*Ref_Map).VtoR[str] == model.Registers[reg] {
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
-		if (*Ref_Map).VtoR[str] != ""{
+		if (*Ref_Map).VtoR[str] != "" {
 			*data = append(*data, "Store "+(*Ref_Map).VtoR[str]+" "+str)
 			model.Set_Reg_Map(Ref_Map, (*Ref_Map).VtoR[str], "")
 		}
