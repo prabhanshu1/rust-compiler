@@ -24,6 +24,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 	Non_Array_Variables, Array_Variables := model.VariableFind(instructions, leader[0], leader[leader_count])
 	// initialize all the map of r to v and v to r.
+	Non_Array_Variables=append(Non_Array_Variables,"@@_temporary_compiler_variable")
 	for i := 0; i < len(Non_Array_Variables); i++ {
 		Ref_Map.VtoR[Non_Array_Variables[i]] = ""
 	}
@@ -72,7 +73,11 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			switch op {
 
-			case "+", "-":
+			case "+":
+				// to prevent the case a=b+a
+				if src2==dest {
+					src2,src1=src1,src2
+				}
 				r2, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
 				Load_and_Store(fresh, Old_Variable, &data, &r2, src1, &Ref_Map)
 
@@ -82,9 +87,33 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], dest, &table, &Ref_Map)
 				Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
 
-
 				data = append(data, "movl"+" "+r2+","+r1)
+				
 				data = append(data, model.Arithmetic[op]+" "+r1+","+r3)
+
+
+			case "-":
+				r2, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
+				Load_and_Store(fresh, Old_Variable, &data, &r2, src1, &Ref_Map)
+
+				r3, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src2, &table, &Ref_Map)
+				Load_and_Store(fresh, Old_Variable, &data, &r3, src2, &Ref_Map)
+
+				r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], dest, &table, &Ref_Map)
+				Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
+
+				if src2==dest {
+					//a=b-a  case
+					r4, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], "@@_temporary_compiler_variable", &table, &Ref_Map)
+					Load_and_Store(fresh, Old_Variable, &data, &r2, src1, &Ref_Map)	
+					data = append(data, "movl"+" "+r3+","+r4)
+					data = append(data, "movl"+" "+r2+","+r1)
+					data = append(data, model.Arithmetic[op]+" "+r1+","+r4)
+					
+				}else{
+					data = append(data, "movl"+" "+r2+","+r1)
+					data = append(data, model.Arithmetic[op]+" "+r1+","+r3)
+				}
 
 			case "*", "/", "%":
 				// a=b/c or a=b*c
@@ -106,7 +135,9 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				Load_and_Store(fresh, Old_Variable, &data, &r3, src2, &Ref_Map)
 
 				// move b to eax
+				data = append(data, "movl"+" "+r3+","+r4)
 				data = append(data, "movl"+" "+r2+","+r1)
+				//move c to edx
 				// divl %(c waala register)
 				data = append(data, model.Arithmetic[op]+" "+r3)
 				if op == "%" {
@@ -171,6 +202,14 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				}
 
 				data = append(data, "ret")
+
+			case "print" :
+				r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
+				//fmt.Println("ZZZZZZZZZZ",r1)
+				Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
+
+				data = append(data,"push " + r1)
+				data = append(data, "print")
 
 			case "call":
 				data = append(data, "call "+" "+jmp)
