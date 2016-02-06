@@ -2,7 +2,7 @@ package cg_getreg
 
 import (
 	"../model"
-	"fmt"
+	//"fmt"
 	//	"reflect"
 	"strconv"
 )
@@ -11,10 +11,10 @@ import (
 func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *[]model.Ref_Table) {
 	size := end - start + 1
 	vars, array_vars := model.VariableFind(instructions, start, end)
-	//fmt.Println(vars)
+	////fmt.Println(vars)
 
 	vars = append(vars, array_vars...)
-	//fmt.Println(end, "  e  s  ", start, "\n")
+	////fmt.Println(end, "  e  s  ", start, "\n")
 	var base_table model.Ref_Table
 	base_table.Ref_t = make(map[string]int)
 	for _, v := range vars {
@@ -34,9 +34,9 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 			}
 		}
 		ModifyTable(*instructions[i+start], &((*tables)[i]), i)
-		// fmt.Println(i, "  ", (*tables)[i].Ref_t, (*tables)[i+1].Ref_t, "\n")
-		// fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i].Ref_t)).Pointer())
-		// fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i+1].Ref_t)).Pointer())
+		// //fmt.Println(i, "  ", (*tables)[i].Ref_t, (*tables)[i+1].Ref_t, "\n")
+		// //fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i].Ref_t)).Pointer())
+		// //fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i+1].Ref_t)).Pointer())
 
 	}
 	return
@@ -47,7 +47,7 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 	dest := instruction.Dest
 	src1 := instruction.Src1
 	src2 := instruction.Src2
-	//	fmt.Println("oper dest s1 s2", oper, " ", dest, " ", src1, " ", src2)
+	//	//fmt.Println("oper dest s1 s2", oper, " ", dest, " ", src1, " ", src2)
 	switch oper {
 	case "call", "ret", "label":
 		return
@@ -55,29 +55,29 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 		table.Dead(dest)
 		UseCheck(src1, table, i)
 		//UseCheck(src2, table, i)
-		//fmt.Println(src1, src2)
+		////fmt.Println(src1, src2)
 	case "+", "-", "*", "/", "%":
 		table.Dead(dest)
 		UseCheck(src1, table, i)
 		UseCheck(src2, table, i)
-		//fmt.Println(src1, src2, dest)
+		////fmt.Println(src1, src2, dest)
 	case "print":
 		UseCheck(src1, table, i)
 	case "ifgoto":
 		UseCheck(src1, table, i)
 		UseCheck(src2, table, i)
-		//fmt.Println(src1, src2)
+		////fmt.Println(src1, src2)
 	}
-	//fmt.Println(*table)
+	////fmt.Println(*table)
 }
 
 //Return Values:
 //The allocated register
 //The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
 func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps) (string, int, string) {
-	fmt.Println(pos, " position  ")
-	fmt.Println((*Ref_Map).VtoR[str], str)
-	fmt.Println((*table)[pos].Ref_t)
+	//fmt.Println(pos, " position  ")
+	//fmt.Println((*Ref_Map).VtoR[str], str)
+	//fmt.Println((*table)[pos].Ref_t)
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
@@ -85,12 +85,12 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 	if !ok {
 		return str, 2, ""
 	} else if (*Ref_Map).VtoR[str] != "" {
-		//fmt.Println("ZZZZZZZZZZZZZ",(*Ref_Map).VtoR[str])
+		////fmt.Println("ZZZZZZZZZZZZZ",(*Ref_Map).VtoR[str])
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
 		for key, value := range (*Ref_Map).RtoV {
 			if value == "" {
-				//	fmt.Println(key, "in getreg key", value)
+				//	//fmt.Println(key, "in getreg key", value)
 				return key, 1, ""
 			}
 		}
@@ -107,6 +107,10 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 }
 
 func Getreg_Force(data *[]string, pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
+	//fmt.Println(pos, " position  ")
+	//fmt.Println((*Ref_Map).VtoR[str], str)
+	//fmt.Println((*table)[pos].Ref_t)
+
 	_, ok := (*Ref_Map).VtoR[str]
 
 	if !ok {
@@ -115,7 +119,7 @@ func Getreg_Force(data *[]string, pos int, str string, table *[]model.Ref_Table,
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
 		if (*Ref_Map).VtoR[str] != "" {
-			*data = append(*data, "Store "+(*Ref_Map).VtoR[str]+" "+str)
+			*data = append(*data, "movl $"+str+" ,"+(*Ref_Map).VtoR[str])
 			model.Set_Reg_Map(Ref_Map, (*Ref_Map).VtoR[str], "")
 		}
 		return model.Registers[reg], 1, (*Ref_Map).RtoV[model.Registers[reg]]
@@ -130,5 +134,5 @@ func UseCheck(s string, table *model.Ref_Table, instr int) {
 			table.Use(s, instr)
 		}
 	}
-	//fmt.Println(*vars, len(*vars))
+	////fmt.Println(*vars, len(*vars))
 }
