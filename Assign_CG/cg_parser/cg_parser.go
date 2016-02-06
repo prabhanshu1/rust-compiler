@@ -53,13 +53,16 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct,leader
 			model.Initialize_instr(instr, s[1], "", "", "", "-1")
 		}
 		*leader=append(*leader,line);
-	case "print":
-		model.Initialize_instr(instr, s[1], "", s[2], "", "-2")
+	case "push":
+		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
 	case "label":
 		model.Initialize_instr(instr, s[1], "", s[2], "", "-3")
 		*leader=append(*leader,line-1);
-	default:
-		//fmt.Println(s[1], "hello")
+	case "exit":
+		model.Initialize_instr(instr, s[1], "", "", "", "-3")
+		*leader=append(*leader,line);
+
+	default: //assuming a syscall
 	}
 
 	*instructions = append(*instructions, instr)

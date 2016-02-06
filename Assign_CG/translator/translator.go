@@ -117,7 +117,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 
 				} 
-				
+
 				data = append(data, "movl"+" "+r2+","+r1)
 				data = append(data, model.Arithmetic[op]+" "+r3+","+r1)
 				
@@ -212,9 +212,9 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				Load_and_Store(fresh, Old_Variable, &data, &r2, src2, &Ref_Map)
 
 				////fmt.Println("XXXXXXXXXXXXXX",src1,"YYY",src2,"YYY",r1,"YYY",r2)
-				if fresh==2 {
+/*				if fresh==2 {
 					r1,r2=r2,r1
-				}
+				}*/
 				data = append(data, "cmpl "+r1+","+r2)
 				data = append(data, dest+" "+jmp)
 
@@ -227,19 +227,35 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 					Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
 
 				}
+				Free_reg_at_end(&data, &Ref_Map)
 
 				data = append(data, "ret")
 
-			case "print":
+/*			case "print":
 				r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
 				////fmt.Println("ZZZZZZZZZZ",r1)
 				Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
 
 				data = append(data, "push "+r1)
-				data = append(data, "print")
+				data = append(data, "print")*/
+
+			case "push":
+
+				if jmp!= "" {data = append(data, "pushl "+jmp)}
+				if src2!= "" {data = append(data, "pushl "+src2)}
+				if src1!= "" {data = append(data, "pushl "+src1)}
+				if dest!= "" {data = append(data, "pushl "+dest)}
+
 
 			case "call":
 				data = append(data, "call "+" "+jmp)
+
+			case "exit":
+
+				Free_reg_at_end(&data, &Ref_Map)
+				data = append(data, "movl $1,%eax")
+				data = append(data, "movl $0,%ebx")
+				data = append(data, "int $0x80")
 
 			default:
 			}
@@ -247,9 +263,6 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 		Free_reg_at_end(&data, &Ref_Map)
 	}
 
-	data = append(data, "movl $1,%eax")
-	data = append(data, "movl $0,%ebx")
-	data = append(data, "int $0x80")
 
 	(*Code).Main_Code = data
 }
@@ -257,7 +270,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 func Load_and_Store(fresh int, Old_Variable string, data *[]string, reg *string, New_Variable string, Ref_Map *model.Ref_Maps) {
 	if fresh == 1 {
 		if Old_Variable != "" {
-			*data = append(*data, "movl $"+Old_Variable+", "+*reg)
+			*data = append(*data, "movl "+*reg+","+Old_Variable)
 			model.Set_Var_Map(Ref_Map, Old_Variable, "")
 
 		}
@@ -273,7 +286,7 @@ func Load_and_Store(fresh int, Old_Variable string, data *[]string, reg *string,
 func Special_Store(fresh int, Old_Variable string, data *[]string, reg *string, New_Variable string, Ref_Map *model.Ref_Maps) {
 	if fresh == 1 {
 		if Old_Variable != "" {
-			*data = append(*data, "movl $"+Old_Variable+", "+*reg)
+			*data = append(*data, "movl "+*reg+","+Old_Variable)
 			model.Set_Var_Map(Ref_Map, Old_Variable, "")
 		}
 	} else if fresh == 2 {
