@@ -95,7 +95,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 				data = append(data, "movl"+" "+r2+","+r1)
 
-				data = append(data, model.Arithmetic[op]+" "+r1+","+r3)
+				data = append(data, model.Arithmetic[op]+" "+r3+","+r1)
 
 			case "-":
 				r2, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
@@ -109,16 +109,18 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 				if src2 == dest {
 					//a=b-a  case
-					r4, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], "temporary_compiler_variable", &table, &Ref_Map)
-					Load_and_Store(fresh, Old_Variable, &data, &r2, src1, &Ref_Map)
-					data = append(data, "movl"+" "+r3+","+r4)
-					data = append(data, "movl"+" "+r2+","+r1)
-					data = append(data, model.Arithmetic[op]+" "+r1+","+r4)
+					src2="temporary_compiler_variable"
+					r3, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src2, &table, &Ref_Map)
+					//fmt.Println("fuck7", r3, fresh, Old_Variable)
+					Load_and_Store(fresh, Old_Variable, &data, &r3, src2, &Ref_Map)
+					data = append(data, "movl"+" "+r1+","+r3)
 
-				} else {
-					data = append(data, "movl"+" "+r2+","+r1)
-					data = append(data, model.Arithmetic[op]+" "+r1+","+r3)
-				}
+
+				} 
+				
+				data = append(data, "movl"+" "+r2+","+r1)
+				data = append(data, model.Arithmetic[op]+" "+r3+","+r1)
+				
 
 			case "*", "/", "%":
 				// a=b/c or a=b*c
@@ -147,8 +149,17 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				//fmt.Println("fuck7", r3, fresh, Old_Variable)
 				Load_and_Store(fresh, Old_Variable, &data, &r3, src2, &Ref_Map)
 
+				if src2==dest {
+					src2="temporary_compiler_variable"
+					r3, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src2, &table, &Ref_Map)
+					//fmt.Println("fuck7", r3, fresh, Old_Variable)
+					Load_and_Store(fresh, Old_Variable, &data, &r3, src2, &Ref_Map)
+					data = append(data, "movl"+" "+r1+","+r3)
+
+					
+				}
+
 				// move b to eax
-				data = append(data, "movl"+" "+r3+","+r4)
 				data = append(data, "movl"+" "+r2+","+r1)
 				//move c to edx
 				// divl %(c waala register)
@@ -169,7 +180,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				////fmt.Println(r1, " r1  ", fresh, "  old var", Old_Variable)
 				Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
 				// remove $
-				data = append(data, "mov "+r1+","+r2)
+				data = append(data, "movl "+r2+","+r1)
 
 			case "=[]":
 
@@ -201,7 +212,10 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				Load_and_Store(fresh, Old_Variable, &data, &r2, src2, &Ref_Map)
 
 				////fmt.Println("XXXXXXXXXXXXXX",src1,"YYY",src2,"YYY",r1,"YYY",r2)
-				data = append(data, "cmp "+r1+","+r2)
+				if fresh==2 {
+					r1,r2=r2,r1
+				}
+				data = append(data, "cmpl "+r1+","+r2)
 				data = append(data, dest+" "+jmp)
 
 			case "label":
@@ -232,6 +246,11 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 		}
 		Free_reg_at_end(&data, &Ref_Map)
 	}
+
+	data = append(data, "movl $1,%eax")
+	data = append(data, "movl $0,%ebx")
+	data = append(data, "int $0x80")
+
 	(*Code).Main_Code = data
 }
 
