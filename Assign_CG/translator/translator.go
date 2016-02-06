@@ -17,8 +17,8 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 	Ref_Map.VtoR = make(map[string]string)
 	Ref_Map.RtoV = make(map[string]string)
 
-	((*Code).Libraries) = append(((*Code).Libraries), "#include <asm/unistd.h>")
-	((*Code).Libraries) = append(((*Code).Libraries), "#include <syscall.h>")
+	/*((*Code).Libraries) = append(((*Code).Libraries), "#include <asm/unistd.h>")
+	((*Code).Libraries) = append(((*Code).Libraries), "#include <syscall.h>")*/
 
 	((*Code).Data_Section) = append(((*Code).Data_Section), ".section .data")
 
