@@ -20,7 +20,7 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 	for _, v := range vars {
 		base_table.Initialize(v)
 	}
-	base_table.Dead("@@@@")
+	base_table.Ref_t["@@@@"] = -2
 
 	(*tables)[size] = base_table
 
