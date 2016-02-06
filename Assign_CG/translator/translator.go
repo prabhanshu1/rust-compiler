@@ -64,7 +64,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 		table := make([]model.Ref_Table, leader[i+1]-leader[i]+2)
 		cg_getreg.Preprocess(instructions, leader[i], leader[i+1]-1, &table)
 		for j := leader[i]; j < leader[i+1]; j++ {
-			//			Free_reg_at_end(&data, &Ref_Map)
+
 			dest := instructions[j].Dest
 			src1 := instructions[j].Src1
 			src2 := instructions[j].Src2
@@ -230,7 +230,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 			default:
 			}
 		}
-
+		Free_reg_at_end(&data, &Ref_Map)
 	}
 	(*Code).Main_Code = data
 }
@@ -264,7 +264,7 @@ func Special_Store(fresh int, Old_Variable string, data *[]string, reg *string, 
 func Free_reg_at_end(data *[]string, Ref_Map *model.Ref_Maps) {
 	for key, value := range (*Ref_Map).RtoV {
 		if value != "" {
-			*data = append(*data, "movl "+key+", $"+value)
+			*data = append(*data, "movl "+key+", "+value)
 		}
 		model.Set_Reg_Map(Ref_Map, key, "")
 	}
