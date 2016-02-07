@@ -10,7 +10,7 @@ import (
 //Called at every Basic Block
 func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *[]model.Ref_Table) {
 	size := end - start + 1
-	vars, array_vars := model.VariableFind(instructions, start, end)
+	vars, array_vars,_ := model.VariableFind(instructions, start, end)
 	////fmt.Println(vars)
 
 	vars = append(vars, array_vars...)

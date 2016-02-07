@@ -55,6 +55,8 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct,leader
 		*leader=append(*leader,line);
 	case "push":
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
+	case "string": //s[2] is name of variable s[3] is string
+		model.Initialize_instr(instr, s[1], s[2], s[3], "", "")
 	case "label":
 		model.Initialize_instr(instr, s[1], "", s[2], "", "-3")
 		*leader=append(*leader,line-1);

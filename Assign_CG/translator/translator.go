@@ -22,7 +22,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 	((*Code).Data_Section) = append(((*Code).Data_Section), ".section .data")
 
-	Non_Array_Variables, Array_Variables := model.VariableFind(instructions, leader[0], leader[leader_count])
+	Non_Array_Variables, Array_Variables,String_Variables := model.VariableFind(instructions, leader[0], leader[leader_count])
 	// initialize all the map of r to v and v to r.
 	Non_Array_Variables = append(Non_Array_Variables, "temporary_compiler_variable")
 	for i := 0; i < len(Non_Array_Variables); i++ {
@@ -40,6 +40,14 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 		data = append(data, ".long "+strconv.Itoa(69))
 		data = append(data, Non_Array_Variables[i]+"end:")
 	}
+
+	for i := 0; i < len(String_Variables); i++ {
+		data = append(data, String_Variables[i]+":")
+		data = append(data, ".ascii "+ "\""+String_Variables[i+1]+"\"")
+		data = append(data, String_Variables[i]+"end:")
+		i++;
+	}
+
 	for i := range Array_Variables {
 		data = append(data, Array_Variables[i]+":")
 		data = append(data, ".rept 100")

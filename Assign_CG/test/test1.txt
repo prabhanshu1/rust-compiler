@@ -10,9 +10,9 @@
 10, +, temp, temp, rand2
 11, %, cur, temp, mod
 12, print, cur
-13, []=, a, i, cur
+13, []=, i, a, cur
 14, +, i, i, 1
-15, ifgoto, je, 1, 1, 8
+15, ifgoto, je, aa, 1, 8
 16, =, i, 0
 17, ifgoto, je, i, n, 32
 18, +, j, i, 1
@@ -23,14 +23,15 @@
 23, +, t1, t1, t2
 24, -, t2, t1, t2
 25, -, t1, t1, t2
-26, []=, a, i, t1
-27, []=, a, j, t2
+26, []=, i, a, t1
+27, []=, j, a, t2
 28, +, j, j, 1
-29, ifgoto, je, 1, 1, 19
+29, ifgoto, je, aa, 1, 19
 30, +, i, i, 1
-31, ifgoto, je, 1, 1, 17
+31, ifgoto, je, aa, 1, 17
 32, =, i, 0
 33, ifgoto, je, i, n, 18
 34, =[], t1, a, i
 35, print, t1
-36, ifgoto, je, 1, 1, 33
+36, ifgoto, je, aa, 1, 33
+37, string, asd, asdasdsad%d

@@ -119,12 +119,16 @@ func Initialize_instr(instr *Instr_struct, Op, Dest, Src1, Src2, Jmp string) {
         return output
 }*/
 
-func VariableFind(instructions []*Instr_struct, start int, end int) ([]string, []string) {
+func VariableFind(instructions []*Instr_struct, start int, end int) ([]string, []string,[]string) {
 	m := make(map[string]bool) //To keep track of what has already been inserted
 	vars := make([]string, 0)
 
 	array_m := make(map[string]bool) //To keep track of what has already been inserted
 	array_vars := make([]string, 0)
+
+
+	string_m := make(map[string]bool) //To keep track of what has already been inserted
+	string_vars := make([]string, 0)
 
 	for i := start; i <= end; i++ {
 		if instructions[i].Op == "=[]" {
@@ -138,13 +142,16 @@ func VariableFind(instructions []*Instr_struct, start int, end int) ([]string, [
 		} else if instructions[i].Op == "ifgoto" {
 			AppendCheck(instructions[i].Src1, m, &vars)
 			AppendCheck(instructions[i].Src2, m, &vars)
-		} else if instructions[i].Op != "call" && instructions[i].Op != "label" {
+		} else if instructions[i].Op == "string" {
+			AppendCheck(instructions[i].Dest, string_m, &string_vars)
+			AppendCheck(instructions[i].Src1, string_m, &string_vars)
+		} else if instructions[i].Op != "call" && instructions[i].Op != "label"  {
 			AppendCheck(instructions[i].Dest, m, &vars)
 			AppendCheck(instructions[i].Src1, m, &vars)
 			AppendCheck(instructions[i].Src2, m, &vars)
 		}
 	}
-	return vars, array_vars
+	return vars, array_vars, string_vars
 }
 
 func AppendCheck(s string, m map[string]bool, vars *[]string) {
