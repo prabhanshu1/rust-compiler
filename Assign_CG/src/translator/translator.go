@@ -81,7 +81,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 			//fmt.Println("\n ", instructions[j])
 			switch op {
 
-			case "+":
+			case "+","&","^","|":
 				// to prevent the case a=b+a
 				if src2 == dest {
 					src2, src1 = src1, src2

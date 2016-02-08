@@ -74,6 +74,9 @@ var Arithmetic = map[string]string{
 	"*": "mull",
 	"/": "divl",
 	"%": "divl",
+	"&": "andl",
+	"^": "xorl",
+	"|": "orl",
 }
 
 /*var Registers = map[int]string{
