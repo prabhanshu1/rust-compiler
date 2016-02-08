@@ -34,9 +34,6 @@ func Preprocess(instructions []*model.Instr_struct, start int, end int, tables *
 			}
 		}
 		ModifyTable(*instructions[i+start], &((*tables)[i]), i)
-		// //fmt.Println(i, "  ", (*tables)[i].Ref_t, (*tables)[i+1].Ref_t, "\n")
-		// //fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i].Ref_t)).Pointer())
-		// //fmt.Printf("0x%x\n", reflect.ValueOf(((*tables)[i+1].Ref_t)).Pointer())
 
 	}
 	return
@@ -71,13 +68,8 @@ func ModifyTable(instruction model.Instr_struct, table *model.Ref_Table, i int) 
 	////fmt.Println(*table)
 }
 
-//Return Values:
-//The allocated register
-//The return code: 0-> alreary in register | 1->NextUse Applied | 2->Not a variable
 func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps) (string, int, string) {
-	//fmt.Println(pos, " position  ")
-	//fmt.Println((*Ref_Map).VtoR[str], str)
-	//fmt.Println((*table)[pos].Ref_t)
+
 	max := 0
 	var max_val string
 	_, ok := (*Ref_Map).VtoR[str]
@@ -107,9 +99,6 @@ func Getreg(pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Ma
 }
 
 func Getreg_Force(data *[]string, pos int, str string, table *[]model.Ref_Table, Ref_Map *model.Ref_Maps, reg int) (string, int, string) {
-	//fmt.Println(pos, " position  ")
-	//fmt.Println((*Ref_Map).VtoR[str], str)
-	//fmt.Println((*table)[pos].Ref_t)
 
 	_, ok := (*Ref_Map).VtoR[str]
 
@@ -134,5 +123,4 @@ func UseCheck(s string, table *model.Ref_Table, instr int) {
 			table.Use(s, instr)
 		}
 	}
-	////fmt.Println(*vars, len(*vars))
 }

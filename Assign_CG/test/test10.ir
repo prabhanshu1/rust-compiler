@@ -1,7 +1,0 @@
-1, =, a, 32
-2, -, c, 0, a
-3, &, a, a, c
-4, arg, str, a, c, , ,
-5, call, printf, , ,
-6, string, str, %d %d \n\0
-7, exit

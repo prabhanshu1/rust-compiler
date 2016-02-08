@@ -106,21 +106,6 @@ func Initialize_instr(instr *Instr_struct, Op, Dest, Src1, Src2, Jmp string) {
 	//fmt.Println(instr, "parsed")
 }
 
-/*func Initialize_table_row(entry *Ref_Table_row, Variable string){
-        entry.Variable = Variable
-        entry.Last = -1                   //-1 corresponds to dead state
-        entry.Next = -1                   //-1 corresponds to dead state
-}
-*/
-/*func Copy(input []Ref_Table_row) []Ref_Table_row{
-        output:= make([]Ref_Table_row, len(input))
-        for i,v:=range input{
-                output[i].Variable = v.Variable
-                output[i].Next = v.Next
-                output[i].Last = v.Last
-        }
-        return output
-}*/
 
 func VariableFind(instructions []*Instr_struct, start int, end int) ([]string, []string,[]string) {
 	m := make(map[string]bool) //To keep track of what has already been inserted
