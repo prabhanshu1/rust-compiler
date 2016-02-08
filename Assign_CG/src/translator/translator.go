@@ -264,12 +264,13 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				data = append(data, "call "+" "+jmp)
 
 			case "exit":
-
 				Free_reg_at_end(&data, &Ref_Map)
 				data = append(data, "movl $1,%eax")
 				data = append(data, "movl $0,%ebx")
 				data = append(data, "int $0x80")
-
+			case "jmp":
+				Free_reg_at_end(&data, &Ref_Map)
+				data = append(data, op+" "+dest)
 			default:
 			}
 		}

@@ -63,7 +63,14 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 	case "exit":
 		model.Initialize_instr(instr, s[1], "", "", "", "-3")
 		*leader = append(*leader, line)
-
+	case "jmp":
+		model.Initialize_instr(instr, s[1], s[2], "", "", "-3")
+		s, err := strconv.Atoi(s[2])
+		if err != nil {
+			log.Fatal("Invalid Jump Target")
+		}
+		*leader = append(*leader, s-1)
+		*leader = append(*leader, line)
 	default: //assuming a syscall
 	}
 
