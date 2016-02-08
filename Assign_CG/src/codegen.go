@@ -18,7 +18,7 @@ func main() {
 	cg_parser.Parser(os.Args[1], &instructions, &leader)
 	// for i := 0; i < len(instructions); i++ {
 	// 	fmt.Println(i, "   ", instructions[i])
-	// }
+	//}
 	translator.Translate(&assembly, instructions, leader)
 
 	model.FormattedStringPrint(assembly.Libraries)

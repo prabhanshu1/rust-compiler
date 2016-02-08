@@ -1,6 +1,6 @@
 
 
-.globl _start
+.globl main
 
 
 .section .data
@@ -56,36 +56,36 @@ aend:
 .section .text
 
 
-_start:
+main:
 label1:
 movl $b, %eax
 movl $10,%eax
-movl $n, %ebx
-movl $10,%ebx
-movl $mod, %ecx
-movl $2713,%ecx
-movl $rand1, %edx
-movl $31,%edx
-movl $rand2, %edi
-movl $101,%edi
+movl $n, %edi
+movl $10,%edi
+movl $mod, %ebx
+movl $2713,%ebx
+movl $rand1, %ecx
+movl $31,%ecx
+movl $rand2, %edx
+movl $101,%edx
 movl $cur, %esp
 movl $23,%esp
-movl %eax,b
-movl $i, %eax
-movl $0,%eax
-movl %eax, i
-movl %ebx, n
-movl %ecx, mod
-movl %edx, rand1
-movl %edi, rand2
+movl %ecx,rand1
+movl $i, %ecx
+movl $0,%ecx
+movl %edx, rand2
+movl %edi, n
 movl %esp, cur
+movl %eax, b
+movl %ebx, mod
+movl %ecx, i
 label2:
-movl $i, %eax
-movl $n, %ebx
-cmpl %eax,%ebx
+movl $i, %edi
+movl $n, %eax
+cmpl %edi,%eax
 je label4
-movl %eax, i
-movl %ebx, n
+movl %eax, n
+movl %edi, i
 label3:
 movl $0,%edx
 movl $temp, %eax
@@ -112,32 +112,32 @@ movl %eax,a(,%edx,4)
 movl %edx,%edx
 addl $1,%edx
 movl $aa, %esp
-cmpl %esp,$1
+cmpl $1,%esp
 je label2
+movl %edi, mod
+movl %esp, aa
 movl %eax, cur
 movl %ebx, rand1
 movl %ecx, temp
 movl %edx, i
-movl %edi, mod
-movl %esp, aa
 label4:
 movl $i, %eax
 movl $0,%eax
 movl %eax, i
 label5:
-movl $i, %eax
-movl $n, %ebx
-cmpl %eax,%ebx
+movl $i, %ebx
+movl $n, %esp
+cmpl %ebx,%esp
 je label12
-movl %eax, i
-movl %ebx, n
+movl %esp, n
+movl %ebx, i
 label6:
 movl $i, %eax
-movl $j, %ebx
-movl %eax,%ebx
-addl $1,%ebx
+movl $j, %edx
+movl %eax,%edx
+addl $1,%edx
 movl %eax, i
-movl %ebx, j
+movl %edx, j
 label7:
 movl $j, %eax
 movl $n, %ebx
@@ -146,75 +146,75 @@ je label11
 movl %eax, j
 movl %ebx, n
 label8:
-movl $i, %eax
+movl $i, %edx
 movl $t1, %ebx
-movl a(,%eax,4),%ebx
+movl a(,%edx,4),%ebx
 movl $j, %ecx
-movl $t2, %edx
-movl a(,%ecx,4),%edx
-cmpl %ebx,%edx
+movl $t2, %edi
+movl a(,%ecx,4),%edi
+cmpl %ebx,%edi
 jle label10
-movl %eax, i
 movl %ebx, t1
 movl %ecx, j
-movl %edx, t2
+movl %edx, i
+movl %edi, t2
 label9:
-movl $t1, %eax
-movl $t2, %ebx
-movl %eax,%eax
-addl %ebx,%eax
-movl $temporary_compiler_variable, %ecx
-movl %ebx,%ecx
-movl %eax,%ebx
-subl %ecx,%ebx
-movl %eax,%eax
-subl %ebx,%eax
-movl %eax, t1
-movl %ebx, t2
-movl %ecx, temporary_compiler_variable
-label10:
-movl $t1, %eax
-movl $i, %ebx
-movl %eax,a(,%ebx,4)
+movl $t1, %ebx
 movl $t2, %ecx
-movl $j, %edx
-movl %ecx,a(,%edx,4)
-movl %edx,%edx
-addl $1,%edx
-movl $aa, %edi
-cmpl %edi,$1
-je label7
-movl %eax, t1
-movl %ebx, i
+movl %ebx,%ebx
+addl %ecx,%ebx
+movl $temporary_compiler_variable, %edi
+movl %ecx,%edi
+movl %ebx,%ecx
+subl %edi,%ecx
+movl %ebx,%ebx
+subl %ecx,%ebx
+movl %ebx, t1
 movl %ecx, t2
-movl %edx, j
+movl %edi, temporary_compiler_variable
+label10:
+movl $t1, %ecx
+movl $i, %edx
+movl %ecx,a(,%edx,4)
+movl $t2, %ebx
+movl $j, %esp
+movl %ebx,a(,%esp,4)
+movl %esp,%esp
+addl $1,%esp
+movl $aa, %edi
+cmpl $1,%edi
+je label7
 movl %edi, aa
+movl %esp, j
+movl %ebx, t2
+movl %ecx, t1
+movl %edx, i
 label11:
 movl $i, %eax
 movl %eax,%eax
 addl $1,%eax
 movl $aa, %ebx
-cmpl %ebx,$1
+cmpl $1,%ebx
 je label5
 movl %eax, i
 movl %ebx, aa
 label12:
-movl $i, %eax
-movl $0,%eax
-movl %eax, i
+movl $i, %esp
+movl $0,%esp
+movl %esp, i
 label13:
 movl $i, %eax
 movl $n, %ebx
 cmpl %eax,%ebx
 je label6
-movl %eax, i
 movl %ebx, n
+movl %eax, i
 label14:
 movl $i, %eax
 movl $t1, %ebx
 movl a(,%eax,4),%ebx
 movl $aa, %ecx
-cmpl %ecx,$1
+cmpl $1,%ecx
 je label13
 movl %eax, i
 movl %ebx, t1
