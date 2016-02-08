@@ -187,6 +187,15 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				// remove $
 				data = append(data, "movl "+r2+","+r1)
 
+			case "addof":
+
+
+			r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], dest, &table, &Ref_Map)
+			////fmt.Println(r1, " r1  ", fresh, "  old var", Old_Variable)
+			Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
+			// remove $
+			data = append(data, "movl $"+src1+","+r1)
+
 			case "=[]":
 
 				r3, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src2, &table, &Ref_Map)
@@ -245,23 +254,34 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 							data = append(data, "push "+r1)
 							data = append(data, "print")*/
 
-			case "push":
+			case "arg":
 
 				if jmp != "" {
 					data = append(data, "pushl "+jmp)
 				}
 				if src2 != "" {
-					data = append(data, "pushl "+src2)
+					r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src2, &table, &Ref_Map)
+					Load_and_Store(fresh, Old_Variable, &data, &r1, src2, &Ref_Map)
+					data = append(data, "pushl "+r1)
 				}
 				if src1 != "" {
-					data = append(data, "pushl "+src1)
+					r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], src1, &table, &Ref_Map)
+					Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
+					data = append(data, "pushl "+r1)
 				}
 				if dest != "" {
-					data = append(data, "pushl "+dest)
+					r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], dest, &table, &Ref_Map)
+					Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
+					data = append(data, "pushl "+r1)
 				}
 
 			case "call":
 				data = append(data, "call "+" "+jmp)
+				if dest!="" {
+					data=append(data,"movl %eax,"+dest)
+					r1, fresh, Old_Variable = cg_getreg.Getreg_Force(&data, j-leader[i], dest, &table, &Ref_Map, 1)
+					Load_and_Store(fresh, Old_Variable, &data, &r1, dest, &Ref_Map)
+				}
 
 			case "exit":
 				Free_reg_at_end(&data, &Ref_Map)
@@ -270,7 +290,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				data = append(data, "int $0x80")
 			case "jmp":
 				Free_reg_at_end(&data, &Ref_Map)
-				data = append(data, op+" "+dest)
+				data = append(data, op+" "+jmp)
 			default:
 			}
 		}

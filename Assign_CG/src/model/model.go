@@ -66,7 +66,7 @@ var Registers = map[int]string{
 	3: "%ecx",
 	4: "%edx",
 	5: "%edi",
-	6: "%esp",
+	6: "%esi",
 }
 var Arithmetic = map[string]string{
 	"+": "addl",
@@ -145,10 +145,12 @@ func VariableFind(instructions []*Instr_struct, start int, end int) ([]string, [
 		} else if instructions[i].Op == "string" {
 			AppendCheck(instructions[i].Dest, string_m, &string_vars)
 			AppendCheck(instructions[i].Src1, string_m, &string_vars)
-		} else if instructions[i].Op != "call" && instructions[i].Op != "label"  {
+		} else if instructions[i].Op != "label" && instructions[i].Op != "arg"  {
 			AppendCheck(instructions[i].Dest, m, &vars)
 			AppendCheck(instructions[i].Src1, m, &vars)
 			AppendCheck(instructions[i].Src2, m, &vars)
+		}else if instructions[i].Op == "call" {
+			AppendCheck(instructions[i].Dest, m, &vars)
 		}
 	}
 	return vars, array_vars, string_vars

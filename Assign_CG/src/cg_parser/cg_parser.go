@@ -29,6 +29,8 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
 	case "=":
 		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
+	case "addof":
+		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
 	case "[]=": // a[i] = b , dest =i , src1 =a ,src2 = b
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
 	case "=[]": // b=a[i] , dest =b , src1 =a ,src2 = i
@@ -42,7 +44,7 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 		*leader = append(*leader, s-1)
 		*leader = append(*leader, line)
 	case "call":
-		model.Initialize_instr(instr, s[1], "", "", "", s[2])
+		model.Initialize_instr(instr, s[1], s[3], "", "", s[2])
 		*leader = append(*leader, line-1)
 	case "ret":
 		if len(s) > 2 {
@@ -51,7 +53,7 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 			model.Initialize_instr(instr, s[1], "", "", "", "-1")
 		}
 		*leader = append(*leader, line)
-	case "push":
+	case "arg":
 		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
 	case "string": //s[2] is name of variable s[3] is string
 		model.Initialize_instr(instr, s[1], s[2], s[3], "", "")
@@ -64,7 +66,7 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 		model.Initialize_instr(instr, s[1], "", "", "", "-3")
 		*leader = append(*leader, line)
 	case "jmp":
-		model.Initialize_instr(instr, s[1], s[2], "", "", "-3")
+		model.Initialize_instr(instr, s[1], "", "", "", s[2])
 		s, err := strconv.Atoi(s[2])
 		if err != nil {
 			log.Fatal("Invalid Jump Target")
@@ -145,7 +147,13 @@ func Parser(file_name string, instructions *[]*model.Instr_struct, leader *[]int
 			tmp_jump, _ := strconv.Atoi((*instructions)[key].Jmp)
 			(*instructions)[key].Jmp = Old_Line_Number_To_New_Labels[tmp_jump-1]
 		}
+
+		if (*instructions)[key].Op == "jmp" {
+			tmp_jump, _ := strconv.Atoi((*instructions)[key].Jmp)
+			(*instructions)[key].Jmp = Old_Line_Number_To_New_Labels[tmp_jump-1]
+		}
 	}
+
 
 	defer file.Close()
 }
