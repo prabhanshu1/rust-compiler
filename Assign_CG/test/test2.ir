@@ -1,37 +1,17 @@
-1, =, b, 10
-2, =, n, 10
-3, =, mod, 2713
-4, =, rand1, 31
-5, =, rand2, 101
-6, =, cur, 23
-7, =, i, 0
-8, ifgoto, je, i, n, 16
-9, *, temp, rand1, cur
-10, +, temp, temp, rand2
-11, %, cur, temp, mod
-12, print, cur
-13, []=, i, a, cur
-14, +, i, i, 1
-15, ifgoto, je, 1, aa, 8
-16, =, i, 0
-17, ifgoto, je, i, n, 32
-18, +, j, i, 1
-19, ifgoto, je, j, n, 30
-20, =[], t1, a, i
-21, =[], t2, a, j
-22, ifgoto, jle, t1, t2, 26
-23, +, t1, t1, t2
-24, -, t2, t1, t2
-25, -, t1, t1, t2
-26, []=, i, a, t1
-27, []=, j, a, t2
-28, +, j, j, 1
-29, ifgoto, je, 1, aa, 19
-30, +, i, i, 1
-31, ifgoto, je, 1, aa, 17
-32, =, i, 0
-33, ifgoto, je, i, n, 18
-34, =[], t1, a, i
-35, print, t1
-36, ifgoto, je, 1, aa, 33
-37, exit
+1, =, i, 0
+2, =, sum, 0
+3, ifgoto, jg, 10, i, 13
+4, []=, i, a, i
+5, =[], mad, a, i
+6, arg, val, mad, , , , , ,
+7, call, printf, , ,
+8, arg, SUM, sum, , , , , ,
+9, call, printf, , ,
+10, +, sum, sum, i
+11, +, i, i, 1
+12, jmp, 3
+13, arg, SUM, sum, , , , , , 
+14, call, printf, , ,
+15, exit
+16, string, val, Value=%d \n\0
+17, string, SUM, SUM=%d \n\0

@@ -1,12 +1,7 @@
-1, =, a, 60
-2, =, b, 48
-3, ifgoto, jge, a, b, 7
-4, +, a, a, b
-5, -, b, a, b
-6, -, a, a, b
-7, ifgoto, je, 0, b, 12
-8, %, c, a, b
-9, =, a, b
-10, =, b, c
-11, ifgoto, je, 1, a, 3
-12, print, a
+1, =, a, 32
+2, -, c, 0, a
+3, ^, a, a, c
+4, arg, str, a, c, , , 
+5, call, printf, , ,  
+6, string, str, %d %d \n\0
+7, exit

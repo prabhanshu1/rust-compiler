@@ -1,11 +1,35 @@
-1, =, ii, 40
-2, scan, a
-3, +, a, a, 18
-4, print,  a
-5, []=, b, 0, 2
-6, =[], c, b, 0
-7, *, d, c, 18
-8, []=, b, 1, d
-9, =, i, 0
-10, =[], e, b, i
-11, print, e
+1, =, a1, 1
+2, =, a2, 2
+3, =, a3, 3
+4, =, a4, 4
+5, =, a0, 0
+6, []=, a0, a, 3
+7, []=, a1, a, 1
+8, []=, a2, a, 7
+9, []=, a3, a, 8
+10, []=, a4, a, 2
+11, =[], pivot, a, a0
+12, =, start, 0
+13, =, end, 4
+14, =, i, 0
+15, ifgoto, jg, 4, i, 27
+16, =[], t1, a, i
+17, ifgoto, jl, t1, pivot, 22
+18, =[], t2, a, i
+19, []=, start, b, t2
+20, +, start, start, 1
+21, jmp, 25
+22, =[], t2, a, i
+23, []=, end, b, t2
+24, -, end, end, 1
+25, +, i, i, 1
+26, jmp, 15
+27, []=, start, b, pivot
+28, =, j, 0
+29, ifgoto, jg, 4, j, 34
+30, =[], t1, b, i
+31, arg, asd, t1, , , 
+32, call, printf, , , , 
+33, jmp, 29
+34, exit
+35, string, asd, %d\n\0
