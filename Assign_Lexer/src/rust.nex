@@ -1,58 +1,59 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/  { tokens_count["KEYWORD"]++; tokens[txt()] = "KEYWORD" }  
-/i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {tokens_count["VAR_TYPE"]++;tokens[txt()] = "VAR_TYPE"}
-/=[\-\+]?[0-9]+/          { tokens_count["INTEGER"]++; tokens_count["OPERATOR_EQ"]++; tokens[txt()[1:]] = "INTEGER"; tokens["="]="OPERATOR_EQ" }
-/[0-9]+/          { tokens_count["INTEGER"]++; tokens[txt()] = "INTEGER" }
-/0x[0-9a-f]+/          { tokens_count["HEX"]++; tokens[txt()] = "HEX" }
-/0o[0-7]+/          { tokens_count["OCTAL"]++; tokens[txt()] = "OCTAL" }
-/0b[0-1]+/          { tokens_count["BINARY"]++; tokens[txt()] = "BINARY" }
-/=[\-\+]?[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++;tokens_count["OPERATOR_EQ"]++; tokens[txt()[1:]] = "FLOAT";tokens["="] = "OPERATOR_EQ" }
-/[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { tokens_count["FLOAT"]++; tokens[txt()] = "FLOAT" }
+/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/  { 
+lval.s = txt(); return KEYWORD }
+/i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = txt(); return VAR_TYPE}
+/=[\-\+]?[0-9]+/          { lval.n,_ = strconv.ParseInt(txt()[1:], 10, 64); return OPEQ_INTEGER}
+/[0-9]+/          { lval.n,_ = strconv.ParseInt(txt(), 10, 64); return INTEGER }
+/0x[0-9a-f]+/          { lval.s =txt() return HEX }
+/0o[0-7]+/          { lval.s =txt() return OCTAL }
+/0b[0-1]+/          { lval.s =txt() return BINARY }
+/=[\-\+]?[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.n,_ = strconv.ParseFloat(txt()[1:], 64); return OPEQ_FLOAT }
+/[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.n,_ = strconv.ParseFloat(txt(), 64); return FLOAT }
 /[\n]/ {line++}
 /[ \t]+/        { /* eat up whitespace */ }
 /(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
-/(\"([^\"])*\")|(\'([^\'])\')/        { tokens_count["LITERAL"]++;tokens[txt()] = "LITERAL" }
-/\>\>/ { tokens_count["OPERATOR_RSHIFT"]++; tokens[txt()] = "OPERATOR_RSHIFT" }
-/\<\</ { tokens_count["OPERATOR_LSHIFT"]++; tokens[txt()] = "OPERATOR_LSHIFT" }
-/\+\=/ { tokens_count["OPERATOR_ADDEQ"]++; tokens[txt()] = "OPERATOR_ADDEQ" }
-/\-\=/ { tokens_count["OPERATOR_SUBEQ"]++; tokens[txt()] = "OPERATOR_SUBEQ" }
-/\*\=/ { tokens_count["OPERATOR_MULEQ"]++; tokens[txt()] = "OPERATOR_MULEQ" }
-/\/\=/ { tokens_count["OPERATOR_DIVEQ"]++; tokens[txt()] = "OPERATOR_DIVEQ" }
-/\%\=/ { tokens_count["OPERATOR_MODEQ"]++; tokens[txt()] = "OPERATOR_MODEQ" }
-/\-\>/ { tokens_count["OPERATOR_INSIDE"]++; tokens[txt()] = "OPERATOR_INSIDE" }
-/\=\=/ { tokens_count["OPERATOR_EQEQ"]++; tokens[txt()] = "OPERATOR_EQEQ" }
-/\!\=/ { tokens_count["OPERATOR_NOTEQ"]++; tokens[txt()] = "OPERATOR_NOTEQ" }
-/\&\&/ { tokens_count["OPERATOR_ANDAND"]++; tokens[txt()] = "OPERATOR_ANDAND" }
-/\|\|/ { tokens_count["OPERATOR_OROR"]++; tokens[txt()] = "OPERATOR_OROR" }
-/\*\*/ { tokens_count["OPERATOR_POWER"]++; tokens[txt()] = "OPERATOR_POWER" }
-/\.\./ { tokens_count["OPERATOR_DOTDOT"]++; tokens[txt()] = "OPERATOR_DOTDOT" }
+/(\"([^\"])*\")|(\'([^\'])\')/        { lval.s =txt(); return LITERAL }
+/\>\>/ { return OP_RSHIFT }
+/\<\</ { return OP_LSHIFT }
+/\+\=/ { return OP_ADDEQ }
+/\-\=/ { return OP_SUBEQ }
+/\*\=/ { return OP_MULEQ }
+/\/\=/ { return OP_DIVEQ }
+/\%\=/ { return OP_MODEQ }
+/\-\>/ { return OP_INSIDE }
+/\=\=/ { return OP_EQEQ }
+/\!\=/ { return OP_NOTEQ }
+/\&\&/ { return OP_ANDAND }
+/\|\|/ { return OP_OROR }
+/\*\*/ { return OP_POWER }
+/\.\./ { return OP_DOTDOT }
 
-/\-/ { tokens_count["OPERATOR_SUB"]++; tokens[txt()] = "OPERATOR_SUB" }
-/\+/ { tokens_count["OPERATOR_ADD"]++; tokens[txt()] = "OPERATOR_ADD" }
-/\&/ { tokens_count["OPERATOR_AND"]++; tokens[txt()] = "OPERATOR_AND" }
-/\|/ { tokens_count["OPERATOR_OR"]++; tokens[txt()] = "OPERATOR_OR" }
-/\^/ { tokens_count["OPERATOR_XOR"]++; tokens[txt()] = "OPERATOR_XOR" }
-/\// { tokens_count["OPERATOR_FSLASH"]++; tokens[txt()] = "OPERATOR_FSLASH" }
-/\!/ { tokens_count["OPERATOR_NOT"]++; tokens[txt()] = "OPERATOR_NOT" }
-/\:/ { tokens_count["OPERATOR_COLUMN"]++; tokens[txt()] = "OPERATOR_COLUMN" }
-/\*/ { tokens_count["OPERATOR_MUL"]++; tokens[txt()] = "OPERATOR_MUL" }
-/\>/ { tokens_count["OPERATOR_GTHAN"]++; tokens[txt()] = "OPERATOR_GTHAN" }
-/\</ { tokens_count["OPERATOR_LTHAN"]++; tokens[txt()] = "OPERATOR_LTHAN" }
-/\%/ { tokens_count["OPERATOR_MOD"]++; tokens[txt()] = "OPERATOR_MOD" }
-/\=/ { tokens_count["OPERATOR_EQ"]++; tokens[txt()] = "OPERATOR_EQ" }
-/\./ { tokens_count["OPERATOR_DOT"]++; tokens[txt()] = "OPERATOR_DOT" }
-/\'/ { tokens_count["OPERATOR_APOSTROPHE"]++; tokens[txt()] = "OPERATOR_APOSTROPHE" }
+/\-/ { return OP_SUB }
+/\+/ { return OP_ADD }
+/\&/ { return OP_AND }
+/\|/ { return OP_OR }
+/\^/ { return OP_XOR }
+/\// { return OP_FSLASH }
+/\!/ { return OP_NOT }
+/\:/ { return OP_COLUMN }
+/\*/ { return OP_MUL }
+/\>/ { return OP_GTHAN }
+/\</ { return OP_LTHAN }
+/\%/ { return OP_MOD }
+/\=/ { return OP_EQ }
+/\./ { return OP_DOT }
+/\'/ { return OP_APOSTROPHE }
 
-/::/ { tokens_count["SYMBOL_COLCOL"]++; tokens[txt()] = "SYMBOL_COLCOL" }
-/\#/ { tokens_count["SYMBOL_HASH"]++; tokens[txt()] = "SYMBOL_HASH" }
-/\[/ { tokens_count["SYMBOL_OPEN_SQ"]++; tokens[txt()] = "SYMBOL_OPEN_SQ" }
-/\]/ { tokens_count["SYMBOL_CLOSE_SQ"]++; tokens[txt()] = "SYMBOL_CLOSE_SQ" }
-/\(/ { tokens_count["SYMBOL_OPEN_ROUND"]++; tokens[txt()] = "SYMBOL_OPEN_ROUND" }
-/\)/ { tokens_count["SYMBOL_CLOSE_ROUND"]++; tokens[txt()] = "SYMBOL_CLOSE_ROUND" }
-/\{/ { tokens_count["SYMBOL_OPEN_CURLY"]++; tokens[txt()] = "SYMBOL_OPEN_CURLY" }
-/\}/ { tokens_count["SYMBOL_CLOSE_CURLY"]++; tokens[txt()] = "SYMBOL_CLOSE_CURLY" }
-/\,/ { tokens_count["SYMBOL_COMMA"]++; tokens[txt()] = "SYMBOL_COMMA" }
-/\;/ { tokens_count["SYMBOL_SEMCOL"]++; tokens[txt()] = "SYMBOL_SEMCOL" }
-/[\_a-zA-Z][\_a-zA-Z0-9]*/ {tokens_count["IDENTIFIER"]++;tokens[txt()] = "IDENTIFIER"}
+/::/ { return SYM_COLCOL }
+/\#/ { return SYM_HASH }
+/\[/ { return SYM_OPEN_SQ }
+/\]/ { return SYM_CLOSE_SQ }
+/\(/ { return SYM_OPEN_ROUND }
+/\)/ { return SYM_CLOSE_ROUND }
+/\{/ { return SYM_OPEN_CURLY }
+/\}/ { return SYM_CLOSE_CURLY }
+/\,/ { return SYM_COMMA }
+/\;/ { return SYM_SEMCOL }
+/[\_a-zA-Z][\_a-zA-Z0-9]*/ {lval.s =txt(); return IDENTIFIER}
 /\*\// {fmt.Println("Syntax Error \n","at line number\n",txt(),"is not a valid syntax\n",line+1); return;}
 /[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",txt(),"is not a valid syntax\n",line+1); return;}
 /./ {fmt.Println("Syntax Error \n","at line number\n",txt(),"is not a valid syntax\n",line+1); return;}
@@ -67,38 +68,10 @@ func main() {
           log.Fatal(err)
   }
 
-  /*var WHITESPACE int
-  var COMMENT int*/
-  tokens := make(map[string]string)
-  tokens_count := make(map[string]int)
   lex := NewLexer(in)
   txt := func() string { return lex.Text() }
   NN_FUN(lex)
 
-   n := map[string][]string{}
-  var a []string
-  for k, v := range tokens {
-          n[v] = append(n[v], k)
-  }
-  for k := range n {
-          a = append(a, k)
-  }
-  sort.Sort(sort.Reverse(sort.StringSlice(a)))
-
-  first := true
-  fmt.Printf("%15s %15s %15s\n","Tokens","Occurances","Lexemes")
-  for _, k := range a {
-          first = true
-          for _, s := range n[k] {
-          if(first){
-                    fmt.Printf("%15s %15d %15s\n", k,tokens_count[k], s)
-                    first=false
-          }else{
-            fmt.Printf("%15s %15s %15s\n", " "," ", s)
-          }
-                //  fmt.Println(k,s)
-          }
-  }
 
 }
 
