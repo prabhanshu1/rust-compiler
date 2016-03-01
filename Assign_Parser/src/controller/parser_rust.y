@@ -2,7 +2,7 @@
 %{
 package main
 import "fmt"
-import "math"
+//import "math"
 import "os"
 var line = 0
 
@@ -29,7 +29,6 @@ func itob(a int64)bool {
 type node struct {
     Token string
     Value string
-    Parent int
     children []int
 }
 
@@ -37,40 +36,47 @@ var tree []node
 
 func make_node(n node) int {
 	tree = append(tree,n)
-	own_number = len(tree) - 1
-	for i,_ := range tree[own_number].children{
+	own_number := len(tree) - 1
+/*	for i,_ := range tree[own_number].children{
 		tree[i].Parent = own_number
-	}
+	}*/
 	return own_number
 }
 
-func writer(n int,fo *FILE) {
-	if _, err := fo.Write("{"); err != nil {
+func writer(n int,fo *os.File) {
+	if _, err := fo.Write([]byte("{")); err != nil {
 	            panic(err)
 	        }
 
-	if _, err := fo.Write("\"name\": \"token = ",tree[n].Token," value = ",tree[n].Value,"\",\n" ); err != nil {
+	if _, err := fo.Write([]byte("\"name\": \"" + tree[n].Token + " " + tree[n].Value + "\"" )); err != nil {
+	            panic(err)
+	        }	
+
+	if len(tree[n].children)!=0 {
+		if _, err := fo.Write([]byte(",\"children\": [")); err != nil {
 	            panic(err)
 	        }
+	    }
 
-	if _, err := fo.Write("\"children\": ["); err != nil {
-	            panic(err)
-	        }
-
-	for i,_ := range tree[n].children{
+	for ii,i := range tree[n].children{
 		writer(i,fo)
-		if i!=len(tree[n].children)-1 {
-			if _, err := fo.Write(",\n"); err != nil {
+		if ii!=(len(tree[n].children)-1) {
+			if _, err := fo.Write([]byte(",")); err != nil {
 	            panic(err)
 	        }
 		}
-	}
-
-	if _, err := fo.Write("]\n"); err != nil {
+		if _, err := fo.Write([]byte("\n")); err != nil {
 	            panic(err)
 	        }
+	}
 
-	if _, err := fo.Write("}"); err != nil {
+	if len(tree[n].children)!=0{
+		if _, err := fo.Write([]byte("]\n")); err != nil {
+	            panic(err)
+	        }
+	    }
+
+	if _, err := fo.Write([]byte("}")); err != nil {
 	            panic(err)
 	        }
 	
@@ -81,14 +87,15 @@ func make_json(n int) {
     if err != nil {
         panic(err)
     }
-    // close fo on exit and check for its returned error
-    defer func() {
-        if err := fo.Close(); err != nil {
-            panic(err)
-        }
-    }()
-
+    
     writer(n,fo)
+    // close fo on exit and check for its returned error
+  
+    if err := fo.Close(); err != nil {
+        panic(err)
+    }
+   
+
 	
 }
 
@@ -158,9 +165,9 @@ func make_json(n int) {
 %token SYM_COMMA
 %token SYM_SEMCOL
 %token IDENTIFIER
-%token NEWLINE
+%token FINISH
 
-%expect 0
+/*%expect 0
 
 // fake-precedence symbol to cause '|' bars in lambda context to parse
 // at low precedence, permit things like |x| foo = bar, where '=' is
@@ -227,9 +234,19 @@ func make_json(n int) {
 
 %precedence '{' '[' '(' '.'
 
-%precedence RANGE
+%precedence RANGE*/
 %%
 
+Code : Statements  {$$.nn=make_node(node{"Code","",[]int{$1.nn}});make_json($$.nn);}
+
+;
+
+Statements : expr SYM_SEMCOL Statements  {$$.nn=make_node(node{"Statements","",[]int{$1.nn,make_node(node{"SYM_SEMCOL",";",[]int{}}),$3.nn}});}
+| FINISH {$$.nn=make_node(node{"Statements","",[]int{make_node(node{"FINISH","",[]int{}})}})}
+;
+
+expr : IDENTIFIER {$$.nn=make_node(node{"expr","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}
+;
 
 
 %%

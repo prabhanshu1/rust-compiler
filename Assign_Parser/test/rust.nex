@@ -1,5 +1,6 @@
 /abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/  { 
 lval.s = yylex.Text(); return KEYWORD }
+/finish/ {return FINISH}
 /i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = yylex.Text(); return VAR_TYPE}
 /=[\-\+]?[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text()[1:], 10, 64); return OPEQ_INTEGER}
 /[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text(), 10, 64);  return INTEGER }
@@ -8,9 +9,9 @@ lval.s = yylex.Text(); return KEYWORD }
 /0b[0-1]+/          { lval.n64,_ =strconv.ParseInt(yylex.Text(), 2, 64); return INTEGER }
 /=[\-\+]?[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.f64,_ = strconv.ParseFloat(yylex.Text()[1:], 64); return OPEQ_FLOAT }
 /[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.f64,_ = strconv.ParseFloat(yylex.Text(), 64); return FLOAT }
-/[\n]/ {line++; return NEWLINE}
-/[ \t]+/        { return NEWLINE/* eat up whitespace */ }
-/(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { return NEWLINE/* eat up comments */ }
+/[\n]/ {line++; }
+/[ \t]+/        { }
+/(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        {   }
 /(\"([^\"])*\")|(\'([^\'])\')/        { lval.s =yylex.Text(); return LITERAL }
 /\>\>/ { return OP_RSHIFT }
 /\<\</ { return OP_LSHIFT }
@@ -54,9 +55,9 @@ lval.s = yylex.Text(); return KEYWORD }
 /\,/ { return SYM_COMMA }
 /\;/ { return SYM_SEMCOL }
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {lval.s =yylex.Text(); return IDENTIFIER}
-/\*\// {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
-/[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
-/./ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
+/\*\// {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1);}
+/[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); }
+/./ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); }
 //
 package main
 import ("fmt";"os";"strconv";)
