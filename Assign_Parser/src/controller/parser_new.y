@@ -16,20 +16,20 @@ import "os"
 %token ANDAND
 %token OROR
 %token BINOPEQ
-%token DOTDOT
+%token OP_DOTDOT  //
 %token DOTDOTDOT
 %token MOD_SEP
-%token RARROW
-%token FAT_ARROW
+%token OP_INSIDE  //
+%token OP_FAT_ARROW //
 %token LIT_CHAR
-%token LIT_INT
+%token INTEGER   //
 %token LIT_UINT
 %token LIT_INT_UNSUFFIXED
-%token LIT_FLOAT
+%token FLOAT   //
 %token LIT_FLOAT_UNSUFFIXED
-%token LIT_STR
+%token LITERAL  //
 %token LIT_STR_RAW
-%token IDENT
+%token IDENTIFIER   //
 %token UNDERSCORE
 %token LIFETIME
 
@@ -46,27 +46,27 @@ import "os"
 %token "false"
 %token "fn"
 %token "for"
-%token IF
+%token "if"
 %token IMPL
-%token IN
-%token LET
-%token LOOP
-%token MATCH
+%token "in"
+%token "let"
+%token "loop"
+%token "match"
 %token MOD
-%token MUT
+%token "mut"
 %token ONCE
 %token PRIV
 %token PUB
 %token REF
 %token RETURN
-%token STRUCT
-%token TRUE
+%token "struct"
+%token "true"
 %token TRAIT
 %token TYPE
 %token UNSAFE
-%token USE
-%token WHILE
-%token CONTINUE
+%token "use"
+%token "while"
+%token CONTINUE  // whether to change to string or not b/c of nonassoc CONTINUE.
 %token PROC
 %token BOX
 %token TYPEOF
@@ -79,7 +79,7 @@ import "os"
 %expect 0
 
 %nonassoc CONTINUE
-%nonassoc IDENT
+%nonassoc IDENTIFIER
 %nonassoc '('
 %nonassoc '{'
 %left '+' '-'
@@ -90,7 +90,7 @@ import "os"
 
 /// println, print macro support => standard macros
 rust
-:struct IDENT struct_expr
+:"struct" IDENTIFIER struct_expr
 |item_or_view_item
 ;
 
@@ -100,7 +100,7 @@ item_or_view_item
 ;
 
 item_fn
-: "fn" IDENT fn_decl inner_attrs_and_block  { $$ = mk_node("fn", 1, $3); }
+: "fn" IDENTIFIER fn_decl inner_attrs_and_block  { $$ = mk_node("fn", 1, $3); }
 ;
 
 fn_decl
@@ -126,8 +126,8 @@ arg_general
 ;
 
 ret_ty
-: RARROW '!'
-| RARROW ty
+: OP_INSIDE '!'
+| OP_INSIDE ty
 | /* empty */
 ;
 
@@ -151,9 +151,9 @@ inner_attr
 
 
 meta_item
-: IDENT
-| IDENT '=' lit
-| IDENT '(' meta_seq ')'
+: IDENTIFIER
+| IDENTIFIER '=' lit
+| IDENTIFIER '(' meta_seq ')'
 ;
 
 meta_seq
@@ -192,14 +192,14 @@ outer_attr
 
 lit
 : LIT_CHAR
-| LIT_INT
+| INTEGER
 | LIT_UINT
 | LIT_INT_UNSUFFIXED
-| LIT_FLOAT
+| FLOAT
 | LIT_FLOAT_UNSUFFIXED
-| LIT_STR
+| LITERAL
 | LIT_STR_RAW
-| TRUE
+| "true"
 | "false"
 ;
 
@@ -230,8 +230,8 @@ expr_stmt
 ;
 
 expr_match
-: MATCH expr '{' match_clauses '}'
-| MATCH expr '{' match_clauses ',' '}'
+: "match" expr '{' match_clauses '}'
+| "match" expr '{' match_clauses ',' '}'
 ;
 
 match_clauses
@@ -240,7 +240,7 @@ match_clauses
 ;
 
 match_clause
-: pats_or maybe_guard FAT_ARROW match_body
+: pats_or maybe_guard OP_FAT_ARROW match_body
 ;
 
 match_body
@@ -249,13 +249,13 @@ match_body
 ;
 
 maybe_guard
-: IF expr
+: "if" expr
 | // empty
 ;
 
 expr_if
-: IF expr block
-| IF expr block "else" block_or_if
+: "if" expr block
+| "if" expr block "else" block_or_if
 ;
 
 block_or_if
@@ -268,19 +268,19 @@ block
 ;
 
 expr_while
-: WHILE expr block
+: "while" expr block
 ;
 
 expr_loop
-: LOOP block
+: "loop" block
 ;
 
 expr_for
-: "for" expr IN expr block
+: "for" expr "in" expr block
 ;
 
 let
-: LET maybe_mut pat maybe_ty_ascription maybe_init_expr
+: "let" maybe_mut pat maybe_ty_ascription maybe_init_expr
 ;
 
 maybe_ty_ascription
@@ -300,7 +300,7 @@ pats_or
 ;
 
 pat
-: IDENT
+: IDENTIFIER
 ;
 
 
@@ -317,7 +317,7 @@ ty
 ;
 
 maybe_mut
-: MUT
+: "mut"
 | /* empty */
 ;
 
@@ -332,14 +332,14 @@ exprs
 | exprs ',' expr
 ;
 
-expr
+expr     // add  other operations.
 : lit
-| IDENT                            { $$ = mk_node("ident", 0); }
-| IDENT struct_expr                { $$ = mk_node("struct", 1, $1); }
+| IDENTIFIER                            { $$ = mk_node("IDENTIFIER", 0); }
+| IDENTIFIER struct_expr                { $$ = mk_node("struct", 1, $1); }
 | expr '+' expr                    { $$ = mk_node("+", 2, $1, $2); }
 | expr '(' maybe_exprs ')'         { $$ = mk_node("call", 1, $1); }
 | CONTINUE                         { $$ = mk_node("continue", 0); }
-| CONTINUE IDENT                   { $$ = mk_node("continue-label", 0); }
+| CONTINUE IDENTIFIER                   { $$ = mk_node("continue-label", 0); }
 | UNSAFE block                     { $$ = mk_node("unsafe-block", 0); }
 | block                            { $$ = mk_node("block", 0); }
 ;
@@ -355,12 +355,12 @@ field_inits
 ;
 
 field_init
-: maybe_mut IDENT ':' expr
+: maybe_mut IDENTIFIER ':' expr
 ;
 
 default_field_init
 : ','
-| ',' DOTDOT expr
+| ',' OP_DOTDOT expr
 | /* empty */
 ;
 
