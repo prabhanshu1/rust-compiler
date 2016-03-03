@@ -1,5 +1,5 @@
 /abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/  { 
-lval.s = yylex.Text(); return KEYWORD }
+lval.s = yylex.Text(); return yylex.text(); }
 /finish/ {return FINISH}
 /i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = yylex.Text(); return VAR_TYPE}
 /=[\-\+]?[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text()[1:], 10, 64); return OPEQ_INTEGER}

@@ -71,7 +71,7 @@ func writer(n int,fo *os.File) {
 	}
 
 	if len(tree[n].children)!=0{
-		if _, err := fo.Write([]byte("]\n")); err != nil {
+		if _, err := fo.Write([]byte("]")); err != nil {
 	            panic(err)
 	        }
 	    }
@@ -241,11 +241,23 @@ Code : Statements  {$$.nn=make_node(node{"Code","",[]int{$1.nn}});make_json($$.n
 
 ;
 
-Statements : expr SYM_SEMCOL Statements  {$$.nn=make_node(node{"Statements","",[]int{$1.nn,make_node(node{"SYM_SEMCOL",";",[]int{}}),$3.nn}});}
+Statements : expr Statements  {$$.nn=make_node(node{"Statements","",[]int{$1.nn,$2.nn}});}
+| Decl_stmt Statements  {$$.nn=make_node(node{"Statements","",[]int{$1.nn,$2.nn}});}
 | FINISH {$$.nn=make_node(node{"Statements","",[]int{make_node(node{"FINISH","",[]int{}})}})}
 ;
 
-expr : IDENTIFIER {$$.nn=make_node(node{"expr","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}
+Decl_stmt : item {???????????}
+| let_decl {$$.nn=make_node(node{"Decl_stmt","",[]int{$1.nn}})}
+;
+
+let_decl : item {?????????????????}
+;
+
+expr : arith {$$.nn=make_node(node{"expr","",[]int{$1.nn}}	)}
+;
+
+arith : IDENTIFIER OP_ADD arith {$$.nn=make_node(node{"arith","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"OP_ADD","+",[]int{}}),$3.nn}});}
+| IDENTIFIER SYM_SEMCOL {$$.nn=make_node(node{"arith","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"SYM_SEMCOL",";",[]int{}})}});fmt.Println("BBBBBBBBBB",$1.s)}
 ;
 
 
