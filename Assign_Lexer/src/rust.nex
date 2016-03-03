@@ -1,4 +1,4 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules/  { 
+/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules!/  { 
 lval.s = yylex.Text(); return KEYWORD }
 /i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = yylex.Text(); return VAR_TYPE}
 /=[\-\+]?[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text()[1:], 10, 64); return OPEQ_INTEGER}
@@ -54,6 +54,7 @@ lval.s = yylex.Text(); return KEYWORD }
 /\,/ { return SYM_COMMA }
 /\;/ { return SYM_SEMCOL }
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {lval.s =yylex.Text(); return IDENTIFIER}
+/[\_a-zA-Z][\_a-zA-Z0-9]*!/ {lval.s =yylex.Text(); return MACRO}
 /\*\// {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
 /[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
 /./ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); return NEWLINE;}
