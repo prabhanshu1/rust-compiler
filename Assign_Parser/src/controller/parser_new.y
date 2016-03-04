@@ -5,81 +5,98 @@ import "fmt"
 import "os"
 %}
 
-%debug
+//%debug
 
+%token ANDAND
+%token BINOPEQ
+%token DOTDOT
+%token DOTDOTDOT
+%token EQEQ
+%token FAT_ARROW
+%token GE
+%token IDENT
+%token LE
+%token LIFETIME
+%token LIT_CHAR
+%token FLOAT //
+%token LIT_FLOAT_UNSUFFIXED
+%token INTEGER //
+%token LIT_INT_UNSUFFIXED
+%token LIT_STR
+%token LIT_STR_RAW
+%token LIT_UINT
+%token MOD_SEP
+%token NE
+%token OROR
+%token RARROW
 %token SHL
 %token SHR
-%token LE
-%token EQEQ
-%token NE
-%token GE
-%token ANDAND
-%token OROR
-%token BINOPEQ
-%token OP_DOTDOT  //
-%token DOTDOTDOT
-%token MOD_SEP
-%token OP_INSIDE  //
-%token OP_FAT_ARROW //
-%token LIT_CHAR
-%token INTEGER   //
-%token LIT_UINT
-%token LIT_INT_UNSUFFIXED
-%token FLOAT   //
-%token LIT_FLOAT_UNSUFFIXED
-%token LITERAL  //
-%token LIT_STR_RAW
-%token IDENTIFIER   //
 %token UNDERSCORE
-%token LIFETIME
 
-// keywords
-%token SELF
-%token STATIC
-%token SUPER
+
+%token ABSTRACT //
+%token ALIGNOF //
 %token AS
+%token BECOME //
+%token BOX
 %token BREAK
+%token CONST
+%token CONTINUE
 %token CRATE
-%token "else"
+%token DO
+%token ELSE
 %token ENUM
 %token EXTERN
-%token "false"
-%token "fn"
-%token "for"
-%token "if"
+%token FALSE
+%token FINAL
+%token FN
+%token FOR
+%token IF
 %token IMPL
-%token "in"
-%token "let"
-%token "loop"
-%token "match"
+%token IN
+%token LET
+%token LOOP
+%token MACRO
+%token MATCH
 %token MOD
-%token "mut"
-%token ONCE
+%token MOVE
+%token MUT
+%token OFFSETOF
+%token OVERRIDE
 %token PRIV
+%token PROC
 %token PUB
 %token REF
 %token RETURN
-%token "struct"
-%token "true"
+%token SELF
+%token SIZEOF 
+%token STATIC
+%token STRUCT
+%token SUPER
 %token TRAIT
+%token TRUE
 %token TYPE
-%token UNSAFE
-%token "use"
-%token "while"
-%token CONTINUE  // whether to change to string or not b/c of nonassoc CONTINUE.
-%token PROC
-%token BOX
 %token TYPEOF
+%token UNSAFE
+%token UNSIZED
+%token USE
+%token VIRTUAL
+%token WHERE
+%token WHILE
+%token YIELD
+%token PRINTLN
+%token MACRO_RULES
+// keywords
 
 %token SHEBANG
 %token STATIC_LIFETIME
 
 
 
-%expect 0
+ //%expect 0
 
 %nonassoc CONTINUE
-%nonassoc IDENTIFIER
+%nonassoc IDENT
 %nonassoc '('
 %nonassoc '{'
 %left '+' '-'
@@ -90,7 +107,7 @@ import "os"
 
 /// println, print macro support => standard macros
 rust
-:"struct" IDENTIFIER struct_expr
+:STRUCT IDENT struct_expr
 |item_or_view_item
 ;
 
@@ -100,7 +117,7 @@ item_or_view_item
 ;
 
 item_fn
-: "fn" IDENTIFIER fn_decl inner_attrs_and_block  { $$ = mk_node("fn", 1, $3); }
+: FN IDENT fn_decl inner_attrs_and_block  { $$ = mk_node(FN, 1, $3); }
 ;
 
 fn_decl
@@ -126,8 +143,8 @@ arg_general
 ;
 
 ret_ty
-: OP_INSIDE '!'
-| OP_INSIDE ty
+: RARROW '!'
+| RARROW ty
 | /* empty */
 ;
 
@@ -151,9 +168,9 @@ inner_attr
 
 
 meta_item
-: IDENTIFIER
-| IDENTIFIER '=' lit
-| IDENTIFIER '(' meta_seq ')'
+: IDENT
+| IDENT '=' lit
+| IDENT '(' meta_seq ')'
 ;
 
 meta_seq
@@ -197,10 +214,10 @@ lit
 | LIT_INT_UNSUFFIXED
 | FLOAT
 | LIT_FLOAT_UNSUFFIXED
-| LITERAL
+| LIT_STR
 | LIT_STR_RAW
-| "true"
-| "false"
+| TRUE
+| FALSE
 ;
 
 maybe_stmts
@@ -230,8 +247,8 @@ expr_stmt
 ;
 
 expr_match
-: "match" expr '{' match_clauses '}'
-| "match" expr '{' match_clauses ',' '}'
+: MATCH expr '{' match_clauses '}'
+| MATCH expr '{' match_clauses ',' '}'
 ;
 
 match_clauses
@@ -240,7 +257,7 @@ match_clauses
 ;
 
 match_clause
-: pats_or maybe_guard OP_FAT_ARROW match_body
+: pats_or maybe_guard FAT_ARROW match_body
 ;
 
 match_body
@@ -249,13 +266,13 @@ match_body
 ;
 
 maybe_guard
-: "if" expr
+: IF expr
 | // empty
 ;
 
 expr_if
-: "if" expr block
-| "if" expr block "else" block_or_if
+: IF expr block
+| IF expr block ELSE block_or_if
 ;
 
 block_or_if
@@ -268,19 +285,19 @@ block
 ;
 
 expr_while
-: "while" expr block
+: WHILE expr block
 ;
 
 expr_loop
-: "loop" block
+: LOOP block
 ;
 
 expr_for
-: "for" expr "in" expr block
+: FOR expr IN expr block
 ;
 
 let
-: "let" maybe_mut pat maybe_ty_ascription maybe_init_expr
+: LET maybe_mut pat maybe_ty_ascription maybe_init_expr
 ;
 
 maybe_ty_ascription
@@ -300,7 +317,7 @@ pats_or
 ;
 
 pat
-: IDENTIFIER
+: IDENT
 ;
 
 
@@ -317,7 +334,7 @@ ty
 ;
 
 maybe_mut
-: "mut"
+: MUT
 | /* empty */
 ;
 
@@ -332,14 +349,14 @@ exprs
 | exprs ',' expr
 ;
 
-expr     // add  other operations.
+expr
 : lit
-| IDENTIFIER                            { $$ = mk_node("IDENTIFIER", 0); }
-| IDENTIFIER struct_expr                { $$ = mk_node("struct", 1, $1); }
+| IDENT                            { $$ = mk_node("ident", 0); }
+| IDENT struct_expr                { $$ = mk_node("struct", 1, $1); }
 | expr '+' expr                    { $$ = mk_node("+", 2, $1, $2); }
 | expr '(' maybe_exprs ')'         { $$ = mk_node("call", 1, $1); }
 | CONTINUE                         { $$ = mk_node("continue", 0); }
-| CONTINUE IDENTIFIER                   { $$ = mk_node("continue-label", 0); }
+| CONTINUE IDENT                   { $$ = mk_node("continue-label", 0); }
 | UNSAFE block                     { $$ = mk_node("unsafe-block", 0); }
 | block                            { $$ = mk_node("block", 0); }
 ;
@@ -355,22 +372,11 @@ field_inits
 ;
 
 field_init
-: maybe_mut IDENTIFIER ':' expr
+: maybe_mut IDENT ':' expr
 ;
 
 default_field_init
 : ','
-| ',' OP_DOTDOT expr
+| ',' DOTDOT expr
 | /* empty */
 ;
-
-
-
-
-
-
-
-
-
-
-

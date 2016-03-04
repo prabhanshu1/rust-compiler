@@ -1,5 +1,5 @@
-/abstract|alignof|as|become|box|break|const|continue|crate|do|else|enum|extern|false|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|offsetof|override|priv|proc|pub|pure|ref|return|Self|self|sizeof|static|struct|super|trait|true|type|typeof|unsafe|unsized|use|virtual|where|while|yield|println|macro_rules!/  { 
-lval.s = yylex.Text(); return KEYWORD }
+\abstract/ { return ABSTRACT}	\alignof/ { return ALIGNOF}	\as/ { return AS}	\become/ { return BECOME}	\box/ { return BOX}	\break/ { return BREAK}	\const/ { return CONST}	\continue/ { return CONTINUE}	\crate/ { return CRATE}	\do/ { return DO}	\else/ { return ELSE}	\enum/ { return ENUM}	\extern/ { return EXTERN}	\false/ { return FALSE}	\final/ { return FINAL}	\fn/ { return FN}	\for/ { return FOR}	\if/ { return IF}	\impl/ { return IMPL}	\in/ { return IN}	\let/ { return LET}	\loop/ { return LOOP}	\macro/ { return MACRO}	\match/ { return MATCH}	\mod/ { return MOD}	\move/ { return MOVE}	\mut/ { return MUT}	\offsetof/ { return OFFSETOF}	\override/ { return OVERRIDE}	\priv/ { return PRIV}	\proc/ { return PROC}	\pub/ { return PUB}	\pure/ { return PURE}	\ref/ { return REF}	\return/ { return RETURN}	\Self/ { return SELF}	\self/ { return SELF}	\sizeof/ { return SIZEOF}	\static/ { return STATIC}	\struct/ { return STRUCT}	\super/ { return SUPER}	\trait/ { return TRAIT}	\true/ { return TRUE}	\type/ { return TYPE}	\typeof/ { return TYPEOF}	\unsafe/ { return UNSAFE}	\unsized/ { return UNSIZED}	\use/ { return USE}	\virtual/ { return VIRTUAL}	\where/ { return WHERE}	\while/ { return WHILE}	\yield/ { return YIELD}	\println/ { return PRINTLN}	\macro_rules!/ { return MACRO_RULES}	
+
 /i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = yylex.Text(); return VAR_TYPE}
 /=[\-\+]?[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text()[1:], 10, 64); return OPEQ_INTEGER}
 /[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text(), 10, 64);  return INTEGER }
@@ -20,6 +20,7 @@ lval.s = yylex.Text(); return KEYWORD }
 /\/\=/ { return OP_DIVEQ }
 /\%\=/ { return OP_MODEQ }
 /\-\>/ { return OP_INSIDE }
+/\=\>/ { return OP_FAT_ARROW }
 /\=\=/ { return OP_EQEQ }
 /\!\=/ { return OP_NOTEQ }
 /\&\&/ { return OP_ANDAND }
