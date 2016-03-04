@@ -98,6 +98,10 @@ func make_json(n int) {
 	
 }
 
+func space(a string,i int)int{
+for ;a[i]==' ';i++{}
+return i
+}
 
 
 %}
@@ -473,11 +477,10 @@ maybe_ty_ascription
 
 maybe_init_expr
 : '=' expr
-| OPEQ_INT 
+| OPEQ_INT  
 | OPEQ_FLOAT 
 | /* empty */
 ;
-
 
 pats_or
 : pat
@@ -527,11 +530,13 @@ exprs
 | exprs ',' expr
 ;
 
+//// $$$opeq+int doesn't work
 expr
 : lit 
 | IDENTIFIER                            
+| IDENTIFIER '=' expr ';'                          
 | IDENTIFIER struct_expr                
-| expr '+' expr                    
+| expr '+' expr        
 | expr SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
 | CONTINUE                         
 | CONTINUE IDENTIFIER                   
