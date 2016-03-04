@@ -3,7 +3,116 @@ package main
 import "fmt"
 //import "math"
 import "os"
+var line = 0
+
+func err_neg(a int64) {
+	if a<0 {
+		fmt.Println("IT has to be non-negative")
+	}
+}
+
+func btoi(a bool)int64 {
+	if a==false {
+		return 0
+	}
+	return 1
+}
+
+func itob(a int64)bool {
+	if a==0 {
+		return false
+	}
+	return true
+}
+
+type node struct {
+    Token string
+    Value string
+    children []int
+}
+
+var tree []node
+
+func make_node(n node) int {
+	tree = append(tree,n)
+	own_number := len(tree) - 1
+/*	for i,_ := range tree[own_number].children{
+		tree[i].Parent = own_number
+	}*/
+	return own_number
+}
+
+func writer(n int,fo *os.File) {
+	if _, err := fo.Write([]byte("{")); err != nil {
+	            panic(err)
+	        }
+
+	if _, err := fo.Write([]byte("\"name\": \"" + tree[n].Token + " " + tree[n].Value + "\"" )); err != nil {
+	            panic(err)
+	        }	
+
+	if len(tree[n].children)!=0 {
+		if _, err := fo.Write([]byte(",\"children\": [")); err != nil {
+	            panic(err)
+	        }
+	    }
+
+	for ii,i := range tree[n].children{
+		writer(i,fo)
+		if ii!=(len(tree[n].children)-1) {
+			if _, err := fo.Write([]byte(",")); err != nil {
+	            panic(err)
+	        }
+		}
+		if _, err := fo.Write([]byte("\n")); err != nil {
+	            panic(err)
+	        }
+	}
+
+	if len(tree[n].children)!=0{
+		if _, err := fo.Write([]byte("]")); err != nil {
+	            panic(err)
+	        }
+	    }
+
+	if _, err := fo.Write([]byte("}")); err != nil {
+	            panic(err)
+	        }
+	
+}
+
+func make_json(n int) {
+	fo, err := os.Create("code.json")
+    if err != nil {
+        panic(err)
+    }
+    
+    writer(n,fo)
+    // close fo on exit and check for its returned error
+  
+    if err := fo.Close(); err != nil {
+        panic(err)
+    }
+   
+
+	
+}
+
+
+
 %}
+
+
+
+%union {
+  nn int // node_number
+  n int
+  n64 int64
+  f64 float64
+  s string
+  b bool
+}
+
 
 //%debug
 
@@ -14,77 +123,133 @@ import "os"
 %token EQEQ
 %token FAT_ARROW
 %token GE
-%token IDENT
+%token IDENTIFIER
 %token LE
 %token LIFETIME
 %token LIT_CHAR
 %token FLOAT //
 %token LIT_FLOAT_UNSUFFIXED
-%token INTEGER //
 %token LIT_INT_UNSUFFIXED
-%token LIT_STR
-%token LIT_STR_RAW
+%token LITERAL_STR
+%token LITERAL_CHAR
 %token LIT_UINT
 %token MOD_SEP
 %token NE
 %token OROR
-%token RARROW
+%token OP_INSIDE
 %token SHL
 %token SHR
 %token UNDERSCORE
 
+%token KEYWORD
+%token VAR_TYPE
+%token LIT_INT
+%token OPEQ_INT
+%token HEX
+%token OCTAL
+%token BINARY
+%token FLOAT
+%token OPEQ_FLOAT
+%token LITERAL
+%token OP_EQ
+%token OP_RSHIFT
+%token OP_LSHIFT
+%token OP_ADDEQ
+%token OP_SUBEQ
+%token OP_MULEQ
+%token OP_DIVEQ
+%token OP_MODEQ
+%token OP_INSIDE
+%token OP_EQEQ
+%token OP_NOTEQ
+%token OP_ANDAND
+%token OP_OROR
+%token OP_POWER
+%token OP_DOTDOT
+%token OP_DOTDOTDOT
+%token OP_SUB
+%token OP_ADD
+%token OP_AND
+%token OP_OR
+%token OP_XOR
+%token OP_FSLASH
+%token OP_NOT
+%token OP_COLUMN
+%token OP_MUL
+%token OP_GTHAN
+%token OP_LTHAN
+%token OP_MOD
+%token OP_EQ
+%token OP_DOT
+%token OP_APOSTROPHE
+%token OP_FAT_ARROW
+%token SYM_COLCOL
+%token SYM_HASH
+%token SYM_OPEN_SQ
+%token SYM_CLOSE_SQ
+%token SYM_OPEN_ROUND
+%token SYM_CLOSE_ROUND
+%token SYM_OPEN_CURLY
+%token SYM_CLOSE_CURLY
+%token SYM_COMMA
+%token SYM_SEMCOL
+%token IDENTIFIER
+%token FINISH
+%token NEWLINE
 
-%token ABSTRACT //
-%token ALIGNOF //
-%token AS
-%token BECOME //
-%token BOX
-%token BREAK
-%token CONST
-%token CONTINUE
-%token CRATE
-%token DO
-%token ELSE
-%token ENUM
-%token EXTERN
-%token FALSE
-%token FINAL
-%token FN
-%token FOR
-%token IF
-%token IMPL
-%token IN
-%token LET
-%token LOOP
-%token MACRO
-%token MATCH
-%token MOD
-%token MOVE
-%token MUT
-%token OFFSETOF
-%token OVERRIDE
-%token PRIV
-%token PROC
-%token PUB
-%token REF
-%token RETURN
-%token SELF
+%token ABSTRACT 
+%token ALIGNOF 
+%token AS 
+%token BECOME 
+%token BOX 
+%token BREAK 
+%token CONST 
+%token CONTINUE 
+%token CRATE 
+%token DO 
+%token ELSE 
+%token ENUM 
+%token EXTERN 
+%token FALSE 
+%token FINAL 
+%token FN 
+%token FOR 
+%token IF 
+%token IMPL 
+%token IN 
+%token LET 
+%token LOOP 
+%token MACRO 
+%token MATCH 
+%token MOD 
+%token MOVE 
+%token MUT 
+%token OFFSETOF 
+%token OVERRIDE 
+%token PRIV 
+%token PROC 
+%token PUB 
+%token PURE 
+%token REF 
+%token RETURN 
+%token SELF 
+%token SELF 
 %token SIZEOF 
-%token STATIC
-%token STRUCT
-%token SUPER
-%token TRAIT
-%token TRUE
-%token TYPE
-%token TYPEOF
-%token UNSAFE
-%token UNSIZED
-%token USE
-%token VIRTUAL
-%token WHERE
-%token WHILE
-%token YIELD
-%token PRINTLN
+%token STATIC 
+%token STRUCT 
+%token SUPER 
+%token TRAIT 
+%token TRUE 
+%token TYPE 
+%token TYPEOF 
+%token UNSAFE 
+%token UNSIZED 
+%token USE 
+%token VIRTUAL 
+%token WHERE 
+%token WHILE 
+%token YIELD 
+%token PRINTLN 
 %token MACRO_RULES
 // keywords
 
@@ -96,9 +261,9 @@ import "os"
  //%expect 0
 
 %nonassoc CONTINUE
-%nonassoc IDENT
-%nonassoc '('
-%nonassoc '{'
+%nonassoc IDENTIFIER
+%nonassoc SYM_OPEN_ROUND
+%nonassoc SYM_OPEN_CURLY
 %left '+' '-'
 
 %start rust
@@ -107,7 +272,7 @@ import "os"
 
 /// println, print macro support => standard macros
 rust
-:STRUCT IDENT struct_expr
+:STRUCT IDENTIFIER struct_expr
 |item_or_view_item
 ;
 
@@ -117,20 +282,20 @@ item_or_view_item
 ;
 
 item_fn
-: FN IDENT fn_decl inner_attrs_and_block  { $$ = mk_node(FN, 1, $3); }
+: FN IDENTIFIER fn_decl inner_attrs_and_block  {fmt.Println("REACHING fn")}
 ;
 
 fn_decl
-: fn_args ret_ty
+: fn_args ret_ty {fmt.Println("REACHING fn_decl")}
 ;
 
 fn_args
-: '(' maybe_args_general ')'
+: SYM_OPEN_ROUND maybe_args_general SYM_CLOSE_ROUND	{fmt.Println("REACHING fn_args")}
 ;
 
 maybe_args_general
 : args_general
-| /* empty */
+| /* empty */		{fmt.Println("REACHING maybe_args_general")}
 ;
 
 args_general
@@ -143,34 +308,35 @@ arg_general
 ;
 
 ret_ty
-: RARROW '!'
-| RARROW ty
+: OP_INSIDE '!'
+| OP_INSIDE ty
+| OP_INSIDE SYM_OPEN_ROUND SYM_CLOSE_ROUND
 | /* empty */
 ;
 
 inner_attrs_and_block
-: '{' maybe_inner_attrs maybe_stmts '}'   { $$ = $2; }
+: SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY   {fmt.Println("REACHING inner_attrs_and_block")}
 ;
 
 maybe_inner_attrs
-: inner_attrs
-| /* empty */
+: inner_attrs {fmt.Println("REACHING maybe_inner_attrs")}
+| /* empty */ {fmt.Println("REACHING maybe_inner_attrs2")}
 ;
 
 inner_attrs
-: inner_attr
-| inner_attrs inner_attr
+: inner_attr {fmt.Println("REACHING inner_attrs")}
+| inner_attrs inner_attr {fmt.Println("REACHING inner_attrs2")}
 ;
 
 inner_attr
-: SHEBANG '[' meta_item ']'
+: SHEBANG '[' meta_item ']' {fmt.Println("REACHING inner_attr")}
 ;
 
 
-meta_item
-: IDENT
-| IDENT '=' lit
-| IDENT '(' meta_seq ')'
+meta_item	
+: IDENTIFIER
+| IDENTIFIER '=' lit
+| IDENTIFIER SYM_OPEN_ROUND meta_seq SYM_CLOSE_ROUND
 ;
 
 meta_seq
@@ -209,29 +375,29 @@ outer_attr
 
 lit
 : LIT_CHAR
-| INTEGER
+| LIT_INT {fmt.Println("REACHING LIT_INT")}
 | LIT_UINT
 | LIT_INT_UNSUFFIXED
 | FLOAT
 | LIT_FLOAT_UNSUFFIXED
-| LIT_STR
-| LIT_STR_RAW
+| LITERAL_STR
+| LITERAL_CHAR
 | TRUE
 | FALSE
 ;
 
 maybe_stmts
-: stmts
-| /* empty */
+: stmts {fmt.Println("REACHING maybe_stmts1")}
+| /* empty */ {fmt.Println("REACHING maybe_stmts2")}
 ;
 
 stmts
 : stmts stmt
-| stmt
+| stmt 
 ;
 
 stmt
-: let
+: let {fmt.Println("REACHING LET")}
 | item_or_view_item
 | expr_stmt
 | expr
@@ -247,8 +413,8 @@ expr_stmt
 ;
 
 expr_match
-: MATCH expr '{' match_clauses '}'
-| MATCH expr '{' match_clauses ',' '}'
+: MATCH expr SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY
+| MATCH expr SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY
 ;
 
 match_clauses
@@ -257,7 +423,7 @@ match_clauses
 ;
 
 match_clause
-: pats_or maybe_guard FAT_ARROW match_body
+: pats_or maybe_guard OP_FAT_ARROW match_body {fmt.Println("REACHING match_clause")}
 ;
 
 match_body
@@ -281,7 +447,7 @@ block_or_if
 ;
 
 block
-: '{' maybe_stmts '}'
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY
 ;
 
 expr_while
@@ -307,17 +473,27 @@ maybe_ty_ascription
 
 maybe_init_expr
 : '=' expr
+| OPEQ_INT 
+| OPEQ_FLOAT 
 | /* empty */
 ;
 
 
 pats_or
 : pat
+| lit
+| range_tri
 | pats_or '|' pat
+| pats_or '|' lit
+| pats_or '|' range_tri
 ;
 
+range_tri
+: LIT_INT OP_DOTDOTDOT LIT_INT
+| LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR
+
 pat
-: IDENT
+: IDENTIFIER
 ;
 
 
@@ -330,7 +506,7 @@ ty
 : path
 | '~' ty
 | '*' maybe_mut ty
-| '(' tys ')'
+| SYM_OPEN_ROUND tys SYM_CLOSE_ROUND
 ;
 
 maybe_mut
@@ -338,7 +514,9 @@ maybe_mut
 | /* empty */
 ;
 
-path:
+path
+: VAR_TYPE
+;
 maybe_exprs
 : exprs
 | /* empty */
@@ -350,20 +528,20 @@ exprs
 ;
 
 expr
-: lit
-| IDENT                            { $$ = mk_node("ident", 0); }
-| IDENT struct_expr                { $$ = mk_node("struct", 1, $1); }
-| expr '+' expr                    { $$ = mk_node("+", 2, $1, $2); }
-| expr '(' maybe_exprs ')'         { $$ = mk_node("call", 1, $1); }
-| CONTINUE                         { $$ = mk_node("continue", 0); }
-| CONTINUE IDENT                   { $$ = mk_node("continue-label", 0); }
-| UNSAFE block                     { $$ = mk_node("unsafe-block", 0); }
-| block                            { $$ = mk_node("block", 0); }
+: lit 
+| IDENTIFIER                            
+| IDENTIFIER struct_expr                
+| expr '+' expr                    
+| expr SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
+| CONTINUE                         
+| CONTINUE IDENTIFIER                   
+| UNSAFE block                     
+| block                            
 ;
 
 
 struct_expr
-: '{' field_inits default_field_init '}'
+: SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY
 ;
 
 field_inits
@@ -372,11 +550,11 @@ field_inits
 ;
 
 field_init
-: maybe_mut IDENT ':' expr
+: maybe_mut IDENTIFIER ':' expr
 ;
 
 default_field_init
 : ','
-| ',' DOTDOT expr
+| ',' OP_DOTDOT expr
 | /* empty */
 ;
