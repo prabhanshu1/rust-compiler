@@ -169,34 +169,18 @@ func make_json(n int) {
 
 /*%expect 0
 
-// fake-precedence symbol to cause '|' bars in lambda context to parse
-// at low precedence, permit things like |x| foo = bar, where '=' is
-// otherwise lower-precedence than '|'. Also used for proc() to cause
-// things like proc() a + b to parse as proc() { a + b }.
+
 %precedence LAMBDA
 
 %precedence SELF
 
-// MUT should be lower precedence than IDENT so that in the pat rule,
-// "& MUT pat" has higher precedence than "binding_mode ident [@ pat]"
+
 %precedence MUT
 
-// IDENT needs to be lower than '{' so that 'foo {' is shifted when
-// trying to decide if we've got a struct-construction expr (esp. in
-// contexts like 'if foo { .')
-//
-// IDENT also needs to be lower precedence than '<' so that '<' in
-// 'foo:bar . <' is shifted (in a trait reference occurring in a
-// bounds list), parsing as foo:(bar<baz>) rather than (foo:bar)<baz>.
+
 %precedence IDENTIFIER
 
-// A couple fake-precedence symbols to use in rules associated with +
-// and < in trailing type contexts. These come up when you have a type
-// in the RHS of operator-AS, such as "foo as bar<baz>". The "<" there
-// has to be shifted so the parser keeps trying to parse a type, even
-// though it might well consider reducing the type "bar" and then
-// going on to "<" as a subsequent binop. The "+" case is with
-// trailing type-bounds ("foo as bar:A+B"), for the same reason.
+
 %precedence SHIFTPLUS
 
 %precedence MOD_SEP

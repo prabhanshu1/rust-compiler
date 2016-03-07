@@ -19,9 +19,16 @@
 /\<\</ { return OP_LSHIFT }
 /\+\=/ { return OP_ADDEQ }
 /\-\=/ { return OP_SUBEQ }
+/\<\=/ { return OP_LEQ }
+/\>\=/ { return OP_GEQ }
 /\*\=/ { return OP_MULEQ }
 /\/\=/ { return OP_DIVEQ }
 /\%\=/ { return OP_MODEQ }
+/\&\=/ { return OP_ANDEQ }
+/\<\<\=/ { return OP_SHLEQ }
+/\>\>\=/ { return OP_SHREQ }
+/\|\=/ { return OP_OREQ }
+/\^\=/ { return OP_XOREQ }
 /\-\>/ { return OP_INSIDE }
 /\=\>/ { return OP_FAT_ARROW }
 /\=\=/ { return OP_EQEQ }

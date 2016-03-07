@@ -120,6 +120,18 @@ return i
 
 //%debug
 
+%token MUT 
+%token IDENTIFIER
+%token OP_INSIDE
+%token FOR
+%token RETURN
+%token AS
+%token SYM_OPEN_SQ
+%token SYM_CLOSE_SQ
+%token SYM_OPEN_ROUND
+%token SYM_CLOSE_ROUND
+%token SYM_OPEN_CURLY
+%token SYM_CLOSE_CURLY
 %token ANDAND
 %token BINOPEQ
 %token DOTDOT
@@ -127,7 +139,6 @@ return i
 %token EQEQ
 %token FAT_ARROW
 %token GE
-%token IDENTIFIER
 %token LE
 %token LIFETIME
 %token LIT_CHAR
@@ -140,7 +151,6 @@ return i
 %token MOD_SEP
 %token NE
 %token OROR
-%token OP_INSIDE
 %token SHL
 %token SHR
 %token UNDERSCORE
@@ -174,6 +184,8 @@ return i
 %token OP_SUB
 %token OP_ADD
 %token OP_AND
+%token OP_LEQ
+%token OP_GEQ
 %token OP_OR
 %token OP_XOR
 %token OP_FSLASH
@@ -189,12 +201,6 @@ return i
 %token OP_FAT_ARROW
 %token SYM_COLCOL
 %token SYM_HASH
-%token SYM_OPEN_SQ
-%token SYM_CLOSE_SQ
-%token SYM_OPEN_ROUND
-%token SYM_CLOSE_ROUND
-%token SYM_OPEN_CURLY
-%token SYM_CLOSE_CURLY
 %token SYM_COMMA
 %token SYM_SEMCOL
 %token IDENTIFIER
@@ -227,7 +233,6 @@ return i
 %token MATCH 
 %token MOD 
 %token MOVE 
-%token MUT 
 %token OFFSETOF 
 %token OVERRIDE 
 %token PRIV 
@@ -268,7 +273,43 @@ return i
 %nonassoc IDENTIFIER
 %nonassoc SYM_OPEN_ROUND
 %nonassoc SYM_OPEN_CURLY
+
+
+
+
+
+
+
+
+
+
+
+// In where clauses, "for" should have greater precedence when used as
+// a higher ranked constraint than when used as the beginning of a
+// for_in_type (which is a ty)
+
+
+// Binops & unops, and their precedences
+
+
+// RETURN needs to be lower-precedence than tokens that start
+// prefix_exprs
+
+%right '=' OP_SHLEQ OP_SHREQ  OP_ADDEQ OP_OREQ OP_ANDEQ  OP_MULEQ OP_DIVEQ OP_MODEQ OP_XOREQ
+%left OP_OROR
+%left OP_ANDAND
+%left OP_EQEQ OP_NOTEQ
+%left '<' '>' OP_GEQ OP_LEQ
+%left '|'
+%left '^'
+%left '&'
+%left OP_LSHIFT OP_RSHIFT
 %left '+' '-'
+
+%left '*' '/' '%'
+
+
+
 
 %start rust
 
@@ -396,29 +437,29 @@ maybe_stmts
 ;
 
 stmts
-: stmts stmt
+: stmts stmt 
 | stmt 
 ;
 
 stmt
-: let {fmt.Println("REACHING LET")}
-| item_or_view_item
-| expr_stmt
-| expr
+: let ';' {fmt.Println("REACHING LET")} 
+| item_or_view_item ';'
+| expr_stmt     
+| expr ';'
 ;
 
 // Things that can be an expr or a stmt, no semi required.
 expr_stmt
 : expr_match
-| expr_if
+| expr_if {fmt.Println("REACHING IF")}
 | expr_while
 | expr_loop
 | expr_for
 ;
 
 expr_match
-: MATCH expr SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY
-| MATCH expr SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY
+: MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY
+| MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY
 ;
 
 match_clauses
@@ -441,8 +482,8 @@ maybe_guard
 ;
 
 expr_if
-: IF expr block
-| IF expr block ELSE block_or_if
+: IF exp block 
+| IF exp block ELSE block_or_if
 ;
 
 block_or_if
@@ -451,11 +492,11 @@ block_or_if
 ;
 
 block
-: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {fmt.Println("REDUCING TO BLOCK")}
 ;
 
 expr_while
-: WHILE expr block
+: WHILE exp block
 ;
 
 expr_loop
@@ -463,11 +504,13 @@ expr_loop
 ;
 
 expr_for
-: FOR expr IN expr block
+: FOR exp IN exp block
+| FOR exp IN range_di block
+| FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block
 ;
 
 let
-: LET maybe_mut pat maybe_ty_ascription maybe_init_expr
+: LET maybe_mut pat maybe_ty_ascription maybe_init_expr 
 ;
 
 maybe_ty_ascription
@@ -476,15 +519,16 @@ maybe_ty_ascription
 ;
 
 maybe_init_expr
-: '=' expr
-| OPEQ_INT  
-| OPEQ_FLOAT 
+: '=' expr 
+| OPEQ_INT  opeq_ops {fmt.Println("REACHING maybe_init_expr	")}
+| OPEQ_FLOAT opeq_ops
 | /* empty */
 ;
 
 pats_or
 : pat
 | lit
+| '_'
 | range_tri
 | pats_or '|' pat
 | pats_or '|' lit
@@ -494,6 +538,11 @@ pats_or
 range_tri
 : LIT_INT OP_DOTDOTDOT LIT_INT
 | LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR
+
+range_di
+: LIT_INT OP_DOTDOT LIT_INT
+| LITERAL_CHAR OP_DOTDOT LITERAL_CHAR
+
 
 pat
 : IDENTIFIER
@@ -531,13 +580,47 @@ exprs
 ;
 
 //// $$$opeq+int doesn't work
+
+maybe_assignment
+: assignment
+|
+;
+
+assignment
+: IDENTIFIER '=' expr 
+| IDENTIFIER OPEQ_INT opeq_ops
+| IDENTIFIER OPEQ_FLOAT opeq_ops
+
+;
+
+opeq_ops
+:  '+' expr     {fmt.Println("REACHING opeq_ops	")}  
+|  '-' expr 
+| '<' expr   
+| '>' expr       
+| OP_LSHIFT expr       
+| OP_RSHIFT expr       
+|
+;
+
 expr
+: exp
+| assignment
+;
+
+//$$struct remaining
+
+exp
 : lit 
-| IDENTIFIER                            
-| IDENTIFIER '=' expr ';'                          
-| IDENTIFIER struct_expr                
-| expr '+' expr        
-| expr SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
+| IDENTIFIER     {fmt.Println("REACHED IDENTIFIER in exp")}                       
+//| IDENTIFIER struct_expr                
+| exp '+' exp       
+| exp '-' exp       
+| exp '<' exp   
+| exp '>' exp       
+| exp OP_LSHIFT exp       
+| exp OP_RSHIFT exp       
+| exp SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
 | CONTINUE                         
 | CONTINUE IDENTIFIER                   
 | UNSAFE block                     
