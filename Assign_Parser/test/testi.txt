@@ -1,0 +1,64 @@
+use asd::asd::sdgf::dfg;
+
+struct point {
+d : sdf,
+df : i32,
+}
+
+fn main(){ let y : i32 = 34 +5;
+
+let y : [i32;7] = [6,8,9,y];
+let y : [i32;7] = [(6+6);7];
+match y{
+34
+ => 7,
+_ => 9,}
+
+if y {
+let y : poiny = sdf : {d:0.4,g:0.8};
+y= sdf : {d:0.4,g:0.8};
+	y=a[8]+7;
+	a[8]=3;
+	y noteq 6;
+	y&=7;
+sdg();
+y=sdf();
+y=input!();
+y=io::asf();
+y=sdf().sdf().sdf;
+}
+
+else if y {
+if y{
+y=9;
+}
+else {y=10;}
+}
+
+while 1 {
+asd = 89;
+}
+
+for i in 5..4{
+y=9;
+}
+
+for i in a{
+y=9;
+}
+for (i=0;i;i=i+1){
+y=9;
+}
+
+loop {
+y=8;
+}
+
+}
+
+fn sdf(x:i32,y:df)->(i32,i32){
+return (a+b);
+return (dsf());
+return a;
+return 2;
+}
