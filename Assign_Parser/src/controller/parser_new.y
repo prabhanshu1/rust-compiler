@@ -173,6 +173,7 @@ return i
 %token OP_MULEQ
 %token OP_DIVEQ
 %token OP_MODEQ
+%token OP_ANDMUT
 %token OP_INSIDE
 %token OP_EQEQ
 %token OP_NOTEQ
@@ -295,18 +296,16 @@ return i
 // RETURN needs to be lower-precedence than tokens that start
 // prefix_exprs
 
-%right '=' OP_SHLEQ OP_SHREQ  OP_ADDEQ OP_OREQ OP_ANDEQ  OP_MULEQ OP_DIVEQ OP_MODEQ OP_XOREQ
-%left OP_OROR
-%left OP_ANDAND
+%right '=' '!' OP_SHLEQ OP_SHREQ  OP_ADDEQ OP_OREQ OP_ANDEQ  OP_MULEQ OP_DIVEQ OP_MODEQ OP_XOREQ 
 %left OP_EQEQ OP_NOTEQ
 %left '<' '>' OP_GEQ OP_LEQ
-%left '|'
-%left '^'
-%left '&'
-%left OP_LSHIFT OP_RSHIFT
-%left '+' '-'
+%left '|' 
+%left '^' 
+%left '&' OP_ANDMUT
+%left OP_LSHIFT OP_RSHIFT OP_ANDAND OP_OROR OP_POWER
+%left '+' '-' '.'
 
-%left '*' '/' '%'
+%left '*' '/' '%' 
 
 
 
@@ -317,8 +316,10 @@ return i
 
 /// println, print macro support => standard macros
 rust
-:STRUCT IDENTIFIER struct_expr
-|item_or_view_item
+:STRUCT IDENTIFIER struct_expr rust
+|item_or_view_item rust
+| USE func_identifier ';' rust
+|
 ;
 
 
@@ -355,7 +356,7 @@ arg_general
 ret_ty
 : OP_INSIDE '!'
 | OP_INSIDE ty
-| OP_INSIDE SYM_OPEN_ROUND SYM_CLOSE_ROUND
+| OP_INSIDE SYM_OPEN_ROUND  SYM_CLOSE_ROUND
 | /* empty */
 ;
 
@@ -429,6 +430,7 @@ lit
 | LITERAL_CHAR
 | TRUE
 | FALSE
+| VAR_TYPE                 
 ;
 
 maybe_stmts
@@ -455,6 +457,14 @@ expr_stmt
 | expr_while
 | expr_loop
 | expr_for
+| expr_return
+;
+
+expr_return
+: RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';'
+| RETURN ';'
+| RETURN lit ';'
+| RETURN IDENTIFIER ';'
 ;
 
 expr_match
@@ -520,6 +530,8 @@ maybe_ty_ascription
 
 maybe_init_expr
 : '=' expr 
+| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ //array
+| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ //array
 | OPEQ_INT  opeq_ops {fmt.Println("REACHING maybe_init_expr	")}
 | OPEQ_FLOAT opeq_ops
 | /* empty */
@@ -558,6 +570,8 @@ ty
 : path
 | '~' ty
 | '*' maybe_mut ty
+| '&' maybe_mut ty
+| OP_POWER maybe_mut ty
 | SYM_OPEN_ROUND tys SYM_CLOSE_ROUND
 ;
 
@@ -566,9 +580,20 @@ maybe_mut
 | /* empty */
 ;
 
-path
+var_types
 : VAR_TYPE
+| IDENTIFIER
+
+path
+: var_types
+| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ
 ;
+
+maybe_size
+: ';' LIT_INT
+|
+;
+
 maybe_exprs
 : exprs
 | /* empty */
@@ -586,25 +611,56 @@ maybe_assignment
 |
 ;
 
+hole
+: IDENTIFIER
+| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ
+| IDENTIFIER '.' hole
+
 assignment
-: IDENTIFIER '=' expr 
-| IDENTIFIER OPEQ_INT opeq_ops
-| IDENTIFIER OPEQ_FLOAT opeq_ops
+: hole '=' expr 
+| hole OP_ADDEQ expr
+| hole OP_SUBEQ expr
+| hole OP_LEQ expr
+| hole OP_GEQ expr
+| hole OP_MULEQ expr
+| hole OP_DIVEQ expr
+| hole OP_MODEQ expr
+| hole OP_ANDEQ expr
+| hole OP_SHLEQ expr
+| hole OP_SHREQ expr
+| hole OP_OREQ expr
+| hole OP_XOREQ expr
+| hole OP_EQEQ expr
+| hole OP_NOTEQ expr
+| hole OPEQ_INT opeq_ops
+| hole OPEQ_FLOAT opeq_ops
+
 
 ;
 
+
+
 opeq_ops
-:  '+' expr     {fmt.Println("REACHING opeq_ops	")}  
-|  '-' expr 
-| '<' expr   
-| '>' expr       
-| OP_LSHIFT expr       
-| OP_RSHIFT expr       
+:  '+' expr
+| '&' expr
+| '|' expr
+| '^' expr
+| '/' expr
+| '*' expr
+| '>' expr
+| '<' expr
+| '%' expr
+| '.' expr
+| OP_RSHIFT expr
+| OP_LSHIFT expr
+| OP_ANDAND expr
+| OP_OROR expr
+| OP_POWER expr     {fmt.Println("REACHING opeq_ops	")}    
 |
 ;
 
 expr
-: exp
+: round_exp
 | assignment
 ;
 
@@ -613,20 +669,42 @@ expr
 exp
 : lit 
 | IDENTIFIER     {fmt.Println("REACHED IDENTIFIER in exp")}                       
-//| IDENTIFIER struct_expr                
-| exp '+' exp       
-| exp '-' exp       
-| exp '<' exp   
-| exp '>' exp       
-| exp OP_LSHIFT exp       
-| exp OP_RSHIFT exp       
-| exp SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
+| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {fmt.Println("REACHED IDENTIFIER in exp")}                       
+| IDENTIFIER ':' struct_expr                
+| '!' round_exp      
+| '&' round_exp      
+| OP_ANDMUT round_exp      
+| round_exp '-' round_exp
+| round_exp '+' round_exp {fmt.Println("REACHED IDENTIFIER in exp")}
+| round_exp '&' round_exp
+| round_exp '|' round_exp
+| round_exp '^' round_exp
+| round_exp '/' round_exp
+| round_exp '*' round_exp
+| round_exp '>' round_exp
+| round_exp '<' round_exp
+| round_exp '%' round_exp
+| round_exp '.' round_exp
+| round_exp OP_RSHIFT round_exp
+| round_exp OP_LSHIFT round_exp
+| round_exp OP_ANDAND round_exp
+| round_exp OP_OROR round_exp
+| round_exp OP_POWER round_exp
+| func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
 | CONTINUE                         
-| CONTINUE IDENTIFIER                   
+| CONTINUE IDENTIFIER  
 | UNSAFE block                     
 | block                            
 ;
 
+round_exp 
+: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND
+| exp
+
+func_identifier 
+: IDENTIFIER
+| IDENTIFIER SYM_COLCOL func_identifier
+| IDENTIFIER '!'
 
 struct_expr
 : SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY

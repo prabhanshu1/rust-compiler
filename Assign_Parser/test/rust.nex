@@ -32,8 +32,9 @@
 /\-\>/ { return OP_INSIDE }
 /\=\>/ { return OP_FAT_ARROW }
 /\=\=/ { return OP_EQEQ }
-/\!\=/ { return OP_NOTEQ }
+/noteq/ { return OP_NOTEQ }
 /\&\&/ { return OP_ANDAND }
+/\&mut/ { return OP_ANDMUT }
 /\|\|/ { return OP_OROR }
 /\*\*/ { return OP_POWER }
 /\.\./ { return OP_DOTDOT }
@@ -66,7 +67,6 @@
 /\,/ { return int(yylex.Text()[0]) }
 /\;/ { return int(yylex.Text()[0]) }
 /[\_a-zA-Z][\_a-zA-Z0-9]*/ {lval.s =yylex.Text(); return IDENTIFIER}
-/[\_a-zA-Z][\_a-zA-Z0-9]*!/ {lval.s =yylex.Text(); return MACRO}
 /\*\// {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
 /[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
 /./ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
