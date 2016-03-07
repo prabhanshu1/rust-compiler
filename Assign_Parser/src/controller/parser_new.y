@@ -261,6 +261,7 @@ return i
 %token YIELD 
 %token PRINTLN 
 %token MACRO_RULES
+%token FINISH
 // keywords
 
 %token SHEBANG
@@ -310,77 +311,81 @@ return i
 
 
 
-%start rust
+%start Code
 
 %%
 
 /// println, print macro support => standard macros
+
+Code : rust   {$$.nn=make_node(node{"Code","",[]int{$1.nn}});make_json($$.nn);}
+;
+
 rust
-:STRUCT IDENTIFIER struct_expr rust
-|item_or_view_item rust
-| USE func_identifier ';' rust
-|
+: STRUCT IDENTIFIER struct_expr rust  {$$.nn=make_node(node{"rust","",[]int{make_node(node{"STRUCT","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}}),$3.nn,$4.nn}})}
+| item_or_view_item rust  {$$.nn=make_node(node{"rust","",[]int{$1.nn,$2.nn}})}
+| USE func_identifier ';' rust {$$.nn=make_node(node{"rust","",[]int{make_node(node{"USE","",[]int{}}),$2.nn,make_node(node{";","",[]int{}}),$4.nn}})}
+|  {$$.nn=make_node(node{"rust","",[]int{}});}
 ;
 
 
 item_or_view_item
-: item_fn
+: item_fn {$$.nn=make_node(node{"item_or_view_item","",[]int{$1.nn}})}
 ;
 
 item_fn
-: FN IDENTIFIER fn_decl inner_attrs_and_block  {fmt.Println("REACHING fn")}
+: FN IDENTIFIER fn_decl inner_attrs_and_block  {$$.nn=make_node(node{"item_fn","",[]int{make_node(node{"FN","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}}),$3.nn,$4.nn}})}
 ;
 
 fn_decl
-: fn_args ret_ty {fmt.Println("REACHING fn_decl")}
+: fn_args ret_ty {$$.nn=make_node(node{"fn_decl","",[]int{$1.nn,$2.nn}})}
 ;
 
 fn_args
-: SYM_OPEN_ROUND maybe_args_general SYM_CLOSE_ROUND	{fmt.Println("REACHING fn_args")}
+: SYM_OPEN_ROUND maybe_args_general SYM_CLOSE_ROUND	{$$.nn=make_node(node{"fn_args","",[]int{make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$2.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
 ;
 
 maybe_args_general
-: args_general
-| /* empty */		{fmt.Println("REACHING maybe_args_general")}
+: args_general      {$$.nn=make_node(node{"maybe_args_general","",[]int{$1.nn}})}
+| /* empty */       {$$.nn=make_node(node{"maybe_args_general","",[]int{}})}
 ;
 
 args_general
-: arg_general
-| args_general ',' arg_general
+: arg_general        {$$.nn=make_node(node{"args_general","",[]int{$1.nn}})}
+| args_general ',' arg_general {$$.nn=make_node(node{"args_general","",[]int{$1.nn,make_node(node{",","",[]int{}}),$3.nn}})}
 ;
 
 arg_general
-: pat ':' ty
+: pat ':' ty  {$$.nn=make_node(node{"arg_general","",[]int{$1.nn,make_node(node{":","",[]int{}}),$3.nn}})}
 ;
 
 ret_ty
-: OP_INSIDE '!'
-| OP_INSIDE ty
-| OP_INSIDE SYM_OPEN_ROUND  SYM_CLOSE_ROUND
-| /* empty */
+: OP_INSIDE '!'  {$$.nn=make_node(node{"ret_ty","",[]int{make_node(node{"OP_INSIDE",$1.s,[]int{}}),make_node(node{"!","",[]int{}})}})}
+| OP_INSIDE ty  {$$.nn=make_node(node{"ret_ty","",[]int{make_node(node{"OP_INSIDE",$1.s,[]int{}}),$2.nn}})}
+| OP_INSIDE SYM_OPEN_ROUND  SYM_CLOSE_ROUND {$$.nn=make_node(node{"ret_ty","",[]int{make_node(node{"OP_INSIDE",$1.s,[]int{}}),make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
+| /* empty */ {$$.nn=make_node(node{"ret_ty","",[]int{}})}
 ;
 
 inner_attrs_and_block
-: SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY   {fmt.Println("REACHING inner_attrs_and_block")}
+: SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY   {$$.nn=make_node(node{"inner_attrs_and_block","",[]int{make_node(node{"SYM_OPEN_CURLY","{",[]int{}}),$2.nn,$3.nn,make_node(node{"SYM_CLOSE_CURLY","}",[]int{}})}})}
 ;
 
 maybe_inner_attrs
-: inner_attrs {fmt.Println("REACHING maybe_inner_attrs")}
-| /* empty */ {fmt.Println("REACHING maybe_inner_attrs2")}
+: inner_attrs {$$.nn=make_node(node{"maybe_inner_attrs","",[]int{$1.nn}})}
+| /* empty */ {$$.nn=make_node(node{"maybe_inner_attrs","",[]int{}})}
 ;
 
 inner_attrs
-: inner_attr {fmt.Println("REACHING inner_attrs")}
-| inner_attrs inner_attr {fmt.Println("REACHING inner_attrs2")}
+: inner_attr {$$.nn=make_node(node{"inner_attrs","",[]int{$1.nn}})}
+| inner_attrs inner_attr {$$.nn=make_node(node{"inner_attrs","",[]int{$1.nn,$2.nn}})}
 ;
 
 inner_attr
-: SHEBANG '[' meta_item ']' {fmt.Println("REACHING inner_attr")}
+: SHEBANG '[' meta_item ']'  {$$.nn=make_node(node{"inner_attr","",[]int{make_node(node{"SHEBANG","",[]int{}}),make_node(node{"[","",[]int{}}),$3.nn,make_node(node{"]","",[]int{}})}})}
 ;
 
 
 meta_item	
-: IDENTIFIER
+: IDENTIFIER {$$.nn=make_node(node{"meta_item","",[]int{$1.nn}})}
 | IDENTIFIER '=' lit
 | IDENTIFIER SYM_OPEN_ROUND meta_seq SYM_CLOSE_ROUND
 ;
@@ -420,220 +425,221 @@ outer_attr
 ;
 
 lit
-: LIT_CHAR
-| LIT_INT {fmt.Println("REACHING LIT_INT")}
-| LIT_UINT
-| LIT_INT_UNSUFFIXED
-| FLOAT
-| LIT_FLOAT_UNSUFFIXED
-| LITERAL_STR
-| LITERAL_CHAR
-| TRUE
-| FALSE
-| VAR_TYPE                 
+: LIT_CHAR  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LIT_CHAR",$1.s,[]int{}})}})}} 
+| LIT_INT  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LIT_INT",$1.s,[]int{}})}})}} 
+| LIT_UINT  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LIT_UINT",$1.s,[]int{}})}})}}
+| LIT_INT_UNSUFFIXED  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LIT_INT_UNSUFFIXED",$1.s,[]int{}})}})}}
+| FLOAT  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"FLOAT",$1.s,[]int{}})}})}}
+| LIT_FLOAT_UNSUFFIXED  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LIT_FLOAT_UNSUFFIXED",$1.s,[]int{}})}})}}
+| LITERAL_STR  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LITERAL_STR",$1.s,[]int{}})}})}}
+| LITERAL_CHAR  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"LITERAL_CHAR",$1.s,[]int{}})}})}}
+| TRUE  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"TRUE",$1.s,[]int{}})}})}}
+| FALSE  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"FALSE",$1.s,[]int{}})}})}}
+| VAR_TYPE  {{$$.nn=make_node(node{"lit","",[]int{make_node(node{"VAR_TYPE",$1.s,[]int{}})}})}}                 
 ;
 
 maybe_stmts
-: stmts {fmt.Println("REACHING maybe_stmts1")}
-| /* empty */ {fmt.Println("REACHING maybe_stmts2")}
+: stmts  {$$.nn=make_node(node{"maybe_stmts","",[]int{$1.nn}})}                
+| /* empty */ {$$.nn=make_node(node{"maybe_stmts","",[]int{}})}                 
 ;
 
 stmts
-: stmts stmt 
-| stmt 
+: stmts stmt {$$.nn=make_node(node{"stmts","",[]int{$1.nn,$2.nn}})}                 
+| stmt {$$.nn=make_node(node{"stmts","",[]int{$1.nn}})}                 
 ;
 
 stmt
-: let ';' {fmt.Println("REACHING LET")} 
-| item_or_view_item ';'
-| expr_stmt     
-| expr ';'
+: let ';' {$$.nn=make_node(node{"stmt","",[]int{$1.nn,make_node(node{";","",[]int{}})}})}                 
+| item_or_view_item ';' {{$$.nn=make_node(node{"stmt","",[]int{$1.nn,make_node(node{";","",[]int{}})}})}}                 
+| expr_stmt     {$$.nn=make_node(node{"stmt","",[]int{$1.nn}})}                 
+| expr ';' {$$.nn=make_node(node{"stmt","",[]int{$1.nn,make_node(node{";","",[]int{}})}})}                 
 ;
 
 // Things that can be an expr or a stmt, no semi required.
 expr_stmt
-: expr_match
-| expr_if {fmt.Println("REACHING IF")}
-| expr_while
-| expr_loop
-| expr_for
-| expr_return
+: expr_match  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})}
+| expr_if  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})} 
+| expr_while  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})}
+| expr_loop  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})}
+| expr_for  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})}
+| expr_return  {$$.nn=make_node(node{"expr_stmt","",[]int{$1.nn}})}
 ;
 
 expr_return
-: RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';'
-| RETURN ';'
-| RETURN lit ';'
-| RETURN IDENTIFIER ';'
+: RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';' {$$.nn=make_node(node{"expr_return","",[]int{make_node(node{"RETURN","",[]int{}}),make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
+| RETURN ';' {$$.nn=make_node(node{"expr_return","",[]int{make_node(node{"RETURN","",[]int{}}),make_node(node{";","",[]int{}})}})}
+| RETURN lit ';'  {$$.nn=make_node(node{"expr_return","",[]int{make_node(node{"RETURN","",[]int{}}),$2.nn,make_node(node{";","",[]int{}})}})}
+| RETURN IDENTIFIER ';'{$$.nn=make_node(node{"expr_return","",[]int{make_node(node{"RETURN","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}}),make_node(node{";","",[]int{}})}})}
 ;
 
 expr_match
-: MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY
-| MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY
+: MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY  {$$.nn=make_node(node{"expr_match","",[]int{make_node(node{"MATCH","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}}),make_node(node{"SYM_OPEN_CURLY","{",[]int{}}),$4.nn,make_node(node{"SYM_CLOSE_CURLY","}",[]int{}})}})}
+| MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY {$$.nn=make_node(node{"expr_match","",[]int{make_node(node{"MATCH","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}}),make_node(node{"SYM_OPEN_CURLY","{",[]int{}}),$4.nn,make_node(node{",","",[]int{}}),make_node(node{"SYM_CLOSE_CURLY","}",[]int{}})}})}
 ;
 
 match_clauses
-: match_clause
-| match_clauses ',' match_clause
+: match_clause  {$$.nn=make_node(node{"match_clauses","",[]int{$1.nn}})}
+| match_clauses ',' match_clause {$$.nn=make_node(node{"match_clauses","",[]int{$1.nn,make_node(node{",","",[]int{}}),$3.nn}})}
 ;
 
 match_clause
-: pats_or maybe_guard OP_FAT_ARROW match_body {fmt.Println("REACHING match_clause")}
+: pats_or maybe_guard OP_FAT_ARROW match_body {$$.nn=make_node(node{"match_clauses","",[]int{$1.nn,$2.nn,make_node(node{"OP_FAT_ARROW","=>",[]int{}}),$4.nn}})}
 ;
 
 match_body
-: expr
-| expr_stmt
+: expr   {$$.nn=make_node(node{"match_body","",[]int{$1.nn}})}
+| expr_stmt {$$.nn=make_node(node{"match_body","",[]int{$1.nn}})}
 ;
 
 maybe_guard
-: IF expr
-| // empty
+: IF expr  {$$.nn=make_node(node{"match_guard","",[]int{make_node(node{"IF","",[]int{}}),$2.nn}})}
+|    {$$.nn=make_node(node{"match_guard","",[]int{}})}
 ;
 
 expr_if
-: IF exp block 
-| IF exp block ELSE block_or_if
+: IF exp block  {$$.nn=make_node(node{"match_guard","",[]int{make_node(node{"IF","",[]int{}}),$2.nn,$3.nn}})}
+| IF exp block ELSE block_or_if  {$$.nn=make_node(node{"match_guard","",[]int{make_node(node{"IF","",[]int{}}),$2.nn,$3.nn,make_node(node{"ELSE","",[]int{}}),$5.nn}})}
 ;
 
 block_or_if
-: block
-| expr_if
+: block   {$$.nn=make_node(node{"block_or_if","",[]int{$1.nn}})}
+| expr_if {$$.nn=make_node(node{"block_or_if","",[]int{$1.nn}})}
 ;
 
 block
-: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {fmt.Println("REDUCING TO BLOCK")}
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY  {$$.nn=make_node(node{"block","",[]int{make_node(node{"SYM_OPEN_CURLY","{",[]int{}}),$2.nn,make_node(node{"SYM_CLOSE_CURLY","}",[]int{}})}})}
 ;
 
 expr_while
-: WHILE exp block
+: WHILE exp block   {$$.nn=make_node(node{"expr_while","",[]int{make_node(node{"WHILE","",[]int{}}),$2.nn,$3.nn}})}
 ;
 
 expr_loop
-: LOOP block
+: LOOP block  {$$.nn=make_node(node{"expr_loop","",[]int{make_node(node{"WHILE","",[]int{}}),$2.nn}})}
 ;
 
 expr_for
-: FOR exp IN exp block
-| FOR exp IN range_di block
-| FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block
+: FOR exp IN exp block   {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),$2.nn,make_node(node{"IN","",[]int{}}),$4.nn,$5.nn}})}
+| FOR exp IN range_di block  {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),$2.nn,make_node(node{"IN","",[]int{}}),$4.nn,$5.nn}})}
+| FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block   {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$3.nn,make_node(node{";","",[]int{}}),$5.nn,make_node(node{";","",[]int{}}),$7.nn,make_node(node{"SYM_CLOSE_ROUND","(",[]int{}}),$9.nn}})}
 ;
 
 let
-: LET maybe_mut pat maybe_ty_ascription maybe_init_expr 
+: LET maybe_mut pat maybe_ty_ascription maybe_init_expr   {$$.nn=make_node(node{"let","",[]int{make_node(node{"LET","",[]int{}}),$2.nn,$3.nn,$4.nn,$5.nn}})}
 ;
 
 maybe_ty_ascription
-: ':' ty
-| /* empty */
+: ':' ty   {$$.nn=make_node(node{"maybe_ty_ascription","",[]int{make_node(node{";","",[]int{}}),$2.nn}})}
+| /* empty */ {$$.nn=make_node(node{"maybe_ty_ascription","",[]int{}})}
 ;
 
 maybe_init_expr
-: '=' expr 
-| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ //array
-| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ //array
-| OPEQ_INT  opeq_ops {fmt.Println("REACHING maybe_init_expr	")}
-| OPEQ_FLOAT opeq_ops
-| /* empty */
+: '=' expr   {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),$2.nn}})}
+| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})}
+| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{";","",[]int{}}),make_node(node{"LIT_INT",$5.s,[]int{}}),make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})} 
+| OPEQ_INT  opeq_ops {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"OPEQ_INT","",[]int{}}),$2.nn}})}
+| OPEQ_FLOAT opeq_ops{$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"OPEQ_FLOAT","",[]int{}}),$2.nn}})}
+| /* empty */{$$.nn=make_node(node{"maybe_init_expr","",[]int{}})}
 ;
 
 pats_or
-: pat
-| lit
-| '_'
-| range_tri
-| pats_or '|' pat
-| pats_or '|' lit
-| pats_or '|' range_tri
+: pat  {$$.nn=make_node(node{"pats_or","",[]int{$1.nn}})}
+| lit {$$.nn=make_node(node{"pats_or","",[]int{$1.nn}})}
+| '_' {$$.nn=make_node(node{"pats_or","",[]int{make_node(node{"_","",[]int{}})}})}
+| range_tri {$$.nn=make_node(node{"pats_or","",[]int{$1.nn}})}
+| pats_or '|' pat  {$$.nn=make_node(node{"pats_or","",[]int{$1.nn,make_node(node{"|","",[]int{}}),$3.nn}})}
+| pats_or '|' lit   {$$.nn=make_node(node{"pats_or","",[]int{$1.nn,make_node(node{"|","",[]int{}}),$3.nn}})}
+| pats_or '|' range_tri   {$$.nn=make_node(node{"pats_or","",[]int{$1.nn,make_node(node{"|","",[]int{}}),$3.nn}})}
 ;
 
 range_tri
-: LIT_INT OP_DOTDOTDOT LIT_INT
-| LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR
+: LIT_INT OP_DOTDOTDOT LIT_INT   {$$.nn=make_node(node{"range_tri","",[]int{make_node(node{"LIT_INT",$1.s,[]int{}}),make_node(node{"OP_DOTDOTDOT",$2.s,[]int{}}),make_node(node{"LIT_INT",$3.s,[]int{}}),}})}
+| LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR  {$$.nn=make_node(node{"range_tri","",[]int{make_node(node{"LITERAL_CHAR",$1.s,[]int{}}),make_node(node{"OP_DOTDOTDOT",$2.s,[]int{}}),make_node(node{"LITERAL_CHAR",$3.s,[]int{}}),}})}
 
 range_di
-: LIT_INT OP_DOTDOT LIT_INT
-| LITERAL_CHAR OP_DOTDOT LITERAL_CHAR
+: LIT_INT OP_DOTDOT LIT_INT  {$$.nn=make_node(node{"range_di","",[]int{make_node(node{"LIT_INT",$1.s,[]int{}}),make_node(node{"OP_DOTDOT",$2.s,[]int{}}),make_node(node{"LIT_INT",$3.s,[]int{}}),}})}
+| LITERAL_CHAR OP_DOTDOT LITERAL_CHAR  {$$.nn=make_node(node{"range_di","",[]int{make_node(node{"LITERAL_CHAR",$1.s,[]int{}}),make_node(node{"OP_DOTDOT",$2.s,[]int{}}),make_node(node{"LITERAL_CHAR",$3.s,[]int{}}),}})}
 
 
 pat
-: IDENTIFIER
+: IDENTIFIER  {$$.nn=make_node(node{"pats_or","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}
 ;
 
 
 tys
-: ty
-| tys ',' ty
+: ty  {$$.nn=make_node(node{"tys","",[]int{$1.nn}})}
+| tys ',' ty  {$$.nn=make_node(node{"tys","",[]int{$1.nn,make_node(node{",","",[]int{}}),$3.nn}})}
 ;
 
 ty
-: path
+: path  {$$.nn=make_node(node{"ty","",[]int{$1.nn}})}
 | '~' ty
 | '*' maybe_mut ty
 | '&' maybe_mut ty
 | OP_POWER maybe_mut ty
-| SYM_OPEN_ROUND tys SYM_CLOSE_ROUND
+| SYM_OPEN_ROUND tys SYM_CLOSE_ROUND  {$$.nn=make_node(node{"ty","",[]int{make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$2.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
 ;
 
 maybe_mut
-: MUT
-| /* empty */
+: MUT   {$$.nn=make_node(node{"maybe_mut","",[]int{make_node(node{"MUT","",[]int{}})}})}
+| /* empty */  {$$.nn=make_node(node{"maybe_mut","",[]int{}})}
 ;
 
+
 var_types
-: VAR_TYPE
-| IDENTIFIER
+: VAR_TYPE  {$$.nn=make_node(node{"var_types","",[]int{make_node(node{"VAR_TYPE",$1.s,[]int{}})}})}                       
+| IDENTIFIER {$$.nn=make_node(node{"var_types","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}                       
 
 path
-: var_types
-| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ
+: var_types {$$.nn=make_node(node{"path","",[]int{$1.nn}})}
+| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ {$$.nn=make_node(node{"path","",[]int{make_node(node{"SYM_OPEN_SQ","{",[]int{}}),$2.nn,$3.nn,make_node(node{"SYM_CLOSE_SQ","}",[]int{}})}})}
 ;
 
 maybe_size
-: ';' LIT_INT
-|
+: ';' LIT_INT {$$.nn=make_node(node{"maybe_size","",[]int{make_node(node{";","",[]int{}}),make_node(node{"LIT_INT",$2.s,[]int{}})}})}
+| {$$.nn=make_node(node{"maybe_size","",[]int{}})}
 ;
 
 maybe_exprs
-: exprs
-| /* empty */
+: exprs {$$.nn=make_node(node{"maybe_exprs","",[]int{$1.nn}})}
+| /* empty */ {$$.nn=make_node(node{"maybe_exprs","",[]int{}})}
 ;
 
 exprs
-: expr
-| exprs ',' expr
+: expr {$$.nn=make_node(node{"exprs","",[]int{$1.nn}})}
+| exprs ',' expr {$$.nn=make_node(node{"exprs","",[]int{$1.nn,make_node(node{",","",[]int{}}),$3.nn}})}
 ;
 
 //// $$$opeq+int doesn't work
 
 maybe_assignment
-: assignment
-|
+: assignment {$$.nn=make_node(node{"maybe_assignment","",[]int{$1.nn}})}
+| {$$.nn=make_node(node{"maybe_assignment","",[]int{}})}
 ;
 
 hole
-: IDENTIFIER
-| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ
-| IDENTIFIER '.' hole
+: IDENTIFIER {$$.nn=make_node(node{"hole","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}                       
+| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ {$$.nn=make_node(node{"hole","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})}                       
+| IDENTIFIER '.' hole {$$.nn=make_node(node{"hole","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{".","",[]int{}}),$3.nn}})}
 
 assignment
-: hole '=' expr 
-| hole OP_ADDEQ expr
-| hole OP_SUBEQ expr
-| hole OP_LEQ expr
-| hole OP_GEQ expr
-| hole OP_MULEQ expr
-| hole OP_DIVEQ expr
-| hole OP_MODEQ expr
-| hole OP_ANDEQ expr
-| hole OP_SHLEQ expr
-| hole OP_SHREQ expr
-| hole OP_OREQ expr
-| hole OP_XOREQ expr
-| hole OP_EQEQ expr
-| hole OP_NOTEQ expr
-| hole OPEQ_INT opeq_ops
-| hole OPEQ_FLOAT opeq_ops
+: hole '=' expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"=","",[]int{}}),$3.nn}})}
+| hole OP_ADDEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"+=","OP_ADDEQ",[]int{}}),$3.nn}})}
+| hole OP_SUBEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"-=","OP_SUBEQ",[]int{}}),$3.nn}})}
+| hole OP_LEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"<=","OP_LEQ",[]int{}}),$3.nn}})}
+| hole OP_GEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{">=","OP_GEQ",[]int{}}),$3.nn}})}
+| hole OP_MULEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"*=","OP_MULEQ",[]int{}}),$3.nn}})}
+| hole OP_DIVEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"/=","OP_DIVEQ",[]int{}}),$3.nn}})}
+| hole OP_MODEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"%=","OP_MODEQ",[]int{}}),$3.nn}})}
+| hole OP_ANDEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"&=","OP_ANDEQ",[]int{}}),$3.nn}})}
+| hole OP_SHLEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"<<=","OP_SHLEQ",[]int{}}),$3.nn}})}
+| hole OP_SHREQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{">>=","OP_SHREQ",[]int{}}),$3.nn}})}
+| hole OP_OREQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"|=","OP_OREQ",[]int{}}),$3.nn}})}
+| hole OP_XOREQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"^=","OP_XOREQ",[]int{}}),$3.nn}})}
+| hole OP_EQEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"==","OP_EQEQ",[]int{}}),$3.nn}})}
+| hole OP_NOTEQ expr {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"!=","OP_NOTEQ",[]int{}}),$3.nn}})}
+| hole OPEQ_INT opeq_ops {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"=int","OPEQ_INT",[]int{}}),$3.nn}})}
+| hole OPEQ_FLOAT opeq_ops {$$.nn=make_node(node{"assignment","",[]int{$1.nn,make_node(node{"=float","OPEQ_FLOAT",[]int{}}),$3.nn}})}
 
 
 ;
@@ -641,86 +647,89 @@ assignment
 
 
 opeq_ops
-:  '+' expr
-| '&' expr
-| '|' expr
-| '^' expr
-| '/' expr
-| '*' expr
-| '>' expr
-| '<' expr
-| '%' expr
-| '.' expr
-| OP_RSHIFT expr
-| OP_LSHIFT expr
-| OP_ANDAND expr
-| OP_OROR expr
-| OP_POWER expr     {fmt.Println("REACHING opeq_ops	")}    
+:  '+' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"+","",[]int{}}),$2.nn}})}
+| '-' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"-","",[]int{}}),$2.nn}})}
+| '&' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"&","",[]int{}}),$2.nn}})}
+| '|' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"|","",[]int{}}),$2.nn}})}
+| '^' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"^","",[]int{}}),$2.nn}})}
+| '/' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"/","",[]int{}}),$2.nn}})}
+| '*' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"*","",[]int{}}),$2.nn}})}
+| '>' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{">","",[]int{}}),$2.nn}})}
+| '<' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"<","",[]int{}}),$2.nn}})}
+| '%' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"%","",[]int{}}),$2.nn}})}
+| '.' expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{".","",[]int{}}),$2.nn}})}
+| OP_RSHIFT expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"OP_RSHIFT",">>",[]int{}}),$2.nn}})}
+| OP_LSHIFT expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"OP_LSHIFT","<<",[]int{}}),$2.nn}})}
+| OP_ANDAND expr {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"OP_ANDAND","&&",[]int{}}),$2.nn}})}
+| OP_OROR expr  {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"OP_OROR","||",[]int{}}),$2.nn}})}
+| OP_POWER expr     {$$.nn=make_node(node{"opeq_ops","",[]int{make_node(node{"OP_POWER","**",[]int{}}),$2.nn}})}    
 |
 ;
 
 expr
-: round_exp
-| assignment
+: round_exp {$$.nn=make_node(node{"expr","",[]int{$1.nn}})}
+| assignment {$$.nn=make_node(node{"expr","",[]int{$1.nn}})}
 ;
 
 //$$struct remaining
 
 exp
-: lit 
-| IDENTIFIER     {fmt.Println("REACHED IDENTIFIER in exp")}                       
-| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {fmt.Println("REACHED IDENTIFIER in exp")}                       
-| IDENTIFIER ':' struct_expr                
-| '!' round_exp      
-| '&' round_exp      
-| OP_ANDMUT round_exp      
-| round_exp '-' round_exp
-| round_exp '+' round_exp {fmt.Println("REACHED IDENTIFIER in exp")}
-| round_exp '&' round_exp
-| round_exp '|' round_exp
-| round_exp '^' round_exp
-| round_exp '/' round_exp
-| round_exp '*' round_exp
-| round_exp '>' round_exp
-| round_exp '<' round_exp
-| round_exp '%' round_exp
-| round_exp '.' round_exp
-| round_exp OP_RSHIFT round_exp
-| round_exp OP_LSHIFT round_exp
-| round_exp OP_ANDAND round_exp
-| round_exp OP_OROR round_exp
-| round_exp OP_POWER round_exp
-| func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND         
-| CONTINUE                         
-| CONTINUE IDENTIFIER  
-| UNSAFE block                     
-| block                            
+: lit {$$.nn=make_node(node{"exp","",[]int{$1.nn}})}
+| IDENTIFIER     {$$.nn=make_node(node{"exp","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}                       
+| IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {$$.nn=make_node(node{"exp","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})}                       
+| IDENTIFIER ':' struct_expr  {$$.nn=make_node(node{"exp","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{":","",[]int{}}),$3.nn}})}              
+| '!' round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"!","",[]int{}}),$2.nn}})}
+| '&' round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"&","",[]int{}}),$2.nn}})}
+| OP_ANDMUT round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"OP_ANDMUT","&mut",[]int{}}),$2.nn}})}
+| round_exp '-' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"-","",[]int{}}),$3.nn}})}
+| round_exp '+' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"+","",[]int{}}),$3.nn}})}
+| round_exp '&' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"&","",[]int{}}),$3.nn}})} 
+| round_exp '|' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"|","",[]int{}}),$3.nn}})}
+| round_exp '^' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"^","",[]int{}}),$3.nn}})}
+| round_exp '/' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"/","",[]int{}}),$3.nn}})}
+| round_exp '*' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"*","",[]int{}}),$3.nn}})}
+| round_exp '>' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{">","",[]int{}}),$3.nn}})}
+| round_exp '<' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"<","",[]int{}}),$3.nn}})}
+| round_exp '%' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"%","",[]int{}}),$3.nn}})}
+| round_exp '.' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{".","",[]int{}}),$3.nn}})}
+| round_exp OP_RSHIFT round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_RSHIFT",">>",[]int{}}),$3.nn}})}
+| round_exp OP_LSHIFT round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_LSHIFT","<<",[]int{}}),$3.nn}})}
+| round_exp OP_ANDAND round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_ANDAND","&&",[]int{}}),$3.nn}})}
+| round_exp OP_OROR round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_OROR","||",[]int{}}),$3.nn}})}
+| round_exp OP_POWER round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_POWER","**",[]int{}}),$3.nn}})}
+| func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND  {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}       
+| CONTINUE     {$$.nn=make_node(node{"exp","",[]int{make_node(node{"CONTINUE","",[]int{}})}}) }                                    
+| CONTINUE IDENTIFIER  {$$.nn=make_node(node{"exp","",[]int{make_node(node{"CONTINUE","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}})}}) }                
+| UNSAFE block    {$$.nn=make_node(node{"exp","",[]int{make_node(node{"UNSAFE","",[]int{}}),$2.nn}}) }                
+| block   {$$.nn=make_node(node{"exp","",[]int{$1.nn}})  }                       
 ;
 
 round_exp 
-: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND
-| exp
+: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND {$$.nn=make_node(node{"round_exp","",[]int{make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$1.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
+| exp {$$.nn=make_node(node{"round_exp","",[]int{$1.nn}})}
+;
 
 func_identifier 
-: IDENTIFIER
-| IDENTIFIER SYM_COLCOL func_identifier
-| IDENTIFIER '!'
+: IDENTIFIER {$$.nn=make_node(node{"func_identifier","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}
+| IDENTIFIER SYM_COLCOL func_identifier {$$.nn=make_node(node{"func_identifier","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"SYM_COLCOL","::",[]int{}}),$3.nn}})}
+| IDENTIFIER '!' {$$.nn=make_node(node{"func_identifier","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{"!","",[]int{}})}})}
+;
 
 struct_expr
-: SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY
+: SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY {$$.nn=make_node(node{"struct_expr","",[]int{make_node(node{"SYM_OPEN_CURLY","{",[]int{}}),$2.nn,$3.nn,make_node(node{"SYM_CLOSE_CURLY","}",[]int{}})}})}
 ;
 
 field_inits
-: field_init
-| field_inits ',' field_init
+: field_init {$$.nn=make_node(node{"field_inits","",[]int{$1.nn}})}
+| field_inits ',' field_init {$$.nn=make_node(node{"field_inits","",[]int{$1.nn,make_node(node{",","",[]int{}}),$3.nn}})}
 ;
 
 field_init
-: maybe_mut IDENTIFIER ':' expr
+: maybe_mut IDENTIFIER ':' expr {$$.nn=make_node(node{"field_init","",[]int{$1.nn,make_node(node{"IDENTIFIER",$2.s,[]int{}}),make_node(node{":","",[]int{}}),$4.nn}})}
 ;
 
 default_field_init
-: ','
-| ',' OP_DOTDOT expr
-| /* empty */
+: ','	{$$.nn=make_node(node{"default_field_init","",[]int{make_node(node{",","",[]int{}})}})}
+| ',' OP_DOTDOT expr {$$.nn=make_node(node{"default_field_init","",[]int{make_node(node{",","",[]int{}}),make_node(node{"OP_DOTDOT","..",[]int{}}),$3.nn}})}
+| /* empty */ {$$.nn=make_node(node{"default_field_init","",[]int{}})}
 ;
