@@ -1,10 +1,14 @@
 %{
 package main
 import "fmt"
-//import "math"
+import "log"
 import "os"
 var line = 0
-
+func list_end(l node)node {
+  while(l.next!=NULL){l=l.next;}
+  return l;
+}
+  
 func err_neg(a int64) {
 	if a<0 {
 		fmt.Println("IT has to be non-negative")
@@ -681,19 +685,19 @@ exp
 | '!' round_exp      {}
 | '&' round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"&","",[]int{}}),$2.nn}})}
 | OP_ANDMUT round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"OP_ANDMUT","&mut",[]int{}}),$2.nn}})}
-| round_exp '-' round_exp {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="-, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '+' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"+","",[]int{}}),$3.nn}})}
-| round_exp '&' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"&","",[]int{}}),$3.nn}})} 
-| round_exp '|' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"|","",[]int{}}),$3.nn}})}
-| round_exp '^' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"^","",[]int{}}),$3.nn}})}
-| round_exp '/' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"/","",[]int{}}),$3.nn}})}
-| round_exp '*' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"*","",[]int{}}),$3.nn}})}
-| round_exp '>' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{">","",[]int{}}),$3.nn}})}
-| round_exp '<' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"<","",[]int{}}),$3.nn}})}
-| round_exp '%' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"%","",[]int{}}),$3.nn}})}
+| round_exp '-' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="-, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '+' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="+, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '&' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="&, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '|' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="|, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '^' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="^, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '/' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="/, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '*' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="*, $$.map["value"],$1.map["value"], $3.map["value"]"; }    
+| round_exp '>' round_exp       
+| round_exp '<' round_exp  
+| round_exp '%' round_exp  {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="%, $$.map["value"],$1.map["value"], $3.map["value"]"; } 
 | round_exp '.' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{".","",[]int{}}),$3.nn}})}
-| round_exp OP_RSHIFT round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_RSHIFT",">>",[]int{}}),$3.nn}})}
-| round_exp OP_LSHIFT round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_LSHIFT","<<",[]int{}}),$3.nn}})}
+| round_exp OP_RSHIFT round_exp       
+| round_exp OP_LSHIFT round_exp 
 | round_exp OP_ANDAND round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_ANDAND","&&",[]int{}}),$3.nn}})}
 | round_exp OP_OROR round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_OROR","||",[]int{}}),$3.nn}})}
 | round_exp OP_POWER round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_POWER","**",[]int{}}),$3.nn}})}
