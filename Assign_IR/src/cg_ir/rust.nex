@@ -1,0 +1,88 @@
+/abstract/ { return ABSTRACT}	/alignof/ { return ALIGNOF}	/as/ { return AS}	/become/ { return BECOME}	/box/ { return BOX}	/break/ { return BREAK}	/const/ { return CONST}	/continue/ { return CONTINUE}	/crate/ { return CRATE}	/do/ { return DO}	/else/ { return ELSE}	/enum/ { return ENUM}	/extern/ { return EXTERN}	/false/ { return FALSE}	/final/ { return FINAL}	/fn/ { return FN}	/for/ { return FOR}	/if/ { return IF}	/impl/ { return IMPL}	/in/ { return IN}	/let/ { return LET}	/loop/ { return LOOP}	/macro/ { return MACRO}	/match/ { return MATCH}	/mod/ { return MOD}	/move/ { return MOVE}	/mut/ { return MUT}	/offsetof/ { return OFFSETOF}	/override/ { return OVERRIDE}	/priv/ { return PRIV}	/proc/ { return PROC}	/pub/ { return PUB}	/pure/ { return PURE}	/ref/ { return REF}	/return/ { return RETURN}	/Self/ { return SELF}	/self/ { return SELF}	/sizeof/ { return SIZEOF}	/static/ { return STATIC}	/struct/ { return STRUCT}	/super/ { return SUPER}	/trait/ { return TRAIT}	/true/ { return TRUE}	/type/ { return TYPE}	/typeof/ { return TYPEOF}	/unsafe/ { return UNSAFE}	/unsized/ { return UNSIZED}	/use/ { return USE}	/virtual/ { return VIRTUAL}	/where/ { return WHERE}	/while/ { return WHILE}	/yield/ { return YIELD}		/macro_rules!/ { return MACRO_RULES}	 /finish!/ { return FINISH}
+
+/i8|i16|i32|i64|isize|u8|u16|u32|u64|usize|f32|f64|char|bool/ {lval.s = yylex.Text(); return VAR_TYPE}
+/=[ ]*[\-\+]?[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text()[space(yylex.Text(),1):], 10, 64); return OPEQ_INT}
+/[0-9]+/          { lval.n64,_ = strconv.ParseInt(yylex.Text(), 10, 64);  return LIT_INT }
+/0x[0-9a-f]+/          { lval.n64,_ =strconv.ParseInt(yylex.Text(), 16, 64); return LIT_INT }
+/0o[0-7]+/          { lval.n64,_ =strconv.ParseInt(yylex.Text(), 8, 64); return LIT_INT }
+/0b[0-1]+/          { lval.n64,_ =strconv.ParseInt(yylex.Text(), 2, 64); return LIT_INT }
+/finish/ {return FINISH}
+/=[ ]*[\-\+]?[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.f64,_ = strconv.ParseFloat(yylex.Text()[space(yylex.Text(),1):], 64); return OPEQ_FLOAT }
+/[0-9]+\.?[0-9]+([eE][-+]?[0-9]+)?/ { lval.f64,_ = strconv.ParseFloat(yylex.Text(), 64); return FLOAT }
+/[\n]/ {line++; }
+/[ \t]+/        { /* eat up whitespace */ }
+/(\/\*([^\*]|[\r\n]|(\*+([^\*\/]|[\r\n])))*\*+\/)|(\/\/[^\n]*)/        { /* eat up comments */ }
+/(\"([^\"])*\")/        { lval.s =yylex.Text(); return LITERAL_STR }
+/(\'([^\'])\')/        { lval.s =yylex.Text(); return LITERAL_CHAR }
+
+/\>\>/ { return OP_RSHIFT }
+/\<\</ { return OP_LSHIFT }
+/\+\=/ { return OP_ADDEQ }
+/\-\=/ { return OP_SUBEQ }
+/\<\=/ { return OP_LEQ }
+/\>\=/ { return OP_GEQ }
+/\*\=/ { return OP_MULEQ }
+/\/\=/ { return OP_DIVEQ }
+/\%\=/ { return OP_MODEQ }
+/\&\=/ { return OP_ANDEQ }
+/\<\<\=/ { return OP_SHLEQ }
+/\>\>\=/ { return OP_SHREQ }
+/\|\=/ { return OP_OREQ }
+/\^\=/ { return OP_XOREQ }
+/\-\>/ { return OP_INSIDE }
+/\=\>/ { return OP_FAT_ARROW }
+/\=\=/ { return OP_EQEQ }
+/noteq/ { return OP_NOTEQ }
+/\&\&/ { return OP_ANDAND }
+/\&mut/ { return OP_ANDMUT }
+/\|\|/ { return OP_OROR }
+/\*\*/ { return OP_POWER }
+/\.\./ { return OP_DOTDOT }
+/\.\.\./ { return OP_DOTDOTDOT }
+
+/\-/ { return int(yylex.Text()[0]) }
+/\+/ { return int(yylex.Text()[0]) }
+/\&/ { return int(yylex.Text()[0]) }
+/\|/ { return int(yylex.Text()[0]) }
+/\^/ { return int(yylex.Text()[0]) }
+/\// { return int(yylex.Text()[0]) }
+/\!/ { return int(yylex.Text()[0]) }
+/\:/ { return int(yylex.Text()[0]) }
+/\*/ { return int(yylex.Text()[0]) }
+/\>/ { return int(yylex.Text()[0]) }
+/\</ { return int(yylex.Text()[0])}
+/\%/ { return int(yylex.Text()[0]) }
+/\=/ { return int(yylex.Text()[0]) }
+/\./ { return int(yylex.Text()[0]) }
+/\'/ { return int(yylex.Text()[0]) }
+
+/::/ { return SYM_COLCOL }
+/\#/ { return int(yylex.Text()[0]) }
+/\[/ { return SYM_OPEN_SQ }
+/\]/ { return SYM_CLOSE_SQ }
+/\(/ { return SYM_OPEN_ROUND }
+/\)/ { return SYM_CLOSE_ROUND }
+/\{/ { return SYM_OPEN_CURLY }
+/\}/ { return SYM_CLOSE_CURLY }
+/\,/ { return int(yylex.Text()[0]) }
+/\;/ { return int(yylex.Text()[0]) }
+/[\_a-zA-Z][\_a-zA-Z0-9]*/ {lval.s =yylex.Text(); return IDENTIFIER}
+/\*\// {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
+/[0-9]+[\_a-zA-Z]+[\_a-zA-Z0-9]*/ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
+/./ {fmt.Println("Syntax Error \n","at line number\n",yylex.Text(),"is not a valid syntax\n",line+1); ;}
+//
+package main
+import ("fmt";"os";"strconv";)
+func main() {
+
+
+/*  in,err := os.Open(os.Args[1])
+  if err != nil {
+          log.Fatal(err)
+  }
+*/
+  yyParse(NewLexer(os.Stdin))
+
+
+}
+
