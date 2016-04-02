@@ -3,8 +3,11 @@ package main
 import "fmt"
 import "log"
 import "os"
-var line = 0
-func list_end(l node)node {
+import "strconv"
+  var line = 0
+  var temp_num=0;
+ var label_num=0;
+ func list_end(l node)node {
   while(l.next!=NULL){l=l.next;}
   return l;
 }
@@ -105,6 +108,17 @@ func make_json(n int) {
 func space(a string,i int)int{
 for ;a[i]==' ';i++{}
 return i
+}
+
+func copy_nodes(a node, b node)node{
+  b.value=a.value;
+  while(a.next!=NULL){
+    b.next=new (node);
+    b=b.next;
+    a=a.next;
+    b.value=a.value;
+  }
+  return b; 
 }
 
 
@@ -500,14 +514,21 @@ maybe_guard
 |    {$$.nn=make_node(node{"match_guard","",[]int{}})}
 ;
 
-expr_if
-: IF exp block  {$$.nn=make_node(node{"match_guard","",[]int{make_node(node{"IF","",[]int{}}),$2.nn,$3.nn}})}
-| IF exp block ELSE block_or_if  {$$.nn=make_node(node{"match_guard","",[]int{make_node(node{"IF","",[]int{}}),$2.nn,$3.nn,make_node(node{"ELSE","",[]int{}}),$5.nn}})}
+expr_if 
+: IF exp block  {  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["after"]="label"+strconv.Itoa(label_num);
+  if($2.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  $$.code=new (node);p=copy_nodes($2.code,$$.code); p.next=new(node); p.next.value="ifgoto, je, $2.map["value"], 0, $$.map["after"]";p.next.next=new(node); q=copy_nodes(p.next.next,$3.code);q.next=new(node); q.next.value="label, $$.map["after"]"; }
+
+| IF exp block ELSE block_or_if  { $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["after"]="label"+strconv.Itoa(label_num);$$.map["true"]="label"+strconv.Itoa(label_num);
+  if($2.map==NULL)||($3.map==NULL)||($5.map==NULL) {log.Fatal("Expression or block  not declared in IF statement")};
+  $$.code=new (node);p=copy_nodes($2.code,$$.code); p.next=new(node); p.next.value="ifgoto, je, $2.map["value"], 1, $$.map["true"]";p.next.next=new(node); q=copy_nodes(p.next.next,$5.code);q.next=new(node); q.next.value="jmp, $$.map["after"]";q.next.next=new(code); q.next.next.value="label, $$.map["true"]";q.next.next.next=new(node);r=copy_nodes(q.next.next.next,$3.code);r.next=new(node);r.next.value="label, $$.map["after"]";}
 ;
 
 block_or_if
-: block   {$$.nn=make_node(node{"block_or_if","",[]int{$1.nn}})}
-| expr_if {$$.nn=make_node(node{"block_or_if","",[]int{$1.nn}})}
+: block   { $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  $$.map=$1.map;$$.code=$1.code;} 
+| expr_if { $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  $$.map=$1.map;$$.code=$1.code;}
 ;
 
 block
@@ -515,11 +536,13 @@ block
 ;
 
 expr_while
-: WHILE exp block   {$$.nn=make_node(node{"expr_while","",[]int{make_node(node{"WHILE","",[]int{}}),$2.nn,$3.nn}})}
+: WHILE exp block   {$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);  if($2.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  $$.code=new (node);$$.code.value="label, $$.map["begin"]";p=copy_codes($2.code,$$.code);p.next=new(node);p.next.value="ifgoto, je, $2.map["value"], 0, $$.map["after"]";p.next.next=new(node); r=copy_codes($3.code,p.next.next);r.next=new(node);r.next.value="jmp, $$.map["begin"]";r.next.next=new(node);r.next.next.value="label, $$.map["after"]";}
 ;
 
 expr_loop
-: LOOP block  {$$.nn=make_node(node{"expr_loop","",[]int{make_node(node{"WHILE","",[]int{}}),$2.nn}})}
+: LOOP block {$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);  if($2.map==NULL) {log.Fatal("variable not declared")};
+  $$.code=new (node);$$.code.value="label, $$.map["begin"]";$$.next=new(node);p=copy_codes($2.code,$$.next);p.next=new(node);p.next.value="jmp, $$.map["begin"]";}  
 ;
 
 expr_for
@@ -678,39 +701,102 @@ expr
 //$$struct remaining
 
 exp
-: lit {$$.map["value"]=$1.map["value"];$$.map["place"]=$1.map["place"];$$.map["type"]=$1.map["type"];}
-| IDENTIFIER     {$$.map["value"]=$1.map["value"];$$.map["place"]=$1.map["place"];$$.map["type"]=$1.map["type"];$$.code=$1.code;}
+: lit {$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  $$.map["value"]=$1.map["value"];$$.map["place"]=$1.map["place"];$$.map["type"]=$1.map["type"];}
+
+| IDENTIFIER     {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  $$.map["value"]=$1.map["value"];$$.map["place"]=$1.map["place"];$$.map["type"]=$1.map["type"];$$.code=$1.code;}
 | IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {}
 | IDENTIFIER ':' struct_expr  {$$.nn=make_node(node{"exp","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}}),make_node(node{":","",[]int{}}),$3.nn}})}              
-| '!' round_exp      {}
+| '!' round_exp      {}         /* not of conditional */
 | '&' round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"&","",[]int{}}),$2.nn}})}
 | OP_ANDMUT round_exp      {$$.nn=make_node(node{"exp","",[]int{make_node(node{"OP_ANDMUT","&mut",[]int{}}),$2.nn}})}
-| round_exp '-' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="-, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '+' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="+, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '&' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="&, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '|' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="|, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '^' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="^, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '/' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="/, $$.map["value"],$1.map["value"], $3.map["value"]"; }
-| round_exp '*' round_exp       {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="*, $$.map["value"],$1.map["value"], $3.map["value"]"; }    
-| round_exp '>' round_exp       
-| round_exp '<' round_exp  
-| round_exp '%' round_exp  {$$.code=$1.code; p=list_end($$.code); p.next=$3.code;q=list_end($1.code);q.next=new(node);if($$.map==NULL)||($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")}; if($$.map["type"]!=$1.map["type"])||($$.map["type"]!=$3.map["type"])||($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")}; q.next.code="%, $$.map["value"],$1.map["value"], $3.map["value"]"; } 
+| round_exp '-' round_exp      {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="-, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
+| round_exp '+' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="+, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
+| round_exp '&' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="&, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '|' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="|, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
+| round_exp '^' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="^, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+| round_exp '/' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="/, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
+| round_exp '*' round_exp        {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="*, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
+| round_exp '>' round_exp       {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"]; $$.map["true"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);
+    $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="ifgoto, jg, $1.map["value"], $3.map["value"], $$.map["true"]";r=new(node);q.next.next=r;r.value="=, $$.map["value"], 0";r.next=new(node);r.next.value="jmp, $$.map["after"]";r.next.next=new(node);s=r.next.next;s.value="label, $$.map["true"]";s.next=new(node);s.next.value="=, $$.map["value"], 1";s.next.next=new(node);s.next.next.value="label, $$.map["after"]"; }
+
+| round_exp '<' round_exp   {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];$$.map["true"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);
+    $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="ifgoto, jl, $1.map["value"], $3.map["value"], $$.map["true"]";r=new(node);q.next.next=r;r.value="=, $$.map["value"], 0";r.next=new(node);r.next.value="jmp, $$.map["after"]";r.next.next=new(node);s=r.next.next;s.value="label, $$.map["true"]";s.next=new(node);s.next.value="=, $$.map["value"], 1";s.next.next=new(node);s.next.next.value="label, $$.map["after"]"; }
+      
+| round_exp '%' round_exp    {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"];
+  $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="%, $$.map["value"],$1.map["value"], $3.map["value"]"; }
+
 | round_exp '.' round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{".","",[]int{}}),$3.nn}})}
 | round_exp OP_RSHIFT round_exp       
 | round_exp OP_LSHIFT round_exp 
-| round_exp OP_ANDAND round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_ANDAND","&&",[]int{}}),$3.nn}})}
-| round_exp OP_OROR round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_OROR","||",[]int{}}),$3.nn}})}
-| round_exp OP_POWER round_exp {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"OP_POWER","**",[]int{}}),$3.nn}})}
-| func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND  {$$.nn=make_node(node{"exp","",[]int{$1.nn,make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}       
-| CONTINUE     {$$.nn=make_node(node{"exp","",[]int{make_node(node{"CONTINUE","",[]int{}})}}) }                                    
+| round_exp OP_ANDAND round_exp  {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"]; $$.map["false"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);
+    $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};
+  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="ifgoto, je, $1.map["value"], 0, $$.map["false"]";r=new(node);q.next.next=r;r.value="ifgoto, je, $3.map["value"], 0, $$.map["false"]";r.next=new(node);rr=r.next; rr.value="=, $$.map["value"], 1";rr.next=new(node);rr.next.value="jmp, $$.map["after"]";rr.next.next=new(node);s=rr.next.next;s.value="label, $$.map["false"]";s.next=new(node);s.next.value="=, $$.map["value"], 0";s.next.next=new(node);s.next.next.value="label, $$.map["after"]"; }
+      
+| round_exp OP_OROR round_exp  {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["type"]=$1.map["type"]; $$.map["true"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);
+    $$.code=new (node);p=copy_nodes($1.code,$$.code); p.next=new(node);q=copy_nodes(p.next,$3.code);q.next=new(node);if($1.map==NULL)||($3.map==NULL) {log.Fatal("variable not declared")};  if($3.map["type"]!=$1.map["type"]) {log.Fatal("Type Mismatch")};
+  q.next.value="ifgoto, je, $1.map["value"], 1, $$.map["true"]";r=new(node);q.next.next=r;r.value="ifgoto, je, $3.map["value"], 1, $$.map["true"]";r.next=new(node);rr=r.next; rr.value="=, $$.map["value"], 0";rr.next=new(node);rr.next.value="jmp, $$.map["after"]";rr.next.next=new(node);s=rr.next.next;s.value="label, $$.map["true"]";s.next=new(node);s.next.value="=, $$.map["value"], 1";s.next.next=new(node);s.next.next.value="label, $$.map["after"]"; }
+      
+| round_exp OP_POWER round_exp 
+| func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND  
+| CONTINUE     
 | CONTINUE IDENTIFIER  {$$.nn=make_node(node{"exp","",[]int{make_node(node{"CONTINUE","",[]int{}}),make_node(node{"IDENTIFIER",$2.s,[]int{}})}}) }                
 | UNSAFE block    {$$.nn=make_node(node{"exp","",[]int{make_node(node{"UNSAFE","",[]int{}}),$2.nn}}) }                
-| block   {$$.nn=make_node(node{"exp","",[]int{$1.nn}})  }                       
+| block   {$$.map=$1.map;$$.code=$1.code;}
+| BREAK {}
+| BREAK IDENTIFIER {}
 ;
 
 round_exp 
-: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND {$$.nn=make_node(node{"round_exp","",[]int{make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$1.nn,make_node(node{"SYM_CLOSE_ROUND",")",[]int{}})}})}
-| exp {$$.nn=make_node(node{"round_exp","",[]int{$1.nn}})}
+: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND  {$$.map=$1.map;$$.code=$1.code;}
+| exp {$$.map=$1.map;$$.code=$1.code;}
 ;
 
 func_identifier 
