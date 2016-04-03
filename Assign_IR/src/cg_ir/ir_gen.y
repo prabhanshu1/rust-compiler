@@ -133,7 +133,10 @@ type node struct {
 %union {
   code *node=NULL
   var map map[string]string =NULL
-}
+  n int
+  s string
+  b bool
+  }
 
 
 //%debug
@@ -585,26 +588,32 @@ $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="l
 
 let
 : LET maybe_mut pat maybe_ty_ascription maybe_init_expr   {
-  if($5!=NULL) {$3.map["type"]=$5.map["type"];$$.code=new(node);$$.code.value="=, $3.map["value"], $5.map["value"]";
-    if($4!=NULL) {if ($4.map["type"]!=$5.map["type"]) {log.Fatal("Type mismatch in let expression");} }
+  if($5.map!=nil) {$3.map["type"]=$5.map["type"];$$.code=new(node);$$.code.value="=, "+$3.map["value"]+", "+$5.map["value"];
+    if($4.map!=nil) {if ($4.map["type"]!=$5.map["type"]) {log.Fatal("Type mismatch in let expression");} }
     }
-  if ($5==NULL) &&($4!=NULL) {$3.map["type"]=$4.map["type"];}
-  if($5==NULL) ||($4==NULL) {log.Fatal("unable to infer enough type information about `_`");}
+  if ($5.map==nil) &&($4.map!=nil) {$3.map["type"]=$4.map["type"];}
+  if($5.map==nil) ||($4.map==nil) {log.Fatal("unable to infer enough type information about `_` in let");}
 }
 ;
 
 maybe_ty_ascription
-: ':' ty   {}
+: ':' ty   {if ($1.map==nil) {$$.s=$1.s;}else{$$.code=$1.code;$$.map=$1.map;  }}
 | /* empty */ {$$.nn=make_node(node{"maybe_ty_ascription","",[]int{}})}
 ;
 
 maybe_init_expr
-: '=' expr   {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),$2.nn}})}
+: '=' expr   {$$.code=$2.code; $$.map=$1.map;}
 | '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})}
 | '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"=","",[]int{}}),make_node(node{"SYM_OPEN_SQ","[",[]int{}}),$3.nn,make_node(node{";","",[]int{}}),make_node(node{"LIT_INT",$5.s,[]int{}}),make_node(node{"SYM_CLOSE_SQ","]",[]int{}})}})} 
-| OPEQ_INT  opeq_ops {$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"OPEQ_INT","",[]int{}}),$2.nn}})}
-| OPEQ_FLOAT opeq_ops{$$.nn=make_node(node{"maybe_init_expr","",[]int{make_node(node{"OPEQ_FLOAT","",[]int{}}),$2.nn}})}
-| /* empty */{$$.nn=make_node(node{"maybe_init_expr","",[]int{}})}
+| OPEQ_INT  opeq_ops  {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1; 
+  $$.code=new (node);p=copy_codes($2.code,$$.code);p.next=new(node);p.next.value="+, "+$$.map["value"]+", "+$1.n+", "+$2.map["value"];
+}
+| OPEQ_FLOAT opeq_ops  {
+  $$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1; 
+  $$.code=new (node);p=copy_codes($2.code,$$.code);p.next=new(node);p.next.value="+, "+$$.map["value"]+", "+$1.f+", "+$2.map["value"];
+}
+| /* empty */
 ;
 
 pats_or
@@ -627,7 +636,7 @@ range_di
 
 
 pat
-: IDENTIFIER {$1.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map=$1.map; } 
+: IDENTIFIER {$$.s=$1.s;}
 ;
 
 
@@ -637,7 +646,10 @@ tys
 ;
 
 ty
-: path  {$$.nn=make_node(node{"ty","",[]int{$1.nn}})}
+: path  {if($1.code==nil) {$$.s=$1.s;}
+  else{ $$.code=$1.code;$$.map=$1.map; }
+
+}
 | '~' ty
 | '*' maybe_mut ty
 | '&' maybe_mut ty
@@ -646,18 +658,19 @@ ty
 ;
 
 maybe_mut
-: MUT   {$$.nn=make_node(node{"maybe_mut","",[]int{make_node(node{"MUT","",[]int{}})}})}
-| /* empty */  {$$.nn=make_node(node{"maybe_mut","",[]int{}})}
+: MUT   {$$.s=$1.s;}
+| /* empty */  {$$.s="";}
 ;
 
 
 var_types
-: VAR_TYPE  {$$.nn=make_node(node{"var_types","",[]int{make_node(node{"VAR_TYPE",$1.s,[]int{}})}})}                       
-| IDENTIFIER {$$.nn=make_node(node{"var_types","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}                       
+: VAR_TYPE  {if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}
+  else{$$.s="str";}}
+| IDENTIFIER {$$.s=$1.s;}
 
 path
-: var_types {$$.nn=make_node(node{"path","",[]int{$1.nn}})}
-| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ {$$.nn=make_node(node{"path","",[]int{make_node(node{"SYM_OPEN_SQ","{",[]int{}}),$2.nn,$3.nn,make_node(node{"SYM_CLOSE_SQ","}",[]int{}})}})}
+: var_types {$$.s=$1.s;}
+| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ 
 ;
 
 maybe_size
