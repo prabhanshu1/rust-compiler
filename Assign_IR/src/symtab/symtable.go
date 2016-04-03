@@ -1,4 +1,4 @@
-package symtable
+package symtab
 
 symtab map[string](map[string]string) := make map[string](map[string]string) 
 
