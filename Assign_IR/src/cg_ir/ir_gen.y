@@ -546,17 +546,55 @@ expr_loop
 ;
 
 expr_for
-: FOR exp IN exp block   {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),$2.nn,make_node(node{"IN","",[]int{}}),$4.nn,$5.nn}})}
-| FOR exp IN range_di block  {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),$2.nn,make_node(node{"IN","",[]int{}}),$4.nn,$5.nn}})}
-| FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block   {$$.nn=make_node(node{"expr_for","",[]int{make_node(node{"FOR","",[]int{}}),make_node(node{"SYM_OPEN_ROUND","(",[]int{}}),$3.nn,make_node(node{";","",[]int{}}),$5.nn,make_node(node{";","",[]int{}}),$7.nn,make_node(node{"SYM_CLOSE_ROUND","(",[]int{}}),$9.nn}})}
+: FOR exp IN exp block  {
+$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);  if($2.map==NULL)||($4.map==NULL)||($5.map==NULL) {log.Fatal("variable/range_di /block not declared");};
+  $$.code=new (node);p=copy_codes($2.code,$$.code);p.next=new(node);q=copy_codes($4.code,p.next);
+  tmp=make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  
+  q.next=new(node);q.next.value="=, tmp.map["value"], 0";
+  q.next.next=new(node);q.next.next.value="label, $$.map["begin"]" ;
+  r=q.next.next;r.next=new(node);r.next.value="ifgoto, jg, tmp.map["value"], $4.map["size"], $$.map["after"]";
+  r.next.next=new(node);r.next.next.value="=, $2.map["value"], $4.map[tmp["value"]]";r.next.next.next=new(node);
+  s=copy_codes($5.code,r.next.next.next);s.next=new(node);
+  s.next.value="+, tmp.map["value"], tmp.map["value"], 1";
+  s.next.next=new(node);s.next.next.value="jmp, $$.map["begin"]";
+  t=s.next.next;t.next=new(node);t.next.value="label, $$.map["after"]";
+   }
+| FOR exp IN range_di block  {$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);  if($2.map==NULL)||($4.map==NULL)||($5.map==NULL) {log.Fatal("variable/range_di /block not declared");};
+  $$.code=new (node);p=copy_codes($2.code,$$.code);p.next=new(node);q=copy_codes($4.code,p.next);
+  q.next=new(node);q.next.value="=, $2.map["value"], $4.map["start"]";
+  q.next.next=new(node);q.next.next.value="label, $$.map["begin"]" ;
+  r=q.next.next;r.next=new(node);r.next.value="ifgoto, jg, $2.map["value"], $4.map["end"], $$.map["after"]";
+  r.next.next=new(node);
+  s=copy_codes($5.code,r.next.next);s.next=new(node);s=copy_codes($5.code,s.next);
+  s.next=new(node);s.next.value="+, $2.map["value"], $2.map["value"], 1";
+  s.next.next=new(node);s.next.next.value="jmp, $$.map["begin"]";
+  t=s.next.next;t.next=new(node);t.next.value="label, $$.map["after"]";
+  
+}
+| FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block  {
+$$.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map["begin"]="label"+strconv.Itoa(label_num);$$.map["after"]="label"+strconv.Itoa(label_num);  ($5.map==NULL)||($9.map==NULL) {log.Fatal("variable/range_di /block not declared");};
+ $$.code=new (node);p=copy_codes($3.code,$$.code);p.next=new(node);q=copy_codes($5.code,p.next);q.next=new(node);
+ q.next.value="ifgoto, je, $5.map["value"], 0, $$.map["after"]";r=q.next;r.next=new(node);
+ s=copy_codes($9.code,r.next);s.next=new(node);
+ t=copy_codes($7.code,s.next);t.next=new(node);
+ t.next.value="jmp, $$.map["begin"]"; u=t.next;u.next=new(temp);
+ u.next.value="label, $$.map["after"]";
+}
 ;
 
 let
-: LET maybe_mut pat maybe_ty_ascription maybe_init_expr   {$$.nn=make_node(node{"let","",[]int{make_node(node{"LET","",[]int{}}),$2.nn,$3.nn,$4.nn,$5.nn}})}
+: LET maybe_mut pat maybe_ty_ascription maybe_init_expr   {
+  if($5!=NULL) {$3.map["type"]=$5.map["type"];$$.code=new(node);$$.code.value="=, $3.map["value"], $5.map["value"]";
+    if($4!=NULL) {if ($4.map["type"]!=$5.map["type"]) {log.Fatal("Type mismatch in let expression");} }
+    }
+  if ($5==NULL) &&($4!=NULL) {$3.map["type"]=$4.map["type"];}
+  if($5==NULL) ||($4==NULL) {log.Fatal("unable to infer enough type information about `_`");}
+}
 ;
 
 maybe_ty_ascription
-: ':' ty   {$$.nn=make_node(node{"maybe_ty_ascription","",[]int{make_node(node{";","",[]int{}}),$2.nn}})}
+: ':' ty   {}
 | /* empty */ {$$.nn=make_node(node{"maybe_ty_ascription","",[]int{}})}
 ;
 
@@ -589,7 +627,7 @@ range_di
 
 
 pat
-: IDENTIFIER  {$$.nn=make_node(node{"pats_or","",[]int{make_node(node{"IDENTIFIER",$1.s,[]int{}})}})}
+: IDENTIFIER {$1.map= make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.map=$1.map; } 
 ;
 
 
