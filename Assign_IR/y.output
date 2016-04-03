@@ -1,0 +1,5551 @@
+
+state 0
+	$accept: .Code $end 
+	rust: .    (5)
+
+	FN  shift 7
+	STRUCT  shift 3
+	USE  shift 5
+	.  reduce 5 (src line 346)
+
+	Code  goto 1
+	rust  goto 2
+	item_or_view_item  goto 4
+	item_fn  goto 6
+
+state 1
+	$accept:  Code.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	Code:  rust.    (1)
+
+	.  reduce 1 (src line 339)
+
+
+state 3
+	rust:  STRUCT.IDENTIFIER struct_expr rust 
+
+	IDENTIFIER  shift 8
+	.  error
+
+
+state 4
+	rust:  item_or_view_item.rust 
+	rust: .    (5)
+
+	FN  shift 7
+	STRUCT  shift 3
+	USE  shift 5
+	.  reduce 5 (src line 346)
+
+	rust  goto 9
+	item_or_view_item  goto 4
+	item_fn  goto 6
+
+state 5
+	rust:  USE.func_identifier ; rust 
+
+	IDENTIFIER  shift 11
+	.  error
+
+	func_identifier  goto 10
+
+state 6
+	item_or_view_item:  item_fn.    (6)
+
+	.  reduce 6 (src line 350)
+
+
+state 7
+	item_fn:  FN.IDENTIFIER fn_decl inner_attrs_and_block 
+
+	IDENTIFIER  shift 12
+	.  error
+
+
+state 8
+	rust:  STRUCT IDENTIFIER.struct_expr rust 
+
+	SYM_OPEN_CURLY  shift 14
+	.  error
+
+	struct_expr  goto 13
+
+state 9
+	rust:  item_or_view_item rust.    (3)
+
+	.  reduce 3 (src line 344)
+
+
+state 10
+	rust:  USE func_identifier.; rust 
+
+	;  shift 15
+	.  error
+
+
+state 11
+	func_identifier:  IDENTIFIER.    (202)
+	func_identifier:  IDENTIFIER.SYM_COLCOL func_identifier 
+	func_identifier:  IDENTIFIER.! 
+
+	SYM_COLCOL  shift 16
+	!  shift 17
+	.  reduce 202 (src line 841)
+
+
+state 12
+	item_fn:  FN IDENTIFIER.fn_decl inner_attrs_and_block 
+
+	SYM_OPEN_ROUND  shift 20
+	.  error
+
+	fn_decl  goto 18
+	fn_args  goto 19
+
+state 13
+	rust:  STRUCT IDENTIFIER struct_expr.rust 
+	rust: .    (5)
+
+	FN  shift 7
+	STRUCT  shift 3
+	USE  shift 5
+	.  reduce 5 (src line 346)
+
+	rust  goto 21
+	item_or_view_item  goto 4
+	item_fn  goto 6
+
+state 14
+	struct_expr:  SYM_OPEN_CURLY.field_inits default_field_init SYM_CLOSE_CURLY 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 24
+	field_inits  goto 22
+	field_init  goto 23
+
+state 15
+	rust:  USE func_identifier ;.rust 
+	rust: .    (5)
+
+	FN  shift 7
+	STRUCT  shift 3
+	USE  shift 5
+	.  reduce 5 (src line 346)
+
+	rust  goto 26
+	item_or_view_item  goto 4
+	item_fn  goto 6
+
+state 16
+	func_identifier:  IDENTIFIER SYM_COLCOL.func_identifier 
+
+	IDENTIFIER  shift 11
+	.  error
+
+	func_identifier  goto 27
+
+state 17
+	func_identifier:  IDENTIFIER !.    (204)
+
+	.  reduce 204 (src line 844)
+
+
+state 18
+	item_fn:  FN IDENTIFIER fn_decl.inner_attrs_and_block 
+
+	SYM_OPEN_CURLY  shift 29
+	.  error
+
+	inner_attrs_and_block  goto 28
+
+state 19
+	fn_decl:  fn_args.ret_ty 
+	ret_ty: .    (18)
+
+	OP_INSIDE  shift 31
+	.  reduce 18 (src line 384)
+
+	ret_ty  goto 30
+
+state 20
+	fn_args:  SYM_OPEN_ROUND.maybe_args_general SYM_CLOSE_ROUND 
+	maybe_args_general: .    (11)
+
+	IDENTIFIER  shift 36
+	.  reduce 11 (src line 368)
+
+	maybe_args_general  goto 32
+	args_general  goto 33
+	arg_general  goto 34
+	pat  goto 35
+
+state 21
+	rust:  STRUCT IDENTIFIER struct_expr rust.    (2)
+
+	.  reduce 2 (src line 342)
+
+
+state 22
+	struct_expr:  SYM_OPEN_CURLY field_inits.default_field_init SYM_CLOSE_CURLY 
+	field_inits:  field_inits., field_init 
+	default_field_init: .    (211)
+
+	,  shift 38
+	.  reduce 211 (src line 863)
+
+	default_field_init  goto 37
+
+state 23
+	field_inits:  field_init.    (206)
+
+	.  reduce 206 (src line 851)
+
+
+state 24
+	field_init:  maybe_mut.IDENTIFIER : expr 
+
+	IDENTIFIER  shift 39
+	.  error
+
+
+state 25
+	maybe_mut:  MUT.    (117)
+
+	.  reduce 117 (src line 649)
+
+
+state 26
+	rust:  USE func_identifier ; rust.    (4)
+
+	.  reduce 4 (src line 345)
+
+
+state 27
+	func_identifier:  IDENTIFIER SYM_COLCOL func_identifier.    (203)
+
+	.  reduce 203 (src line 843)
+
+
+state 28
+	item_fn:  FN IDENTIFIER fn_decl inner_attrs_and_block.    (7)
+
+	.  reduce 7 (src line 354)
+
+
+state 29
+	inner_attrs_and_block:  SYM_OPEN_CURLY.maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY 
+	maybe_inner_attrs: .    (21)
+
+	SHEBANG  shift 43
+	.  reduce 21 (src line 393)
+
+	maybe_inner_attrs  goto 40
+	inner_attrs  goto 41
+	inner_attr  goto 42
+
+state 30
+	fn_decl:  fn_args ret_ty.    (8)
+
+	.  reduce 8 (src line 358)
+
+
+state 31
+	ret_ty:  OP_INSIDE.! 
+	ret_ty:  OP_INSIDE.ty 
+	ret_ty:  OP_INSIDE.SYM_OPEN_ROUND SYM_CLOSE_ROUND 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 46
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	!  shift 44
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 45
+	path  goto 47
+	var_types  goto 52
+
+state 32
+	fn_args:  SYM_OPEN_ROUND maybe_args_general.SYM_CLOSE_ROUND 
+
+	SYM_CLOSE_ROUND  shift 56
+	.  error
+
+
+state 33
+	maybe_args_general:  args_general.    (10)
+	args_general:  args_general., arg_general 
+
+	,  shift 57
+	.  reduce 10 (src line 366)
+
+
+state 34
+	args_general:  arg_general.    (12)
+
+	.  reduce 12 (src line 371)
+
+
+state 35
+	arg_general:  pat.: ty 
+
+	:  shift 58
+	.  error
+
+
+state 36
+	pat:  IDENTIFIER.    (108)
+
+	.  reduce 108 (src line 630)
+
+
+state 37
+	struct_expr:  SYM_OPEN_CURLY field_inits default_field_init.SYM_CLOSE_CURLY 
+
+	SYM_CLOSE_CURLY  shift 59
+	.  error
+
+
+state 38
+	field_inits:  field_inits ,.field_init 
+	default_field_init:  ,.    (209)
+	default_field_init:  ,.OP_DOTDOT expr 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	SYM_CLOSE_CURLY  reduce 209 (src line 860)
+	OP_DOTDOT  shift 61
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 24
+	field_init  goto 60
+
+state 39
+	field_init:  maybe_mut IDENTIFIER.: expr 
+
+	:  shift 62
+	.  error
+
+
+state 40
+	inner_attrs_and_block:  SYM_OPEN_CURLY maybe_inner_attrs.maybe_stmts SYM_CLOSE_CURLY 
+	maybe_stmts: .    (52)
+
+	IDENTIFIER  shift 89
+	FOR  shift 83
+	RETURN  shift 84
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	FN  shift 7
+	IF  shift 80
+	LET  shift 70
+	LOOP  shift 82
+	MATCH  shift 79
+	TRUE  shift 106
+	UNSAFE  shift 95
+	WHILE  shift 81
+	!  shift 90
+	&  shift 91
+	.  reduce 52 (src line 462)
+
+	item_or_view_item  goto 67
+	func_identifier  goto 93
+	item_fn  goto 6
+	maybe_stmts  goto 63
+	lit  goto 88
+	stmts  goto 64
+	stmt  goto 65
+	let  goto 66
+	expr_stmt  goto 68
+	expr  goto 69
+	expr_match  goto 71
+	expr_if  goto 72
+	expr_while  goto 73
+	expr_loop  goto 74
+	expr_for  goto 75
+	expr_return  goto 76
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 41
+	maybe_inner_attrs:  inner_attrs.    (20)
+	inner_attrs:  inner_attrs.inner_attr 
+
+	SHEBANG  shift 43
+	.  reduce 20 (src line 391)
+
+	inner_attr  goto 110
+
+state 42
+	inner_attrs:  inner_attr.    (22)
+
+	.  reduce 22 (src line 396)
+
+
+state 43
+	inner_attr:  SHEBANG.[ meta_item ] 
+
+	[  shift 111
+	.  error
+
+
+state 44
+	ret_ty:  OP_INSIDE !.    (15)
+
+	.  reduce 15 (src line 380)
+
+
+state 45
+	ret_ty:  OP_INSIDE ty.    (16)
+
+	.  reduce 16 (src line 382)
+
+
+state 46
+	ret_ty:  OP_INSIDE SYM_OPEN_ROUND.SYM_CLOSE_ROUND 
+	ty:  SYM_OPEN_ROUND.tys SYM_CLOSE_ROUND 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	SYM_CLOSE_ROUND  shift 112
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 114
+	tys  goto 113
+	path  goto 47
+	var_types  goto 52
+
+state 47
+	ty:  path.    (111)
+
+	.  reduce 111 (src line 640)
+
+
+state 48
+	ty:  ~.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 116
+	path  goto 47
+	var_types  goto 52
+
+state 49
+	ty:  *.maybe_mut ty 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 117
+
+state 50
+	ty:  &.maybe_mut ty 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 118
+
+state 51
+	ty:  OP_POWER.maybe_mut ty 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 119
+
+state 52
+	path:  var_types.    (121)
+
+	.  reduce 121 (src line 659)
+
+
+state 53
+	path:  SYM_OPEN_SQ.var_types maybe_size SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 55
+	VAR_TYPE  shift 54
+	.  error
+
+	var_types  goto 120
+
+state 54
+	var_types:  VAR_TYPE.    (119)
+
+	.  reduce 119 (src line 655)
+
+
+state 55
+	var_types:  IDENTIFIER.    (120)
+
+	.  reduce 120 (src line 657)
+
+
+state 56
+	fn_args:  SYM_OPEN_ROUND maybe_args_general SYM_CLOSE_ROUND.    (9)
+
+	.  reduce 9 (src line 362)
+
+
+state 57
+	args_general:  args_general ,.arg_general 
+
+	IDENTIFIER  shift 36
+	.  error
+
+	arg_general  goto 121
+	pat  goto 35
+
+state 58
+	arg_general:  pat :.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 122
+	path  goto 47
+	var_types  goto 52
+
+state 59
+	struct_expr:  SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY.    (205)
+
+	.  reduce 205 (src line 847)
+
+
+state 60
+	field_inits:  field_inits , field_init.    (207)
+
+	.  reduce 207 (src line 853)
+
+
+state 61
+	default_field_init:  , OP_DOTDOT.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 123
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 62
+	field_init:  maybe_mut IDENTIFIER :.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 124
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 63
+	inner_attrs_and_block:  SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts.SYM_CLOSE_CURLY 
+
+	SYM_CLOSE_CURLY  shift 125
+	.  error
+
+
+state 64
+	maybe_stmts:  stmts.    (51)
+	stmts:  stmts.stmt 
+
+	IDENTIFIER  shift 89
+	FOR  shift 83
+	RETURN  shift 84
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	FN  shift 7
+	IF  shift 80
+	LET  shift 70
+	LOOP  shift 82
+	MATCH  shift 79
+	TRUE  shift 106
+	UNSAFE  shift 95
+	WHILE  shift 81
+	!  shift 90
+	&  shift 91
+	.  reduce 51 (src line 460)
+
+	item_or_view_item  goto 67
+	func_identifier  goto 93
+	item_fn  goto 6
+	lit  goto 88
+	stmt  goto 126
+	let  goto 66
+	expr_stmt  goto 68
+	expr  goto 69
+	expr_match  goto 71
+	expr_if  goto 72
+	expr_while  goto 73
+	expr_loop  goto 74
+	expr_for  goto 75
+	expr_return  goto 76
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 65
+	stmts:  stmt.    (54)
+
+	.  reduce 54 (src line 467)
+
+
+state 66
+	stmt:  let.; 
+
+	;  shift 127
+	.  error
+
+
+state 67
+	stmt:  item_or_view_item.; 
+
+	;  shift 128
+	.  error
+
+
+state 68
+	stmt:  expr_stmt.    (57)
+
+	.  reduce 57 (src line 473)
+
+
+state 69
+	stmt:  expr.; 
+
+	;  shift 129
+	.  error
+
+
+state 70
+	let:  LET.maybe_mut pat maybe_ty_ascription maybe_init_expr 
+	maybe_mut: .    (118)
+
+	MUT  shift 25
+	.  reduce 118 (src line 651)
+
+	maybe_mut  goto 130
+
+state 71
+	expr_stmt:  expr_match.    (59)
+
+	.  reduce 59 (src line 478)
+
+
+state 72
+	expr_stmt:  expr_if.    (60)
+
+	.  reduce 60 (src line 480)
+
+
+state 73
+	expr_stmt:  expr_while.    (61)
+
+	.  reduce 61 (src line 481)
+
+
+state 74
+	expr_stmt:  expr_loop.    (62)
+
+	.  reduce 62 (src line 482)
+
+
+state 75
+	expr_stmt:  expr_for.    (63)
+
+	.  reduce 63 (src line 483)
+
+
+state 76
+	expr_stmt:  expr_return.    (64)
+
+	.  reduce 64 (src line 484)
+
+
+state 77
+	expr:  round_exp.    (168)
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 168 (src line 735)
+
+
+state 78
+	expr:  assignment.    (169)
+
+	.  reduce 169 (src line 737)
+
+
+state 79
+	expr_match:  MATCH.IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY 
+	expr_match:  MATCH.IDENTIFIER SYM_OPEN_CURLY match_clauses , SYM_CLOSE_CURLY 
+
+	IDENTIFIER  shift 147
+	.  error
+
+
+state 80
+	expr_if:  IF.exp block 
+	expr_if:  IF.exp block ELSE block_or_if 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 148
+	block  goto 96
+	round_exp  goto 150
+
+state 81
+	expr_while:  WHILE.exp block 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 151
+	block  goto 96
+	round_exp  goto 150
+
+state 82
+	expr_loop:  LOOP.block 
+
+	SYM_OPEN_CURLY  shift 109
+	.  error
+
+	block  goto 152
+
+state 83
+	expr_for:  FOR.exp IN exp block 
+	expr_for:  FOR.exp IN range_di block 
+	expr_for:  FOR.SYM_OPEN_ROUND maybe_assignment ; exp ; maybe_assignment SYM_CLOSE_ROUND block 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 154
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 153
+	block  goto 96
+	round_exp  goto 150
+
+state 84
+	expr_return:  RETURN.SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ; 
+	expr_return:  RETURN.; 
+	expr_return:  RETURN.lit ; 
+	expr_return:  RETURN.IDENTIFIER ; 
+
+	IDENTIFIER  shift 158
+	SYM_OPEN_ROUND  shift 155
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	FALSE  shift 107
+	TRUE  shift 106
+	;  shift 156
+	.  error
+
+	lit  goto 157
+
+state 85
+	round_exp:  SYM_OPEN_ROUND.round_exp SYM_CLOSE_ROUND 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 159
+
+state 86
+	round_exp:  exp.    (201)
+
+	.  reduce 201 (src line 838)
+
+
+state 87
+	assignment:  hole.= expr 
+	assignment:  hole.OP_ADDEQ expr 
+	assignment:  hole.OP_SUBEQ expr 
+	assignment:  hole.OP_LEQ expr 
+	assignment:  hole.OP_GEQ expr 
+	assignment:  hole.OP_MULEQ expr 
+	assignment:  hole.OP_DIVEQ expr 
+	assignment:  hole.OP_MODEQ expr 
+	assignment:  hole.OP_ANDEQ expr 
+	assignment:  hole.OP_SHLEQ expr 
+	assignment:  hole.OP_SHREQ expr 
+	assignment:  hole.OP_OREQ expr 
+	assignment:  hole.OP_XOREQ expr 
+	assignment:  hole.OP_EQEQ expr 
+	assignment:  hole.OP_NOTEQ expr 
+	assignment:  hole.OPEQ_INT opeq_ops 
+	assignment:  hole.OPEQ_FLOAT opeq_ops 
+
+	OPEQ_INT  shift 175
+	OPEQ_FLOAT  shift 176
+	OP_ADDEQ  shift 161
+	OP_SUBEQ  shift 162
+	OP_MULEQ  shift 165
+	OP_DIVEQ  shift 166
+	OP_MODEQ  shift 167
+	OP_EQEQ  shift 173
+	OP_NOTEQ  shift 174
+	OP_LEQ  shift 163
+	OP_GEQ  shift 164
+	=  shift 160
+	OP_SHLEQ  shift 169
+	OP_SHREQ  shift 170
+	OP_OREQ  shift 171
+	OP_ANDEQ  shift 168
+	OP_XOREQ  shift 172
+	.  error
+
+
+state 88
+	exp:  lit.    (170)
+
+	.  reduce 170 (src line 742)
+
+
+state 89
+	hole:  IDENTIFIER.    (131)
+	hole:  IDENTIFIER.SYM_OPEN_SQ round_exp SYM_CLOSE_SQ 
+	hole:  IDENTIFIER.. hole 
+	exp:  IDENTIFIER.    (171)
+	exp:  IDENTIFIER.SYM_OPEN_SQ round_exp SYM_CLOSE_SQ 
+	exp:  IDENTIFIER.: struct_expr 
+	func_identifier:  IDENTIFIER.    (202)
+	func_identifier:  IDENTIFIER.SYM_COLCOL func_identifier 
+	func_identifier:  IDENTIFIER.! 
+
+	SYM_OPEN_SQ  shift 177
+	SYM_OPEN_ROUND  reduce 202 (src line 841)
+	OPEQ_INT  reduce 131 (src line 686)
+	OPEQ_FLOAT  reduce 131 (src line 686)
+	OP_ADDEQ  reduce 131 (src line 686)
+	OP_SUBEQ  reduce 131 (src line 686)
+	OP_MULEQ  reduce 131 (src line 686)
+	OP_DIVEQ  reduce 131 (src line 686)
+	OP_MODEQ  reduce 131 (src line 686)
+	OP_EQEQ  reduce 131 (src line 686)
+	OP_NOTEQ  reduce 131 (src line 686)
+	OP_LEQ  reduce 131 (src line 686)
+	OP_GEQ  reduce 131 (src line 686)
+	SYM_COLCOL  shift 16
+	=  reduce 131 (src line 686)
+	!  shift 17
+	OP_SHLEQ  reduce 131 (src line 686)
+	OP_SHREQ  reduce 131 (src line 686)
+	OP_OREQ  reduce 131 (src line 686)
+	OP_ANDEQ  reduce 131 (src line 686)
+	OP_XOREQ  reduce 131 (src line 686)
+	.  shift 178
+	:  shift 179
+	.  reduce 171 (src line 746)
+
+
+state 90
+	exp:  !.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 180
+
+state 91
+	exp:  &.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 181
+
+state 92
+	exp:  OP_ANDMUT.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 182
+
+state 93
+	exp:  func_identifier.SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND 
+
+	SYM_OPEN_ROUND  shift 183
+	.  error
+
+
+state 94
+	exp:  CONTINUE.    (194)
+	exp:  CONTINUE.IDENTIFIER 
+
+	IDENTIFIER  shift 184
+	.  reduce 194 (src line 828)
+
+
+state 95
+	exp:  UNSAFE.block 
+
+	SYM_OPEN_CURLY  shift 109
+	.  error
+
+	block  goto 185
+
+state 96
+	exp:  block.    (197)
+
+	.  reduce 197 (src line 831)
+
+
+state 97
+	exp:  BREAK.    (198)
+	exp:  BREAK.IDENTIFIER 
+
+	IDENTIFIER  shift 186
+	.  reduce 198 (src line 832)
+
+
+state 98
+	lit:  LIT_CHAR.    (40)
+
+	.  reduce 40 (src line 446)
+
+
+state 99
+	lit:  LIT_INT.    (41)
+
+	.  reduce 41 (src line 448)
+
+
+state 100
+	lit:  LIT_UINT.    (42)
+
+	.  reduce 42 (src line 449)
+
+
+state 101
+	lit:  LIT_INT_UNSUFFIXED.    (43)
+
+	.  reduce 43 (src line 450)
+
+
+state 102
+	lit:  FLOAT.    (44)
+
+	.  reduce 44 (src line 451)
+
+
+state 103
+	lit:  LIT_FLOAT_UNSUFFIXED.    (45)
+
+	.  reduce 45 (src line 452)
+
+
+state 104
+	lit:  LITERAL_STR.    (46)
+
+	.  reduce 46 (src line 453)
+
+
+state 105
+	lit:  LITERAL_CHAR.    (47)
+
+	.  reduce 47 (src line 454)
+
+
+state 106
+	lit:  TRUE.    (48)
+
+	.  reduce 48 (src line 455)
+
+
+state 107
+	lit:  FALSE.    (49)
+
+	.  reduce 49 (src line 456)
+
+
+state 108
+	lit:  VAR_TYPE.    (50)
+
+	.  reduce 50 (src line 457)
+
+
+state 109
+	block:  SYM_OPEN_CURLY.maybe_stmts SYM_CLOSE_CURLY 
+	maybe_stmts: .    (52)
+
+	IDENTIFIER  shift 89
+	FOR  shift 83
+	RETURN  shift 84
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	FN  shift 7
+	IF  shift 80
+	LET  shift 70
+	LOOP  shift 82
+	MATCH  shift 79
+	TRUE  shift 106
+	UNSAFE  shift 95
+	WHILE  shift 81
+	!  shift 90
+	&  shift 91
+	.  reduce 52 (src line 462)
+
+	item_or_view_item  goto 67
+	func_identifier  goto 93
+	item_fn  goto 6
+	maybe_stmts  goto 187
+	lit  goto 88
+	stmts  goto 64
+	stmt  goto 65
+	let  goto 66
+	expr_stmt  goto 68
+	expr  goto 69
+	expr_match  goto 71
+	expr_if  goto 72
+	expr_while  goto 73
+	expr_loop  goto 74
+	expr_for  goto 75
+	expr_return  goto 76
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 110
+	inner_attrs:  inner_attrs inner_attr.    (23)
+
+	.  reduce 23 (src line 398)
+
+
+state 111
+	inner_attr:  SHEBANG [.meta_item ] 
+
+	IDENTIFIER  shift 189
+	.  error
+
+	meta_item  goto 188
+
+state 112
+	ret_ty:  OP_INSIDE SYM_OPEN_ROUND SYM_CLOSE_ROUND.    (17)
+
+	.  reduce 17 (src line 383)
+
+
+state 113
+	tys:  tys., ty 
+	ty:  SYM_OPEN_ROUND tys.SYM_CLOSE_ROUND 
+
+	SYM_CLOSE_ROUND  shift 191
+	,  shift 190
+	.  error
+
+
+state 114
+	tys:  ty.    (109)
+
+	.  reduce 109 (src line 635)
+
+
+state 115
+	ty:  SYM_OPEN_ROUND.tys SYM_CLOSE_ROUND 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 114
+	tys  goto 113
+	path  goto 47
+	var_types  goto 52
+
+state 116
+	ty:  ~ ty.    (112)
+
+	.  reduce 112 (src line 642)
+
+
+state 117
+	ty:  * maybe_mut.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 192
+	path  goto 47
+	var_types  goto 52
+
+state 118
+	ty:  & maybe_mut.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 193
+	path  goto 47
+	var_types  goto 52
+
+state 119
+	ty:  OP_POWER maybe_mut.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 194
+	path  goto 47
+	var_types  goto 52
+
+state 120
+	path:  SYM_OPEN_SQ var_types.maybe_size SYM_CLOSE_SQ 
+	maybe_size: .    (124)
+
+	;  shift 196
+	.  reduce 124 (src line 666)
+
+	maybe_size  goto 195
+
+state 121
+	args_general:  args_general , arg_general.    (13)
+
+	.  reduce 13 (src line 373)
+
+
+state 122
+	arg_general:  pat : ty.    (14)
+
+	.  reduce 14 (src line 376)
+
+
+state 123
+	default_field_init:  , OP_DOTDOT expr.    (210)
+
+	.  reduce 210 (src line 862)
+
+
+state 124
+	field_init:  maybe_mut IDENTIFIER : expr.    (208)
+
+	.  reduce 208 (src line 856)
+
+
+state 125
+	inner_attrs_and_block:  SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY.    (19)
+
+	.  reduce 19 (src line 387)
+
+
+state 126
+	stmts:  stmts stmt.    (53)
+
+	.  reduce 53 (src line 465)
+
+
+state 127
+	stmt:  let ;.    (55)
+
+	.  reduce 55 (src line 470)
+
+
+state 128
+	stmt:  item_or_view_item ;.    (56)
+
+	.  reduce 56 (src line 472)
+
+
+state 129
+	stmt:  expr ;.    (58)
+
+	.  reduce 58 (src line 474)
+
+
+state 130
+	let:  LET maybe_mut.pat maybe_ty_ascription maybe_init_expr 
+
+	IDENTIFIER  shift 36
+	.  error
+
+	pat  goto 197
+
+state 131
+	exp:  round_exp -.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 198
+
+state 132
+	exp:  round_exp +.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 199
+
+state 133
+	exp:  round_exp &.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 200
+
+state 134
+	exp:  round_exp |.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 201
+
+state 135
+	exp:  round_exp ^.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 202
+
+state 136
+	exp:  round_exp /.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 203
+
+state 137
+	exp:  round_exp *.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 204
+
+state 138
+	exp:  round_exp >.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 205
+
+state 139
+	exp:  round_exp <.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 206
+
+state 140
+	exp:  round_exp %.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 207
+
+state 141
+	exp:  round_exp ..round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 208
+
+state 142
+	exp:  round_exp OP_RSHIFT.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 209
+
+state 143
+	exp:  round_exp OP_LSHIFT.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 210
+
+state 144
+	exp:  round_exp OP_ANDAND.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 211
+
+state 145
+	exp:  round_exp OP_OROR.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 212
+
+state 146
+	exp:  round_exp OP_POWER.round_exp 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 213
+
+state 147
+	expr_match:  MATCH IDENTIFIER.SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY 
+	expr_match:  MATCH IDENTIFIER.SYM_OPEN_CURLY match_clauses , SYM_CLOSE_CURLY 
+
+	SYM_OPEN_CURLY  shift 214
+	.  error
+
+
+state 148
+	expr_if:  IF exp.block 
+	expr_if:  IF exp.block ELSE block_or_if 
+	round_exp:  exp.    (201)
+
+	SYM_OPEN_CURLY  shift 109
+	.  reduce 201 (src line 838)
+
+	block  goto 215
+
+state 149
+	exp:  IDENTIFIER.    (171)
+	exp:  IDENTIFIER.SYM_OPEN_SQ round_exp SYM_CLOSE_SQ 
+	exp:  IDENTIFIER.: struct_expr 
+	func_identifier:  IDENTIFIER.    (202)
+	func_identifier:  IDENTIFIER.SYM_COLCOL func_identifier 
+	func_identifier:  IDENTIFIER.! 
+
+	SYM_OPEN_SQ  shift 216
+	SYM_OPEN_ROUND  reduce 202 (src line 841)
+	SYM_COLCOL  shift 16
+	!  shift 17
+	:  shift 179
+	.  reduce 171 (src line 746)
+
+
+state 150
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  error
+
+
+state 151
+	expr_while:  WHILE exp.block 
+	round_exp:  exp.    (201)
+
+	SYM_OPEN_CURLY  shift 109
+	.  reduce 201 (src line 838)
+
+	block  goto 217
+
+state 152
+	expr_loop:  LOOP block.    (84)
+
+	.  reduce 84 (src line 544)
+
+
+state 153
+	expr_for:  FOR exp.IN exp block 
+	expr_for:  FOR exp.IN range_di block 
+	round_exp:  exp.    (201)
+
+	IN  shift 218
+	.  reduce 201 (src line 838)
+
+
+state 154
+	expr_for:  FOR SYM_OPEN_ROUND.maybe_assignment ; exp ; maybe_assignment SYM_CLOSE_ROUND block 
+	round_exp:  SYM_OPEN_ROUND.round_exp SYM_CLOSE_ROUND 
+	maybe_assignment: .    (130)
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  reduce 130 (src line 683)
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	maybe_assignment  goto 219
+	round_exp  goto 159
+	assignment  goto 220
+	hole  goto 87
+
+state 155
+	expr_return:  RETURN SYM_OPEN_ROUND.maybe_exprs SYM_CLOSE_ROUND ; 
+	maybe_exprs: .    (126)
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  reduce 126 (src line 671)
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 223
+	maybe_exprs  goto 221
+	exp  goto 86
+	block  goto 96
+	exprs  goto 222
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 156
+	expr_return:  RETURN ;.    (66)
+
+	.  reduce 66 (src line 489)
+
+
+state 157
+	expr_return:  RETURN lit.; 
+
+	;  shift 224
+	.  error
+
+
+state 158
+	expr_return:  RETURN IDENTIFIER.; 
+
+	;  shift 225
+	.  error
+
+
+state 159
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+	round_exp:  SYM_OPEN_ROUND round_exp.SYM_CLOSE_ROUND 
+
+	SYM_CLOSE_ROUND  shift 226
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  error
+
+
+state 160
+	assignment:  hole =.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 227
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 161
+	assignment:  hole OP_ADDEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 228
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 162
+	assignment:  hole OP_SUBEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 229
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 163
+	assignment:  hole OP_LEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 230
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 164
+	assignment:  hole OP_GEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 231
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 165
+	assignment:  hole OP_MULEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 232
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 166
+	assignment:  hole OP_DIVEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 233
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 167
+	assignment:  hole OP_MODEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 234
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 168
+	assignment:  hole OP_ANDEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 235
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 169
+	assignment:  hole OP_SHLEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 236
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 170
+	assignment:  hole OP_SHREQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 237
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 171
+	assignment:  hole OP_OREQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 238
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 172
+	assignment:  hole OP_XOREQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 239
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 173
+	assignment:  hole OP_EQEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 240
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 174
+	assignment:  hole OP_NOTEQ.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 241
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 175
+	assignment:  hole OPEQ_INT.opeq_ops 
+	opeq_ops: .    (167)
+
+	OP_RSHIFT  shift 254
+	OP_LSHIFT  shift 255
+	OP_ANDAND  shift 256
+	OP_OROR  shift 257
+	OP_POWER  shift 258
+	<  shift 251
+	>  shift 250
+	|  shift 246
+	^  shift 247
+	&  shift 245
+	+  shift 243
+	-  shift 244
+	.  shift 253
+	*  shift 249
+	/  shift 248
+	%  shift 252
+	.  reduce 167 (src line 732)
+
+	opeq_ops  goto 242
+
+state 176
+	assignment:  hole OPEQ_FLOAT.opeq_ops 
+	opeq_ops: .    (167)
+
+	OP_RSHIFT  shift 254
+	OP_LSHIFT  shift 255
+	OP_ANDAND  shift 256
+	OP_OROR  shift 257
+	OP_POWER  shift 258
+	<  shift 251
+	>  shift 250
+	|  shift 246
+	^  shift 247
+	&  shift 245
+	+  shift 243
+	-  shift 244
+	.  shift 253
+	*  shift 249
+	/  shift 248
+	%  shift 252
+	.  reduce 167 (src line 732)
+
+	opeq_ops  goto 259
+
+state 177
+	hole:  IDENTIFIER SYM_OPEN_SQ.round_exp SYM_CLOSE_SQ 
+	exp:  IDENTIFIER SYM_OPEN_SQ.round_exp SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 260
+
+state 178
+	hole:  IDENTIFIER ..hole 
+
+	IDENTIFIER  shift 262
+	.  error
+
+	hole  goto 261
+
+state 179
+	exp:  IDENTIFIER :.struct_expr 
+
+	SYM_OPEN_CURLY  shift 14
+	.  error
+
+	struct_expr  goto 263
+
+state 180
+	exp:  ! round_exp.    (174)
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 174 (src line 751)
+
+
+state 181
+	exp:  & round_exp.    (175)
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 175 (src line 752)
+
+
+state 182
+	exp:  OP_ANDMUT round_exp.    (176)
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 176 (src line 753)
+
+
+state 183
+	exp:  func_identifier SYM_OPEN_ROUND.maybe_exprs SYM_CLOSE_ROUND 
+	maybe_exprs: .    (126)
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  reduce 126 (src line 671)
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 223
+	maybe_exprs  goto 264
+	exp  goto 86
+	block  goto 96
+	exprs  goto 222
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 184
+	exp:  CONTINUE IDENTIFIER.    (195)
+
+	.  reduce 195 (src line 829)
+
+
+state 185
+	exp:  UNSAFE block.    (196)
+
+	.  reduce 196 (src line 830)
+
+
+state 186
+	exp:  BREAK IDENTIFIER.    (199)
+
+	.  reduce 199 (src line 833)
+
+
+state 187
+	block:  SYM_OPEN_CURLY maybe_stmts.SYM_CLOSE_CURLY 
+
+	SYM_CLOSE_CURLY  shift 265
+	.  error
+
+
+state 188
+	inner_attr:  SHEBANG [ meta_item.] 
+
+	]  shift 266
+	.  error
+
+
+state 189
+	meta_item:  IDENTIFIER.    (25)
+	meta_item:  IDENTIFIER.= lit 
+	meta_item:  IDENTIFIER.SYM_OPEN_ROUND meta_seq SYM_CLOSE_ROUND 
+
+	SYM_OPEN_ROUND  shift 268
+	=  shift 267
+	.  reduce 25 (src line 406)
+
+
+state 190
+	tys:  tys ,.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 269
+	path  goto 47
+	var_types  goto 52
+
+state 191
+	ty:  SYM_OPEN_ROUND tys SYM_CLOSE_ROUND.    (116)
+
+	.  reduce 116 (src line 646)
+
+
+state 192
+	ty:  * maybe_mut ty.    (113)
+
+	.  reduce 113 (src line 643)
+
+
+state 193
+	ty:  & maybe_mut ty.    (114)
+
+	.  reduce 114 (src line 644)
+
+
+state 194
+	ty:  OP_POWER maybe_mut ty.    (115)
+
+	.  reduce 115 (src line 645)
+
+
+state 195
+	path:  SYM_OPEN_SQ var_types maybe_size.SYM_CLOSE_SQ 
+
+	SYM_CLOSE_SQ  shift 270
+	.  error
+
+
+state 196
+	maybe_size:  ;.LIT_INT 
+
+	LIT_INT  shift 271
+	.  error
+
+
+state 197
+	let:  LET maybe_mut pat.maybe_ty_ascription maybe_init_expr 
+	maybe_ty_ascription: .    (90)
+
+	:  shift 273
+	.  reduce 90 (src line 599)
+
+	maybe_ty_ascription  goto 272
+
+state 198
+	exp:  round_exp.- round_exp 
+	exp:  round_exp - round_exp.    (177)
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 177 (src line 754)
+
+
+state 199
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp + round_exp.    (178)
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 178 (src line 760)
+
+
+state 200
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp & round_exp.    (179)
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 179 (src line 766)
+
+
+state 201
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp | round_exp.    (180)
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 180 (src line 771)
+
+
+state 202
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp ^ round_exp.    (181)
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 181 (src line 777)
+
+
+state 203
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp / round_exp.    (182)
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	.  reduce 182 (src line 782)
+
+
+state 204
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp * round_exp.    (183)
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	.  reduce 183 (src line 788)
+
+
+state 205
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp > round_exp.    (184)
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 184 (src line 794)
+
+
+state 206
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp < round_exp.    (185)
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 185 (src line 800)
+
+
+state 207
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp % round_exp.    (186)
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	.  reduce 186 (src line 806)
+
+
+state 208
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp . round_exp.    (187)
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 187 (src line 812)
+
+
+state 209
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp OP_RSHIFT round_exp.    (188)
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 188 (src line 813)
+
+
+state 210
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp OP_LSHIFT round_exp.    (189)
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 189 (src line 814)
+
+
+state 211
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp OP_ANDAND round_exp.    (190)
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 190 (src line 815)
+
+
+state 212
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp OP_OROR round_exp.    (191)
+	exp:  round_exp.OP_POWER round_exp 
+
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 191 (src line 821)
+
+
+state 213
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+	exp:  round_exp OP_POWER round_exp.    (192)
+
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  reduce 192 (src line 826)
+
+
+state 214
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY.match_clauses SYM_CLOSE_CURLY 
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY.match_clauses , SYM_CLOSE_CURLY 
+
+	IDENTIFIER  shift 36
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 282
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 281
+	FALSE  shift 107
+	TRUE  shift 106
+	_  shift 279
+	.  error
+
+	pat  goto 277
+	lit  goto 278
+	match_clauses  goto 274
+	match_clause  goto 275
+	pats_or  goto 276
+	range_tri  goto 280
+
+state 215
+	expr_if:  IF exp block.    (78)
+	expr_if:  IF exp block.ELSE block_or_if 
+
+	ELSE  shift 283
+	.  reduce 78 (src line 518)
+
+
+state 216
+	exp:  IDENTIFIER SYM_OPEN_SQ.round_exp SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 284
+
+state 217
+	expr_while:  WHILE exp block.    (83)
+
+	.  reduce 83 (src line 539)
+
+
+state 218
+	expr_for:  FOR exp IN.exp block 
+	expr_for:  FOR exp IN.range_di block 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 288
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 287
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 285
+	block  goto 96
+	range_di  goto 286
+	round_exp  goto 150
+
+state 219
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment.; exp ; maybe_assignment SYM_CLOSE_ROUND block 
+
+	;  shift 289
+	.  error
+
+
+state 220
+	maybe_assignment:  assignment.    (129)
+
+	.  reduce 129 (src line 681)
+
+
+state 221
+	expr_return:  RETURN SYM_OPEN_ROUND maybe_exprs.SYM_CLOSE_ROUND ; 
+
+	SYM_CLOSE_ROUND  shift 290
+	.  error
+
+
+state 222
+	maybe_exprs:  exprs.    (125)
+	exprs:  exprs., expr 
+
+	,  shift 291
+	.  reduce 125 (src line 669)
+
+
+state 223
+	exprs:  expr.    (127)
+
+	.  reduce 127 (src line 674)
+
+
+state 224
+	expr_return:  RETURN lit ;.    (67)
+
+	.  reduce 67 (src line 490)
+
+
+state 225
+	expr_return:  RETURN IDENTIFIER ;.    (68)
+
+	.  reduce 68 (src line 491)
+
+
+state 226
+	round_exp:  SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND.    (200)
+
+	.  reduce 200 (src line 836)
+
+
+state 227
+	assignment:  hole = expr.    (134)
+
+	.  reduce 134 (src line 691)
+
+
+state 228
+	assignment:  hole OP_ADDEQ expr.    (135)
+
+	.  reduce 135 (src line 693)
+
+
+state 229
+	assignment:  hole OP_SUBEQ expr.    (136)
+
+	.  reduce 136 (src line 694)
+
+
+state 230
+	assignment:  hole OP_LEQ expr.    (137)
+
+	.  reduce 137 (src line 695)
+
+
+state 231
+	assignment:  hole OP_GEQ expr.    (138)
+
+	.  reduce 138 (src line 696)
+
+
+state 232
+	assignment:  hole OP_MULEQ expr.    (139)
+
+	.  reduce 139 (src line 697)
+
+
+state 233
+	assignment:  hole OP_DIVEQ expr.    (140)
+
+	.  reduce 140 (src line 698)
+
+
+state 234
+	assignment:  hole OP_MODEQ expr.    (141)
+
+	.  reduce 141 (src line 699)
+
+
+state 235
+	assignment:  hole OP_ANDEQ expr.    (142)
+
+	.  reduce 142 (src line 700)
+
+
+state 236
+	assignment:  hole OP_SHLEQ expr.    (143)
+
+	.  reduce 143 (src line 701)
+
+
+state 237
+	assignment:  hole OP_SHREQ expr.    (144)
+
+	.  reduce 144 (src line 702)
+
+
+state 238
+	assignment:  hole OP_OREQ expr.    (145)
+
+	.  reduce 145 (src line 703)
+
+
+state 239
+	assignment:  hole OP_XOREQ expr.    (146)
+
+	.  reduce 146 (src line 704)
+
+
+state 240
+	assignment:  hole OP_EQEQ expr.    (147)
+
+	.  reduce 147 (src line 705)
+
+
+state 241
+	assignment:  hole OP_NOTEQ expr.    (148)
+
+	.  reduce 148 (src line 706)
+
+
+state 242
+	assignment:  hole OPEQ_INT opeq_ops.    (149)
+
+	.  reduce 149 (src line 707)
+
+
+state 243
+	opeq_ops:  +.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 292
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 244
+	opeq_ops:  -.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 293
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 245
+	opeq_ops:  &.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 294
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 246
+	opeq_ops:  |.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 295
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 247
+	opeq_ops:  ^.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 296
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 248
+	opeq_ops:  /.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 297
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 249
+	opeq_ops:  *.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 298
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 250
+	opeq_ops:  >.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 299
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 251
+	opeq_ops:  <.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 300
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 252
+	opeq_ops:  %.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 301
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 253
+	opeq_ops:  ..expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 302
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 254
+	opeq_ops:  OP_RSHIFT.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 303
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 255
+	opeq_ops:  OP_LSHIFT.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 304
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 256
+	opeq_ops:  OP_ANDAND.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 305
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 257
+	opeq_ops:  OP_OROR.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 306
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 258
+	opeq_ops:  OP_POWER.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 307
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 259
+	assignment:  hole OPEQ_FLOAT opeq_ops.    (150)
+
+	.  reduce 150 (src line 708)
+
+
+state 260
+	hole:  IDENTIFIER SYM_OPEN_SQ round_exp.SYM_CLOSE_SQ 
+	exp:  IDENTIFIER SYM_OPEN_SQ round_exp.SYM_CLOSE_SQ 
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	SYM_CLOSE_SQ  shift 308
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  error
+
+
+state 261
+	hole:  IDENTIFIER . hole.    (133)
+
+	.  reduce 133 (src line 689)
+
+
+state 262
+	hole:  IDENTIFIER.    (131)
+	hole:  IDENTIFIER.SYM_OPEN_SQ round_exp SYM_CLOSE_SQ 
+	hole:  IDENTIFIER.. hole 
+
+	SYM_OPEN_SQ  shift 309
+	.  shift 178
+	.  reduce 131 (src line 686)
+
+
+state 263
+	exp:  IDENTIFIER : struct_expr.    (173)
+
+	.  reduce 173 (src line 750)
+
+
+state 264
+	exp:  func_identifier SYM_OPEN_ROUND maybe_exprs.SYM_CLOSE_ROUND 
+
+	SYM_CLOSE_ROUND  shift 310
+	.  error
+
+
+state 265
+	block:  SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY.    (82)
+
+	.  reduce 82 (src line 535)
+
+
+state 266
+	inner_attr:  SHEBANG [ meta_item ].    (24)
+
+	.  reduce 24 (src line 401)
+
+
+state 267
+	meta_item:  IDENTIFIER =.lit 
+
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	FALSE  shift 107
+	TRUE  shift 106
+	.  error
+
+	lit  goto 311
+
+state 268
+	meta_item:  IDENTIFIER SYM_OPEN_ROUND.meta_seq SYM_CLOSE_ROUND 
+
+	IDENTIFIER  shift 189
+	.  error
+
+	meta_item  goto 313
+	meta_seq  goto 312
+
+state 269
+	tys:  tys , ty.    (110)
+
+	.  reduce 110 (src line 637)
+
+
+state 270
+	path:  SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ.    (122)
+
+	.  reduce 122 (src line 661)
+
+
+state 271
+	maybe_size:  ; LIT_INT.    (123)
+
+	.  reduce 123 (src line 664)
+
+
+state 272
+	let:  LET maybe_mut pat maybe_ty_ascription.maybe_init_expr 
+	maybe_init_expr: .    (96)
+
+	OPEQ_INT  shift 316
+	OPEQ_FLOAT  shift 317
+	=  shift 315
+	.  reduce 96 (src line 608)
+
+	maybe_init_expr  goto 314
+
+state 273
+	maybe_ty_ascription:  :.ty 
+
+	IDENTIFIER  shift 55
+	SYM_OPEN_SQ  shift 53
+	SYM_OPEN_ROUND  shift 115
+	VAR_TYPE  shift 54
+	OP_POWER  shift 51
+	&  shift 50
+	*  shift 49
+	~  shift 48
+	.  error
+
+	ty  goto 318
+	path  goto 47
+	var_types  goto 52
+
+state 274
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses.SYM_CLOSE_CURLY 
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses., SYM_CLOSE_CURLY 
+	match_clauses:  match_clauses., match_clause 
+
+	SYM_CLOSE_CURLY  shift 319
+	,  shift 320
+	.  error
+
+
+state 275
+	match_clauses:  match_clause.    (71)
+
+	.  reduce 71 (src line 499)
+
+
+state 276
+	match_clause:  pats_or.maybe_guard OP_FAT_ARROW match_body 
+	pats_or:  pats_or.| pat 
+	pats_or:  pats_or.| lit 
+	pats_or:  pats_or.| range_tri 
+	maybe_guard: .    (77)
+
+	IF  shift 323
+	|  shift 322
+	.  reduce 77 (src line 515)
+
+	maybe_guard  goto 321
+
+state 277
+	pats_or:  pat.    (97)
+
+	.  reduce 97 (src line 611)
+
+
+state 278
+	pats_or:  lit.    (98)
+
+	.  reduce 98 (src line 613)
+
+
+state 279
+	pats_or:  _.    (99)
+
+	.  reduce 99 (src line 614)
+
+
+state 280
+	pats_or:  range_tri.    (100)
+
+	.  reduce 100 (src line 615)
+
+
+state 281
+	lit:  LIT_INT.    (41)
+	range_tri:  LIT_INT.OP_DOTDOTDOT LIT_INT 
+
+	OP_DOTDOTDOT  shift 324
+	.  reduce 41 (src line 448)
+
+
+state 282
+	lit:  LITERAL_CHAR.    (47)
+	range_tri:  LITERAL_CHAR.OP_DOTDOTDOT LITERAL_CHAR 
+
+	OP_DOTDOTDOT  shift 325
+	.  reduce 47 (src line 454)
+
+
+state 283
+	expr_if:  IF exp block ELSE.block_or_if 
+
+	SYM_OPEN_CURLY  shift 109
+	IF  shift 80
+	.  error
+
+	expr_if  goto 328
+	block  goto 327
+	block_or_if  goto 326
+
+state 284
+	exp:  IDENTIFIER SYM_OPEN_SQ round_exp.SYM_CLOSE_SQ 
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	SYM_CLOSE_SQ  shift 329
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  error
+
+
+state 285
+	expr_for:  FOR exp IN exp.block 
+	round_exp:  exp.    (201)
+
+	SYM_OPEN_CURLY  shift 109
+	.  reduce 201 (src line 838)
+
+	block  goto 330
+
+state 286
+	expr_for:  FOR exp IN range_di.block 
+
+	SYM_OPEN_CURLY  shift 109
+	.  error
+
+	block  goto 331
+
+state 287
+	lit:  LIT_INT.    (41)
+	range_di:  LIT_INT.OP_DOTDOT LIT_INT 
+
+	OP_DOTDOT  shift 332
+	.  reduce 41 (src line 448)
+
+
+state 288
+	lit:  LITERAL_CHAR.    (47)
+	range_di:  LITERAL_CHAR.OP_DOTDOT LITERAL_CHAR 
+
+	OP_DOTDOT  shift 333
+	.  reduce 47 (src line 454)
+
+
+state 289
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ;.exp ; maybe_assignment SYM_CLOSE_ROUND block 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 334
+	block  goto 96
+	round_exp  goto 150
+
+state 290
+	expr_return:  RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND.; 
+
+	;  shift 335
+	.  error
+
+
+state 291
+	exprs:  exprs ,.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 336
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 292
+	opeq_ops:  + expr.    (151)
+
+	.  reduce 151 (src line 715)
+
+
+state 293
+	opeq_ops:  - expr.    (152)
+
+	.  reduce 152 (src line 717)
+
+
+state 294
+	opeq_ops:  & expr.    (153)
+
+	.  reduce 153 (src line 718)
+
+
+state 295
+	opeq_ops:  | expr.    (154)
+
+	.  reduce 154 (src line 719)
+
+
+state 296
+	opeq_ops:  ^ expr.    (155)
+
+	.  reduce 155 (src line 720)
+
+
+state 297
+	opeq_ops:  / expr.    (156)
+
+	.  reduce 156 (src line 721)
+
+
+state 298
+	opeq_ops:  * expr.    (157)
+
+	.  reduce 157 (src line 722)
+
+
+state 299
+	opeq_ops:  > expr.    (158)
+
+	.  reduce 158 (src line 723)
+
+
+state 300
+	opeq_ops:  < expr.    (159)
+
+	.  reduce 159 (src line 724)
+
+
+state 301
+	opeq_ops:  % expr.    (160)
+
+	.  reduce 160 (src line 725)
+
+
+state 302
+	opeq_ops:  . expr.    (161)
+
+	.  reduce 161 (src line 726)
+
+
+state 303
+	opeq_ops:  OP_RSHIFT expr.    (162)
+
+	.  reduce 162 (src line 727)
+
+
+state 304
+	opeq_ops:  OP_LSHIFT expr.    (163)
+
+	.  reduce 163 (src line 728)
+
+
+state 305
+	opeq_ops:  OP_ANDAND expr.    (164)
+
+	.  reduce 164 (src line 729)
+
+
+state 306
+	opeq_ops:  OP_OROR expr.    (165)
+
+	.  reduce 165 (src line 730)
+
+
+state 307
+	opeq_ops:  OP_POWER expr.    (166)
+
+	.  reduce 166 (src line 731)
+
+
+state 308
+	hole:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (132)
+	exp:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (172)
+
+	OPEQ_INT  reduce 132 (src line 688)
+	OPEQ_FLOAT  reduce 132 (src line 688)
+	OP_ADDEQ  reduce 132 (src line 688)
+	OP_SUBEQ  reduce 132 (src line 688)
+	OP_MULEQ  reduce 132 (src line 688)
+	OP_DIVEQ  reduce 132 (src line 688)
+	OP_MODEQ  reduce 132 (src line 688)
+	OP_EQEQ  reduce 132 (src line 688)
+	OP_NOTEQ  reduce 132 (src line 688)
+	OP_LEQ  reduce 132 (src line 688)
+	OP_GEQ  reduce 132 (src line 688)
+	=  reduce 132 (src line 688)
+	OP_SHLEQ  reduce 132 (src line 688)
+	OP_SHREQ  reduce 132 (src line 688)
+	OP_OREQ  reduce 132 (src line 688)
+	OP_ANDEQ  reduce 132 (src line 688)
+	OP_XOREQ  reduce 132 (src line 688)
+	.  reduce 172 (src line 749)
+
+
+state 309
+	hole:  IDENTIFIER SYM_OPEN_SQ.round_exp SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 149
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 337
+
+state 310
+	exp:  func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND.    (193)
+
+	.  reduce 193 (src line 827)
+
+
+state 311
+	meta_item:  IDENTIFIER = lit.    (26)
+
+	.  reduce 26 (src line 408)
+
+
+state 312
+	meta_item:  IDENTIFIER SYM_OPEN_ROUND meta_seq.SYM_CLOSE_ROUND 
+	meta_seq:  meta_seq., meta_item 
+
+	SYM_CLOSE_ROUND  shift 338
+	,  shift 339
+	.  error
+
+
+state 313
+	meta_seq:  meta_item.    (28)
+
+	.  reduce 28 (src line 412)
+
+
+state 314
+	let:  LET maybe_mut pat maybe_ty_ascription maybe_init_expr.    (88)
+
+	.  reduce 88 (src line 587)
+
+
+state 315
+	maybe_init_expr:  =.expr 
+	maybe_init_expr:  =.SYM_OPEN_SQ exprs SYM_CLOSE_SQ 
+	maybe_init_expr:  =.SYM_OPEN_SQ round_exp ; LIT_INT SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_SQ  shift 341
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 340
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 316
+	maybe_init_expr:  OPEQ_INT.opeq_ops 
+	opeq_ops: .    (167)
+
+	OP_RSHIFT  shift 254
+	OP_LSHIFT  shift 255
+	OP_ANDAND  shift 256
+	OP_OROR  shift 257
+	OP_POWER  shift 258
+	<  shift 251
+	>  shift 250
+	|  shift 246
+	^  shift 247
+	&  shift 245
+	+  shift 243
+	-  shift 244
+	.  shift 253
+	*  shift 249
+	/  shift 248
+	%  shift 252
+	.  reduce 167 (src line 732)
+
+	opeq_ops  goto 342
+
+state 317
+	maybe_init_expr:  OPEQ_FLOAT.opeq_ops 
+	opeq_ops: .    (167)
+
+	OP_RSHIFT  shift 254
+	OP_LSHIFT  shift 255
+	OP_ANDAND  shift 256
+	OP_OROR  shift 257
+	OP_POWER  shift 258
+	<  shift 251
+	>  shift 250
+	|  shift 246
+	^  shift 247
+	&  shift 245
+	+  shift 243
+	-  shift 244
+	.  shift 253
+	*  shift 249
+	/  shift 248
+	%  shift 252
+	.  reduce 167 (src line 732)
+
+	opeq_ops  goto 343
+
+state 318
+	maybe_ty_ascription:  : ty.    (89)
+
+	.  reduce 89 (src line 597)
+
+
+state 319
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY.    (69)
+
+	.  reduce 69 (src line 494)
+
+
+state 320
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ,.SYM_CLOSE_CURLY 
+	match_clauses:  match_clauses ,.match_clause 
+
+	IDENTIFIER  shift 36
+	SYM_CLOSE_CURLY  shift 344
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 282
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 281
+	FALSE  shift 107
+	TRUE  shift 106
+	_  shift 279
+	.  error
+
+	pat  goto 277
+	lit  goto 278
+	match_clause  goto 345
+	pats_or  goto 276
+	range_tri  goto 280
+
+state 321
+	match_clause:  pats_or maybe_guard.OP_FAT_ARROW match_body 
+
+	OP_FAT_ARROW  shift 346
+	.  error
+
+
+state 322
+	pats_or:  pats_or |.pat 
+	pats_or:  pats_or |.lit 
+	pats_or:  pats_or |.range_tri 
+
+	IDENTIFIER  shift 36
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 282
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 281
+	FALSE  shift 107
+	TRUE  shift 106
+	.  error
+
+	pat  goto 347
+	lit  goto 348
+	range_tri  goto 349
+
+state 323
+	maybe_guard:  IF.expr 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 350
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 324
+	range_tri:  LIT_INT OP_DOTDOTDOT.LIT_INT 
+
+	LIT_INT  shift 351
+	.  error
+
+
+state 325
+	range_tri:  LITERAL_CHAR OP_DOTDOTDOT.LITERAL_CHAR 
+
+	LITERAL_CHAR  shift 352
+	.  error
+
+
+state 326
+	expr_if:  IF exp block ELSE block_or_if.    (79)
+
+	.  reduce 79 (src line 523)
+
+
+state 327
+	block_or_if:  block.    (80)
+
+	.  reduce 80 (src line 528)
+
+
+state 328
+	block_or_if:  expr_if.    (81)
+
+	.  reduce 81 (src line 531)
+
+
+state 329
+	exp:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (172)
+
+	.  reduce 172 (src line 749)
+
+
+state 330
+	expr_for:  FOR exp IN exp block.    (85)
+
+	.  reduce 85 (src line 549)
+
+
+state 331
+	expr_for:  FOR exp IN range_di block.    (86)
+
+	.  reduce 86 (src line 564)
+
+
+state 332
+	range_di:  LIT_INT OP_DOTDOT.LIT_INT 
+
+	LIT_INT  shift 353
+	.  error
+
+
+state 333
+	range_di:  LITERAL_CHAR OP_DOTDOT.LITERAL_CHAR 
+
+	LITERAL_CHAR  shift 354
+	.  error
+
+
+state 334
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ; exp.; maybe_assignment SYM_CLOSE_ROUND block 
+	round_exp:  exp.    (201)
+
+	;  shift 355
+	.  reduce 201 (src line 838)
+
+
+state 335
+	expr_return:  RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ;.    (65)
+
+	.  reduce 65 (src line 487)
+
+
+state 336
+	exprs:  exprs , expr.    (128)
+
+	.  reduce 128 (src line 676)
+
+
+state 337
+	hole:  IDENTIFIER SYM_OPEN_SQ round_exp.SYM_CLOSE_SQ 
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	SYM_CLOSE_SQ  shift 356
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	.  error
+
+
+state 338
+	meta_item:  IDENTIFIER SYM_OPEN_ROUND meta_seq SYM_CLOSE_ROUND.    (27)
+
+	.  reduce 27 (src line 409)
+
+
+state 339
+	meta_seq:  meta_seq ,.meta_item 
+
+	IDENTIFIER  shift 189
+	.  error
+
+	meta_item  goto 357
+
+state 340
+	maybe_init_expr:  = expr.    (91)
+
+	.  reduce 91 (src line 602)
+
+
+state 341
+	maybe_init_expr:  = SYM_OPEN_SQ.exprs SYM_CLOSE_SQ 
+	maybe_init_expr:  = SYM_OPEN_SQ.round_exp ; LIT_INT SYM_CLOSE_SQ 
+
+	IDENTIFIER  shift 89
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	TRUE  shift 106
+	UNSAFE  shift 95
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr  goto 223
+	exp  goto 86
+	block  goto 96
+	exprs  goto 358
+	round_exp  goto 359
+	assignment  goto 78
+	hole  goto 87
+
+state 342
+	maybe_init_expr:  OPEQ_INT opeq_ops.    (94)
+
+	.  reduce 94 (src line 606)
+
+
+state 343
+	maybe_init_expr:  OPEQ_FLOAT opeq_ops.    (95)
+
+	.  reduce 95 (src line 607)
+
+
+state 344
+	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses , SYM_CLOSE_CURLY.    (70)
+
+	.  reduce 70 (src line 496)
+
+
+state 345
+	match_clauses:  match_clauses , match_clause.    (72)
+
+	.  reduce 72 (src line 501)
+
+
+state 346
+	match_clause:  pats_or maybe_guard OP_FAT_ARROW.match_body 
+
+	IDENTIFIER  shift 89
+	FOR  shift 83
+	RETURN  shift 84
+	SYM_OPEN_ROUND  shift 85
+	SYM_OPEN_CURLY  shift 109
+	LIT_CHAR  shift 98
+	FLOAT  shift 102
+	LIT_FLOAT_UNSUFFIXED  shift 103
+	LIT_INT_UNSUFFIXED  shift 101
+	LITERAL_STR  shift 104
+	LITERAL_CHAR  shift 105
+	LIT_UINT  shift 100
+	VAR_TYPE  shift 108
+	LIT_INT  shift 99
+	OP_ANDMUT  shift 92
+	BREAK  shift 97
+	CONTINUE  shift 94
+	FALSE  shift 107
+	IF  shift 80
+	LOOP  shift 82
+	MATCH  shift 79
+	TRUE  shift 106
+	UNSAFE  shift 95
+	WHILE  shift 81
+	!  shift 90
+	&  shift 91
+	.  error
+
+	func_identifier  goto 93
+	lit  goto 88
+	expr_stmt  goto 362
+	expr  goto 361
+	expr_match  goto 71
+	expr_if  goto 72
+	expr_while  goto 73
+	expr_loop  goto 74
+	expr_for  goto 75
+	expr_return  goto 76
+	match_body  goto 360
+	exp  goto 86
+	block  goto 96
+	round_exp  goto 77
+	assignment  goto 78
+	hole  goto 87
+
+state 347
+	pats_or:  pats_or | pat.    (101)
+
+	.  reduce 101 (src line 616)
+
+
+state 348
+	pats_or:  pats_or | lit.    (102)
+
+	.  reduce 102 (src line 617)
+
+
+state 349
+	pats_or:  pats_or | range_tri.    (103)
+
+	.  reduce 103 (src line 618)
+
+
+state 350
+	maybe_guard:  IF expr.    (76)
+
+	.  reduce 76 (src line 513)
+
+
+state 351
+	range_tri:  LIT_INT OP_DOTDOTDOT LIT_INT.    (104)
+
+	.  reduce 104 (src line 621)
+
+
+state 352
+	range_tri:  LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR.    (105)
+
+	.  reduce 105 (src line 623)
+
+
+state 353
+	range_di:  LIT_INT OP_DOTDOT LIT_INT.    (106)
+
+	.  reduce 106 (src line 625)
+
+
+state 354
+	range_di:  LITERAL_CHAR OP_DOTDOT LITERAL_CHAR.    (107)
+
+	.  reduce 107 (src line 627)
+
+
+state 355
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ; exp ;.maybe_assignment SYM_CLOSE_ROUND block 
+	maybe_assignment: .    (130)
+
+	IDENTIFIER  shift 262
+	.  reduce 130 (src line 683)
+
+	maybe_assignment  goto 363
+	assignment  goto 220
+	hole  goto 87
+
+state 356
+	hole:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (132)
+
+	.  reduce 132 (src line 688)
+
+
+state 357
+	meta_seq:  meta_seq , meta_item.    (29)
+
+	.  reduce 29 (src line 414)
+
+
+state 358
+	maybe_init_expr:  = SYM_OPEN_SQ exprs.SYM_CLOSE_SQ 
+	exprs:  exprs., expr 
+
+	SYM_CLOSE_SQ  shift 364
+	,  shift 291
+	.  error
+
+
+state 359
+	maybe_init_expr:  = SYM_OPEN_SQ round_exp.; LIT_INT SYM_CLOSE_SQ 
+	expr:  round_exp.    (168)
+	exp:  round_exp.- round_exp 
+	exp:  round_exp.+ round_exp 
+	exp:  round_exp.& round_exp 
+	exp:  round_exp.| round_exp 
+	exp:  round_exp.^ round_exp 
+	exp:  round_exp./ round_exp 
+	exp:  round_exp.* round_exp 
+	exp:  round_exp.> round_exp 
+	exp:  round_exp.< round_exp 
+	exp:  round_exp.% round_exp 
+	exp:  round_exp.. round_exp 
+	exp:  round_exp.OP_RSHIFT round_exp 
+	exp:  round_exp.OP_LSHIFT round_exp 
+	exp:  round_exp.OP_ANDAND round_exp 
+	exp:  round_exp.OP_OROR round_exp 
+	exp:  round_exp.OP_POWER round_exp 
+
+	OP_RSHIFT  shift 142
+	OP_LSHIFT  shift 143
+	OP_ANDAND  shift 144
+	OP_OROR  shift 145
+	OP_POWER  shift 146
+	<  shift 139
+	>  shift 138
+	|  shift 134
+	^  shift 135
+	&  shift 133
+	+  shift 132
+	-  shift 131
+	.  shift 141
+	*  shift 137
+	/  shift 136
+	%  shift 140
+	;  shift 365
+	.  reduce 168 (src line 735)
+
+
+state 360
+	match_clause:  pats_or maybe_guard OP_FAT_ARROW match_body.    (73)
+
+	.  reduce 73 (src line 504)
+
+
+state 361
+	match_body:  expr.    (74)
+
+	.  reduce 74 (src line 508)
+
+
+state 362
+	match_body:  expr_stmt.    (75)
+
+	.  reduce 75 (src line 510)
+
+
+state 363
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ; exp ; maybe_assignment.SYM_CLOSE_ROUND block 
+
+	SYM_CLOSE_ROUND  shift 366
+	.  error
+
+
+state 364
+	maybe_init_expr:  = SYM_OPEN_SQ exprs SYM_CLOSE_SQ.    (92)
+
+	.  reduce 92 (src line 604)
+
+
+state 365
+	maybe_init_expr:  = SYM_OPEN_SQ round_exp ;.LIT_INT SYM_CLOSE_SQ 
+
+	LIT_INT  shift 367
+	.  error
+
+
+state 366
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ; exp ; maybe_assignment SYM_CLOSE_ROUND.block 
+
+	SYM_OPEN_CURLY  shift 109
+	.  error
+
+	block  goto 368
+
+state 367
+	maybe_init_expr:  = SYM_OPEN_SQ round_exp ; LIT_INT.SYM_CLOSE_SQ 
+
+	SYM_CLOSE_SQ  shift 369
+	.  error
+
+
+state 368
+	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ; exp ; maybe_assignment SYM_CLOSE_ROUND block.    (87)
+
+	.  reduce 87 (src line 576)
+
+
+state 369
+	maybe_init_expr:  = SYM_OPEN_SQ round_exp ; LIT_INT SYM_CLOSE_SQ.    (93)
+
+	.  reduce 93 (src line 605)
+
+Rule not reduced: maybe_mod_items:  mod_items 
+Rule not reduced: maybe_mod_items:  
+Rule not reduced: mod_items:  mod_item 
+Rule not reduced: mod_items:  mod_items mod_item 
+Rule not reduced: mod_item:  maybe_outer_attrs item_or_view_item 
+Rule not reduced: maybe_outer_attrs:  outer_attrs 
+Rule not reduced: maybe_outer_attrs:  
+Rule not reduced: outer_attrs:  outer_attr 
+Rule not reduced: outer_attrs:  outer_attrs outer_attr 
+Rule not reduced: outer_attr:  # [ meta_item ] 
+
+162 terminals, 67 nonterminals
+212 grammar rules, 370/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+116 working sets used
+memory: parser 920/30000
+256 extra closures
+2079 shift entries, 38 exceptions
+200 goto entries
+460 entries saved by goto default
+Optimizer space used: output 1054/30000
+1054 table entries, 326 zero
+maximum spread: 162, maximum offset: 366

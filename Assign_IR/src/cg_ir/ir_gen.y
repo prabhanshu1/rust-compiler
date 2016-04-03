@@ -121,14 +121,15 @@ func copy_nodes(a node, b node)node{
   return b; 
 }
 
-
-%}
-
-
 type node struct {
   var value [100]char
   next *node
 }
+
+%}
+
+
+
 
 %union {
   code *node=NULL
