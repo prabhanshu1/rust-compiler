@@ -31,7 +31,8 @@ type node struct {
 func copy_nodes(a *node, b *node) *node {
   b.value=a.value;
   for(a.next!=nil){
-    b.next=new (node);
+    fmt.Println(a.value)
+    b.next=new(node);
     b=b.next;
     a=a.next;
     b.value=a.value;
@@ -252,7 +253,7 @@ func copy_nodes(a *node, b *node) *node {
 
 /// println, print macro support => standard macros
 
-Code : rust   
+Code : rust {}   
 ;
 
 rust
@@ -330,34 +331,34 @@ meta_seq
 | meta_seq ',' meta_item
 ;
 
-maybe_mod_items
-: mod_items
-| /* empty */
-;
+/* maybe_mod_items */
+/* : mod_items */
+/* | /\* empty *\/ */
+/* ; */
 
-mod_items
-: mod_item
-| mod_items mod_item
-;
+/* mod_items */
+/* : mod_item */
+/* | mod_items mod_item */
+/* ; */
 
-mod_item
-: maybe_outer_attrs item_or_view_item    { $$ = $2; }
-;
+/* mod_item */
+/* : maybe_outer_attrs item_or_view_item    { $$ = $2; } */
+/* ; */
 
 
-maybe_outer_attrs
-: outer_attrs
-| /* empty */
-;
+/* maybe_outer_attrs */
+/* : outer_attrs */
+/* | /\* empty *\/ */
+/* ; */
 
-outer_attrs
-: outer_attr
-| outer_attrs outer_attr
-;
+/* outer_attrs */
+/* : outer_attr */
+/* | outer_attrs outer_attr */
+/* ; */
 
-outer_attr
-: '#' '[' meta_item ']'
-;
+/* outer_attr */
+/* : '#' '[' meta_item ']' */
+/* ; */
 
 lit
 : LIT_CHAR   
@@ -508,18 +509,43 @@ $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"
 ;
 
 let
-: LET maybe_mut pat maybe_ty_ascription maybe_init_expr   {
-  if($5.mp!=nil) {$3.mp["type"]=$5.mp["type"];$$.code=new(node);$$.code.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
-    if($4.mp!=nil) {if ($4.mp["type"]!=$5.mp["type"]) {log.Fatal("Type mismatch in let expression");} }
+: LET maybe_mut pat  maybe_ty_ascription maybe_init_expr   {
+  fmt.Println("ldl");
+  if($3.mp==nil) {log.Fatal("Variable name not present in let");}
+fmt.Println("ldl");
+  if($4.mp==nil){
+    fmt.Println("ldl");
+    if($4.s!=""){
+      fmt.Println("ldl");
+      if($5.mp!=nil){
+        fmt.Println("ldl");
+          /*let mut y:i32 = expr */
+          if($5.mp["type"]!=$4.s) {log.Fatal("Type mismatch in let ;;");}
+          $3.mp["type"]=$5.mp["type"];
+          $$.code=new(node);
+        p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+fmt.Println("ldl");
+      } else{/*let  y:i32 */
+        fmt.Println("ldl");
+        $3.mp["type"]=$4.s;
+        fmt.Println("ldls");
+      }
+    } else{ /* let y = 5 */
+      fmt.Println("ldl");
+      if($5.mp==nil) {log.Fatal("incomplete let expression  ;");}
+      $3.mp["type"]=$5.mp["type"];
+      $$.code=new(node);p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
     }
-  if ($5.mp==nil) &&($4.mp!=nil) {$3.mp["type"]=$4.mp["type"];}
-  if($5.mp==nil) ||($4.mp==nil) {log.Fatal("unable to infer enough type information about `_` in let");}
+        }
+  fmt.Println("ldlss");
+  print_ircode($$.code);
+  fmt.Println("ldlss");
 }
 ;
 
 maybe_ty_ascription
-: ':' ty   {if ($1.mp==nil) {$$.s=$1.s;}else{$$.code=$1.code;$$.mp=$1.mp;  }}
-| /* empty */ 
+: ':' ty   {if ($2.mp==nil) {$$.s=$2.s;}else{$$.code=$2.code;$$.mp=$2.mp;  }}
+| /* empty */ {$$.s="";}
 ;
 
 maybe_init_expr
@@ -528,10 +554,12 @@ maybe_init_expr
 | '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  
 | OPEQ_INT  opeq_ops  {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1; 
-  $$.code=new (node);p:=copy_nodes($2.code,$$.code);p.next=new(node);p.next.value="+, "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];
+  if($2.code!=nil){
+    $$.code=new (node);p:=copy_nodes($2.code,$$.code);p.next=new(node);p.next.value="+, "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];}else{
+    $$.s="";}
 }
 | OPEQ_FLOAT opeq_ops 
-| /* empty */
+| /* empty */ {$$.s=""}
 ;
 
 pats_or
@@ -554,7 +582,7 @@ range_di
 
 
 pat
-: IDENTIFIER {$$.s=$1.s;}
+: IDENTIFIER {$1.mp=symtab.Make_entry($1.s);$$.mp=$1.mp;fmt.Println($1.mp,$$.mp);}
 ;
 
 
@@ -655,7 +683,7 @@ opeq_ops
 | OP_ANDAND expr 
 | OP_OROR expr  
 | OP_POWER expr         
-|
+|   { $$.s=""; }
 ;
 
 expr
