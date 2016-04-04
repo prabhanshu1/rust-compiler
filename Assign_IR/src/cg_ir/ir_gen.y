@@ -294,7 +294,7 @@ item_or_view_item
 
 item_fn
 : FN IDENTIFIER fn_decl inner_attrs_and_block  
-{$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]="label"+$2.s;$$.mp["after"]=strconv.Itoa(label_num);  
+{$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]=$2.s;$$.mp["after"]="label"+strconv.Itoa(label_num);  
   $$.code=new (node);$$.code.value="jmp, "+$$.mp["after"];$$.code.next=new(node);$$.code.next.value="label, "+$$.mp["begin"];$$.code.next.next=new(node);p:=copy_nodes($4.code,$$.code.next.next);p.next=new(node);p.next.value="label, "+$$.mp["after"];print_ircode($$.code)}
 ;
 
@@ -328,7 +328,7 @@ ret_ty
 ;
 
 inner_attrs_and_block
-: SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY   
+: SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY  {$$.code=$3.code; }   
 ;
 
 maybe_inner_attrs
@@ -641,11 +641,11 @@ var_types
 
 path
 : var_types {$$.s=$1.s;}
-| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ 
+| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ {$$.s="Array_"+$2.s+"_"+$3.s}
 ;
 
 maybe_size
-: ';' LIT_INT 
+: ';' LIT_INT {$$.s=strconv.Itoa($2.n)}
 | 
 ;
 
@@ -753,7 +753,7 @@ exp
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
   $$.mp["type"]=$1.mp["type"];
   $$.code=new(node);
-  $$.code.value="=, "+$$.mp["value"]+", "+$1.mp[$3.mp["value"]];
+  $$.code.value="=[], "+$$.mp["value"]+", "+$3.mp["value"];
 }
 | IDENTIFIER ':' struct_expr  
 | '!' round_exp      {}         /* not of conditional */
