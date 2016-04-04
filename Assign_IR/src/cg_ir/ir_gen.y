@@ -29,6 +29,7 @@ type node struct {
 }
 
 func copy_nodes(a *node, b *node) *node {
+  fmt.Println(a,b)
   b.value=a.value;
   for(a.next!=nil){
     fmt.Println(a.value)
@@ -40,12 +41,31 @@ func copy_nodes(a *node, b *node) *node {
   return b; 
 }
 
+func space(a string,i int)int{
+for ;a[i]==' ';i++{}
+return i
+}
+
+func btoi(a bool)int64 {
+	if a==false {
+		return 0
+	}
+	return 1
+}
+
+func itob(a int64)bool {
+	if a==0 {
+		return false
+	}
+	return true
+}
+
 %}
 
 
 
 
-%union {
+%struct {
   code *node
   mp map[string]string
   n int
@@ -330,36 +350,6 @@ meta_seq
 : meta_item
 | meta_seq ',' meta_item
 ;
-
-/* maybe_mod_items */
-/* : mod_items */
-/* | /\* empty *\/ */
-/* ; */
-
-/* mod_items */
-/* : mod_item */
-/* | mod_items mod_item */
-/* ; */
-
-/* mod_item */
-/* : maybe_outer_attrs item_or_view_item    { $$ = $2; } */
-/* ; */
-
-
-/* maybe_outer_attrs */
-/* : outer_attrs */
-/* | /\* empty *\/ */
-/* ; */
-
-/* outer_attrs */
-/* : outer_attr */
-/* | outer_attrs outer_attr */
-/* ; */
-
-/* outer_attr */
-/* : '#' '[' meta_item ']' */
-/* ; */
-
 lit
 : LIT_CHAR   
 | LIT_INT   
@@ -375,17 +365,17 @@ lit
 ;
 
 maybe_stmts
-: stmts                  
+: stmts       {$$.code=$1.code;}           
 | /* empty */                  
 ;
 
 stmts
 : stmts stmt                  
-| stmt                  
+| stmt    {$$.code=$1.code;}              
 ;
 
 stmt
-: let ';'                  
+: let ';' {if($1.code==nil) {fmt.Println("in stmt let code is nil");};$$.code=$1.code;}                 
 | item_or_view_item ';'                  
 | expr_stmt                      
 | expr ';'                  
@@ -434,12 +424,21 @@ maybe_guard
 
 
 expr_if 
-: IF exp block  {  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);
-  if($2.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
-  $$.code=new (node);p:=copy_nodes($2.code,$$.code); p.next=new(node); p.next.value="ifgoto, je, "+$2.mp["value"]+", 0, "+$$.mp["after"];p.next.next=new(node); q:=copy_nodes(p.next.next,$3.code);q.next=new(node); q.next.value="label, "+$$.mp["after"]; }
+: IF exp block  { fmt.Println("iff0"); $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);
+   fmt.Println("iff1",$2,$3);
+  if($2.mp==nil) {log.Fatal("Bad If   block;;;")};
+  fmt.Println("iff2");
+  $$.code=new(node);fmt.Println("ssdd");p:=$$.code;
+  if($2.code!=nil){
+  o:=copy_nodes($2.code,$$.code);o.next=new(node);p=o.next;fmt.Println("sss00"); }else{p=$$.code;}
+  p.value="ifgoto, je, "+$2.mp["value"]+", 0, "+$$.mp["after"];fmt.Println("iff2-1");p.next=new(node);if($3.code==nil){fmt.Println("$3.code nil in expr_if");}; q:=copy_nodes($3.code,p.next);q.next=new(node); fmt.Println("iff2-3");q.next.value="label, "+$$.mp["after"];
+ fmt.Println("iff3");
+  print_ircode($$.code);
+  fmt.Println("iff4");
+ }
 
 | IF exp block ELSE block_or_if  { $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);$$.mp["true"]="label"+strconv.Itoa(label_num);
-   if($2.mp==nil)||($3.mp==nil)||($5.mp==nil) {log.Fatal("Expression or block  not declared in IF statement")};
+   if($2.mp==nil)||($5.mp==nil) {log.Fatal("Expression or block  not declared in IF statement")};
   $$.code=new (node);p:=copy_nodes($2.code,$$.code);
   p.next=new(node); p.next.value="ifgoto, je, "+$2.mp["value"]+", 1, "+$$.mp["true"];
   p.next.next=new(node); q:=copy_nodes(p.next.next,$5.code);q.next=new(node);
@@ -457,7 +456,7 @@ block_or_if
 ;
 
 block
-: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY  
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {$$.code=$2.code;}  
 ;
 
 expr_while
@@ -512,32 +511,36 @@ let
 : LET maybe_mut pat  maybe_ty_ascription maybe_init_expr   {
   fmt.Println("ldl");
   if($3.mp==nil) {log.Fatal("Variable name not present in let");}
-fmt.Println("ldl");
+fmt.Println("ldl1");
   if($4.mp==nil){
-    fmt.Println("ldl");
+    fmt.Println("ldl2");
     if($4.s!=""){
-      fmt.Println("ldl");
+      fmt.Println("ldl3");
       if($5.mp!=nil){
-        fmt.Println("ldl");
+        fmt.Println("ldl4");
           /*let mut y:i32 = expr */
           if($5.mp["type"]!=$4.s) {log.Fatal("Type mismatch in let ;;");}
           $3.mp["type"]=$5.mp["type"];
           $$.code=new(node);
-        p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
-fmt.Println("ldl");
+          if($5.code!=nil) {
+          p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+          }else {
+            $$.code.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+          }
+          fmt.Println("ldl5");
       } else{/*let  y:i32 */
-        fmt.Println("ldl");
+        fmt.Println("ldl6");
         $3.mp["type"]=$4.s;
-        fmt.Println("ldls");
+        fmt.Println("ldl7");
       }
     } else{ /* let y = 5 */
-      fmt.Println("ldl");
+      fmt.Println("ldl8");
       if($5.mp==nil) {log.Fatal("incomplete let expression  ;");}
       $3.mp["type"]=$5.mp["type"];
       $$.code=new(node);p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
     }
         }
-  fmt.Println("ldlss");
+  fmt.Println("ldlss9");
   print_ircode($$.code);
   fmt.Println("ldlss");
 }
@@ -553,7 +556,9 @@ maybe_init_expr
 | '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  
 | '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  
 | OPEQ_INT  opeq_ops  {
-  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1; 
+  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+  $$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+strconv.Itoa($1.n);fmt.Println($1.n)
+  $$.mp["type"]="int"
   if($2.code!=nil){
     $$.code=new (node);p:=copy_nodes($2.code,$$.code);p.next=new(node);p.next.value="+, "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];}else{
     $$.s="";}
@@ -582,7 +587,11 @@ range_di
 
 
 pat
-: IDENTIFIER {$1.mp=symtab.Make_entry($1.s);$$.mp=$1.mp;fmt.Println($1.mp,$$.mp);}
+: IDENTIFIER {
+ p:=symtab.Find_id($1.s);
+  if(p==nil){
+    $1.mp=symtab.Make_entry($1.s);}
+$$.mp=$1.mp;fmt.Println($1.mp,"sdaaa",$$.mp);}
 ;
 
 
@@ -698,8 +707,12 @@ exp
   $$.mp["value"]=$1.mp["value"];$$.mp["place"]=$1.mp["place"];$$.mp["type"]=$1.mp["type"];}
 
 | IDENTIFIER     {
-  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
-  $$.mp["value"]=$1.mp["value"];$$.mp["place"]=$1.mp["place"];$$.mp["type"]=$1.mp["type"];$$.code=$1.code;}
+ p:=symtab.Find_id($1.s);fmt.Println("(in exp ) Identifier =",p["value"]);
+  if(p==nil){fmt.Println("(in exp )new Identifier ",$1.s);
+    $1.mp=symtab.Make_entry($1.s);
+    $$.mp=$1.mp;  
+  }else{$$.mp=p;}
+    }
 | IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {}
 | IDENTIFIER ':' struct_expr  
 | '!' round_exp      {}         /* not of conditional */
@@ -713,7 +726,7 @@ exp
 
 | round_exp '+' round_exp        {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];
-  $$.code=new (node);p:=copy_nodes($1.code,$$.code); p.next=new(node);q:=copy_nodes(p.next,$3.code);q.next=new(node);if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+  $$.code=new(node);p:=copy_nodes($1.code,$$.code); p.next=new(node);q:=copy_nodes(p.next,$3.code);q.next=new(node);if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
   if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
   q.next.value="+, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 

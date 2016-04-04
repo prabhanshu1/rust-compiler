@@ -19,3 +19,6 @@ func Make_entry(s string) map[string]string {
 	symtab[s] = newmap
 	return newmap
 }
+func Find_id(s string) map[string]string {
+	return symtab[s]
+}
