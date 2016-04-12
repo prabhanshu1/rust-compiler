@@ -566,12 +566,11 @@ maybe_init_expr
 | '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  
 | OPEQ_INT  opeq_ops  {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
-  $$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+strconv.Itoa($1.n);
-  $$.mp["type"]="int"
-  if($2.code!=nil){
-    $$.code=$2.code;p:=list_end(&$2.code);p.next=new(node);p.next.value="+, "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];}else{
-    $$.s="";}
+  $$.code=new(node);$$.code=$2.code;p:=list_end(&$$.code);
+  p.next=new(node);p.next.value=$2.mp["op"]+", "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];
+  $$.mp["type"]="int";
 }
+
 | OPEQ_FLOAT opeq_ops 
 | /* empty */ {$$.s=""}
 ;
@@ -612,7 +611,7 @@ tys
 ty
 : path  {if($1.code==nil) {$$.s=$1.s;} else{ $$.code=$1.code;$$.mp=$1.mp; } }
 | '~' ty
-| '*' maybe_mut ty
+| '*' maybe_mut ty  
 | '&' maybe_mut ty
 | OP_POWER maybe_mut ty
 | SYM_OPEN_ROUND tys SYM_CLOSE_ROUND  
@@ -626,7 +625,13 @@ maybe_mut
 
 var_types
 : VAR_TYPE  {if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}  else{$$.s="str";}}
-| IDENTIFIER {$$.s=$1.s;}
+| IDENTIFIER {
+ $1.mp =symtab.Find_id($1.s);
+  if($1.mp==nil){
+    $1.mp=symtab.Make_entry($1.s);}
+$$.mp=$1.mp;
+ $$.s=$1.s;
+  }  //maybe incomplete
 
 path
 : var_types {$$.s=$1.s;}
@@ -635,7 +640,7 @@ path
 
 maybe_size
 : ';' LIT_INT {$$.s=strconv.Itoa($2.n)}
-| 
+|                      //maybe incomplete
 ;
 
 maybe_exprs
@@ -650,10 +655,9 @@ exprs
 }
 ;
 
-//// $$$opeq+int doesn't work
 
 maybe_assignment
-: assignment {$$.code=$1.code;}
+: assignment {$$.code=$1.code;$$.mp=$1.mp;}
 | 
 ;
 
@@ -674,7 +678,7 @@ hole
   }else{$$.mp=p;}
 }
 
-| IDENTIFIER '.' hole 
+| IDENTIFIER '.' hole  //incomplete
 
 
 
@@ -688,12 +692,16 @@ assignment
 | hole OP_DIVEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="/, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_MODEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="%, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_ANDEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="&, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+
 | hole OP_SHLEQ expr 
 | hole OP_SHREQ expr 
+
 | hole OP_OREQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="|, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_XOREQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="^, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+
 | hole OP_EQEQ expr 
 | hole OP_NOTEQ expr 
+
 | hole OPEQ_INT opeq_ops {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
   $$.code=new(node);$$.code=$3.code;p:=list_end(&$$.code);
