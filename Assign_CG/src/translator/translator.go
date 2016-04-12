@@ -5,6 +5,7 @@ import (
 	"../model"
 	//"fmt"
 	"strconv"
+	"../runtime"
 )
 
 func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leader []int) {
@@ -256,6 +257,8 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			case "arg":
 
+				//ContextSave()
+
 				if jmp != "" {
 					data = append(data, "pushl "+jmp)
 				}
@@ -276,6 +279,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				}
 
 			case "call":
+
 				data = append(data, "call "+" "+jmp)
 				if dest!="" {
 					data=append(data,"movl %eax,"+dest)
@@ -336,7 +340,6 @@ func Free_reg_at_end(data *[]string, Ref_Map *model.Ref_Maps) {
 	for key, _ := range (*Ref_Map).VtoR {
 		model.Set_Var_Map(Ref_Map, key, "")
 	}
-
 }
 
 func Hold_Reg(reg string, Ref_Map *model.Ref_Maps) {
