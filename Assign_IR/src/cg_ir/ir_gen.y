@@ -672,16 +672,18 @@ hole
     $1.mp["value2"]=$3.mp["value"];
     $$.mp=$1.mp;  
   }else{$$.mp=p;}
-    }                          
+}
+
 | IDENTIFIER '.' hole 
+
+
 
 assignment
 : hole '=' expr  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p);q.next=new(node);if($1.mp["value2"]=="") {q.next.value="=, "+$1.mp["value"]+", "+$3.mp["value"];}else{q.next.value="[]=, "+$1.mp["value2"]+", "+$1.mp["value"] +", "+$3.mp["value"];}}
 
 | hole OP_ADDEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="+, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_SUBEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="-, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
-| hole OP_LEQ expr 
-| hole OP_GEQ expr 
+
 | hole OP_MULEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="*, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_DIVEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="/, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_MODEQ expr {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="%, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
@@ -694,10 +696,10 @@ assignment
 | hole OP_NOTEQ expr 
 | hole OPEQ_INT opeq_ops {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
-  $$.code=new(node);$$.code.value="=, "+$1.mp["value"]+", "+strconv.Itoa($2.n);
-    if($3.code!=nil){
-      $$.code.next=new(node);$$.code.next=$2.code;p:=list_end(&$$.code.next);p.next=new(node);p.next.value="+, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];}else{
-    $$.s="";}
+  $$.code=new(node);$$.code=$3.code;p:=list_end(&$$.code);
+  p.next=new(node);p.next.value=$3.mp["op"]+", "+$$.mp["value"]+", "+strconv.Itoa($2.n)+", "+$3.mp["value"];
+  p.next.next=new(node);
+  p.next.next.value="=, "+$1.mp["value"]+", "+$$.mp["value"];
 }
  
 | hole OPEQ_FLOAT opeq_ops 
@@ -708,26 +710,26 @@ assignment
 
 
 opeq_ops
-:  '+' expr 
-| '-' expr 
-| '&' expr 
-| '|' expr 
-| '^' expr 
-| '/' expr 
-| '*' expr 
-| '>' expr 
-| '<' expr 
-| '%' expr 
-| '.' expr 
+:  '+' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="+";} 
+| '-' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="-";} 
+| '&' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="&";} 
+| '|' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="|";} 
+| '^' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="^";} 
+| '/' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="/";} 
+| '*' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="*";} 
+| '>' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]=">";} 
+| '<' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="<";} 
+| '%' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="%";} 
+| '.' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]=".";} //incorrect 
 | OP_RSHIFT expr 
 | OP_LSHIFT expr 
-| OP_ANDAND expr 
-| OP_OROR expr  
+| OP_ANDAND expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="&&";} //incorrect
+| OP_OROR expr  {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="||";} //incorrect 
 | OP_POWER expr         
 |   { $$.s=""; }
 ;
 
-expr
+expr 
 : round_exp {$$.code=$1.code;$$.mp=$1.mp;}
 | assignment {$$.code=$1.code;$$.mp=$1.mp;}
 ;
@@ -735,7 +737,7 @@ expr
 //$$struct remaining
 
 exp
-: lit {$$.mp=$1.mp;}
+: lit {$$.mp=$1.mp;$$.code=$1.code;}
 
 | IDENTIFIER     {
  p:=symtab.Find_id($1.s);
@@ -745,6 +747,7 @@ exp
   }else{$$.mp=p;}
 
     }
+
 | IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ     {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
   $$.mp["type"]=$1.mp["type"];
@@ -755,6 +758,7 @@ exp
 | '!' round_exp      {}         /* not of conditional */
 | '&' round_exp      
 | OP_ANDMUT round_exp      
+
 | round_exp '-' round_exp      {  
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
   q.next.value="-, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
@@ -789,51 +793,163 @@ exp
   }
     
 | round_exp '>' round_exp       {
+  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));
+ temp_num+=1;
+ $$.mp["type"]=$1.mp["type"];
+ $$.mp["true"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+ $$.mp["after"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+      $$.code=$1.code;
+      p:=list_end(&$$.code); 
+      p.next=new(node);
+      p.next=$3.code;
+      q:=list_end(&$$.code);
 
-   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
-  q.next.value=">, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
- }
+      //q:=copy_nodes(p.next,$3.code);
+      q.next=new(node);
+      if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+      if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
+    q.next.value="ifgoto, jg, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    r:=new(node);
+    q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
+    r.next.value="jmp, "+$$.mp["after"];
+    r.next.next=new(node);s:=r.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);
+    s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
+  
 
 | round_exp '<' round_exp   {
-  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
-  q.next.value="<, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
-   }
+ $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));
+ temp_num+=1;
+ $$.mp["type"]=$1.mp["type"];
+ $$.mp["true"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+ $$.mp["after"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+      $$.code=$1.code;
+      p:=list_end(&$$.code); 
+      p.next=new(node);
+      p.next=$3.code;
+      q:=list_end(&$$.code);
 
+      //q:=copy_nodes(p.next,$3.code);
+      q.next=new(node);
+      if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+      if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
+    q.next.value="ifgoto, jl, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    r:=new(node);
+    q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
+    r.next.value="jmp, "+$$.mp["after"];
+    r.next.next=new(node);s:=r.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);
+    s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
+
+| round_exp OP_LEQ round_exp  {
+  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));
+ temp_num+=1;
+ $$.mp["type"]=$1.mp["type"];
+ $$.mp["true"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+ $$.mp["after"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+      $$.code=$1.code;
+      p:=list_end(&$$.code); 
+      p.next=new(node);
+      p.next=$3.code;
+      q:=list_end(&$$.code);
+
+      //q:=copy_nodes(p.next,$3.code);
+      q.next=new(node);
+      if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+      if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
+    q.next.value="ifgoto, jle, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    r:=new(node);
+    q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
+    r.next.value="jmp, "+$$.mp["after"];
+    r.next.next=new(node);s:=r.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);
+    s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
+| round_exp OP_GEQ round_exp  {
+  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));
+ temp_num+=1;
+ $$.mp["type"]=$1.mp["type"];
+ $$.mp["true"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+ $$.mp["after"]="label"+strconv.Itoa(label_num);
+ label_num+=1;
+      $$.code=$1.code;
+      p:=list_end(&$$.code); 
+      p.next=new(node);
+      p.next=$3.code;
+      q:=list_end(&$$.code);
+
+      //q:=copy_nodes(p.next,$3.code);
+      q.next=new(node);
+      if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+      if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
+    q.next.value="ifgoto, jge, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    r:=new(node);
+    q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
+    r.next.value="jmp, "+$$.mp["after"];
+    r.next.next=new(node);s:=r.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);
+    s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
       
 | round_exp '%' round_exp    {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
   q.next.value="%, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
    }
 
-| round_exp '.' round_exp 
+| round_exp '.' round_exp   //incorrect 
 {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
   q.next.value="., "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
    }
-| round_exp OP_RSHIFT round_exp   
+| round_exp OP_RSHIFT round_exp   //incorrect
     {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
   q.next.value=">>, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
    }
-| round_exp OP_LSHIFT round_exp {
+| round_exp OP_LSHIFT round_exp { //incorrect
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
   q.next.value="<<, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
    }
 | round_exp OP_ANDAND round_exp  {
 
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"]; $$.mp["false"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;
-    $$.code=$1.code;p:=list_end(&$1.code); p.next=new(node);q:=copy_nodes(p.next,$3.code);q.next=new(node);if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+    $$.code=$1.code;p:=list_end(&$1.code);
+    p.next=new(node);p.next=$3.code;  q:=list_end(&$$.code);
+    q.next=new(node);
+    if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
   if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-  q.next.value="ifgoto, je, "+$1.mp["value"]+", 0, "+$$.mp["false"];r:=new(node);q.next.next=r;r.value="ifgoto, je, "+$3.mp["value"]+", 0, "+$$.mp["false"];r.next=new(node);rr:=r.next; rr.value="=, "+$$.mp["value"]+", "+"1";rr.next=new(node);rr.next.value="jmp, "+$$.mp["after"];rr.next.next=new(node);s:=rr.next.next;s.value="label, "+$$.mp["false"];s.next=new(node);s.next.value="=, "+$$.mp["value"]+", "+"0";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
-      
+  q.next.value="ifgoto, je, "+$1.mp["value"]+", 0, "+$$.mp["false"];
+ r:=new(node);q.next.next=r;
+  r.value="ifgoto, je, "+$3.mp["value"]+", 0, "+$$.mp["false"];
+  r.next=new(node);rr:=r.next; rr.value="=, "+$$.mp["value"]+", "+"1";
+  rr.next=new(node);rr.next.value="jmp, "+$$.mp["after"];
+  rr.next.next=new(node);s:=rr.next.next;s.value="label, "+$$.mp["false"];
+  s.next=new(node);s.next.value="=, "+$$.mp["value"]+", "+"0";
+  s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"];
+}
+
+
 | round_exp OP_OROR round_exp  {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"]; $$.mp["true"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;
-    $$.code=$1.code;p:=list_end(&$1.code); p.next=new(node);q:=copy_nodes(p.next,$3.code);q.next=new(node);if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};  if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-    q.next.value="ifgoto, je, "+$1.mp["value"]+", 1, "+$$.mp["true"];r:=new(node);q.next.next=r;r.value="ifgoto, je, "+$3.mp["value"]+", 1, "+$$.mp["true"];r.next=new(node);rr:=r.next; rr.value="=, "+$$.mp["value"]+", "+"0";rr.next=new(node);rr.next.value="jmp, "+$$.mp["after"];rr.next.next=new(node);s:=rr.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"]; }
-      
-| round_exp OP_POWER round_exp {
-  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
-  q.next.value="**, "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
+
+$$.code=$1.code;p:=list_end(&$1.code);
+    p.next=new(node);p.next=$3.code;  q:=list_end(&$$.code);
+    q.next=new(node);
+    if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
+    if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
+
+    q.next.value="ifgoto, je, "+$1.mp["value"]+", 1, "+$$.mp["true"];r:=new(node);
+    q.next.next=r;r.value="ifgoto, je, "+$3.mp["value"]+", 1, "+$$.mp["true"];
+    r.next=new(node);rr:=r.next; rr.value="=, "+$$.mp["value"]+", "+"0";
+    rr.next=new(node);rr.next.value="jmp, "+$$.mp["after"];rr.next.next=new(node);
+    s:=rr.next.next;s.value="label, "+$$.mp["true"];s.next=new(node);
+    s.next.value="=, "+$$.mp["value"]+", "+"1";s.next.next=new(node);s.next.next.value="label, "+$$.mp["after"];
+}
+
+
+| round_exp OP_POWER round_exp { //incorrect
+  
    }
 | func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND  {
     $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
