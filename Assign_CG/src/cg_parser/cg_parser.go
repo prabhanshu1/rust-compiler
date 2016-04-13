@@ -16,62 +16,50 @@ func Parse_line(str string, line int, instructions *[]*model.Instr_struct, leade
 
 	s := strings.Split(str, ", ")
 
-	if s[0] != strconv.Itoa(line) {
-		log.Fatal("file line and instruction line no do not match")
-	}
-
-	if strconv.Itoa(line) != s[0] {
-		log.Fatal("Line mismatch, in sorce file and cg_parser")
-	}
-
-	switch s[1] {
+	switch s[0] {
 	case "+", "-", "*", "/", "%","&","^","|":
-		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
+		model.Initialize_instr(instr, s[0], s[1], s[2], s[3], "0")
 	case "=":
-		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
+		model.Initialize_instr(instr, s[0], s[1], s[2], "", "0")
+	case "=ret":
+		model.Initialize_instr(instr, s[0], s[1], "" , "", "0")
 	case "addof":
-		model.Initialize_instr(instr, s[1], s[2], s[3], "", "0")
+		model.Initialize_instr(instr, s[0], s[1], s[2], "", "0")
 	case "[]=": // a[i] = b , dest =i , src1 =a ,src2 = b
-		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
+		model.Initialize_instr(instr, s[0], s[1], s[2], s[3], "0")
 	case "=[]": // b=a[i] , dest =b , src1 =a ,src2 = i
-		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], "0")
+		model.Initialize_instr(instr, s[0], s[1], s[2], s[3], "0")
 	case "ifgoto":
-		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
-		s, err := strconv.Atoi(s[5])
-		if err != nil {
-			log.Fatal("Invalid Jump Target")
-		}
-		*leader = append(*leader, s-1)
+		model.Initialize_instr(instr, s[0], s[1], s[2], s[3], s[4])
 		*leader = append(*leader, line)
 	case "call":
-		model.Initialize_instr(instr, s[1], s[3], "", "", s[2])
+		model.Initialize_instr(instr, s[0], s[2], "", "", s[1])
 		*leader = append(*leader, line-1)
 	case "ret":
-		if len(s) > 2 {
-			model.Initialize_instr(instr, s[1], "", s[2], "", "-1")
+		if len(s) > 1 {
+			model.Initialize_instr(instr, s[0], "", s[1], "", "-1")
 		} else {
-			model.Initialize_instr(instr, s[1], "", "", "", "-1")
+			model.Initialize_instr(instr, s[0], "", "", "", "-1")
 		}
 		*leader = append(*leader, line)
 	case "arg":
-		model.Initialize_instr(instr, s[1], s[2], s[3], s[4], s[5])
-	case "string": //s[2] is name of variable s[3] is string
-		model.Initialize_instr(instr, s[1], s[2], s[3], "", "")
+		model.Initialize_instr(instr, s[0], s[1], s[2], s[3], s[4])
+	case "string": //s[1] is name of variable s[2] is string
+		model.Initialize_instr(instr, s[0], s[1], s[2], "", "")
 	case "label":
-		model.Initialize_instr(instr, s[1], "", s[2], "", "-3")
+		if (len(s) > 2) {
+			model.Initialize_instr(instr, s[0], "", s[1], s[2], "-3")
+			}else{
+				model.Initialize_instr(instr, s[0], "", s[1], "", "-3")
+			}
 		*leader = append(*leader, line-1)
 	case "print":
-		model.Initialize_instr(instr, s[1], "", s[2], "", "-2")
+		model.Initialize_instr(instr, s[0], "", s[1], "", "-2")
 	case "exit":
-		model.Initialize_instr(instr, s[1], "", "", "", "-3")
+		model.Initialize_instr(instr, s[0], "", "", "", "-3")
 		*leader = append(*leader, line)
 	case "jmp":
-		model.Initialize_instr(instr, s[1], "", "", "", s[2])
-		s, err := strconv.Atoi(s[2])
-		if err != nil {
-			log.Fatal("Invalid Jump Target")
-		}
-		*leader = append(*leader, s-1)
+		model.Initialize_instr(instr, s[0], "", "", "", s[1])
 		*leader = append(*leader, line)
 	default: //assuming a syscall
 	}
@@ -119,9 +107,9 @@ func Parser(file_name string, instructions *[]*model.Instr_struct, leader *[]int
 		if tmp[(*leader)[i]].Op != "label" {
 
 			instr := new(model.Instr_struct)
-			model.Initialize_instr(instr, "label", " ", "label"+strconv.Itoa(label_count), "", "-3")
+			model.Initialize_instr(instr, "label", " ", "label_CG"+strconv.Itoa(label_count), "", "-3")
 			*instructions = append(*instructions, instr)
-			Old_Line_Number_To_New_Labels[(*leader)[i]] = "label" + strconv.Itoa(label_count)
+			Old_Line_Number_To_New_Labels[(*leader)[i]] = "label_CG" + strconv.Itoa(label_count)
 
 			label_count++
 			tmp_delta++
@@ -142,7 +130,7 @@ func Parser(file_name string, instructions *[]*model.Instr_struct, leader *[]int
 	model.Initialize_instr(end, "label", " ", "end", "", "-3")
 	*instructions = append(*instructions, end)
 
-	for key := range *instructions {
+/*	for key := range *instructions {
 		if (*instructions)[key].Op == "ifgoto" {
 			tmp_jump, _ := strconv.Atoi((*instructions)[key].Jmp)
 			(*instructions)[key].Jmp = Old_Line_Number_To_New_Labels[tmp_jump-1]
@@ -152,7 +140,7 @@ func Parser(file_name string, instructions *[]*model.Instr_struct, leader *[]int
 			tmp_jump, _ := strconv.Atoi((*instructions)[key].Jmp)
 			(*instructions)[key].Jmp = Old_Line_Number_To_New_Labels[tmp_jump-1]
 		}
-	}
+	}*/
 
 
 	defer file.Close()

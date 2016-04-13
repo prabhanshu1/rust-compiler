@@ -1,35 +1,41 @@
-1, =, a1, 1
-2, =, a2, 2
-3, =, a3, 3
-4, =, a4, 4
-5, =, a0, 0
-6, []=, a0, a, 3
-7, []=, a1, a, 1
-8, []=, a2, a, 7
-9, []=, a3, a, 8
-10, []=, a4, a, 2
-11, =[], pivot, a, a0
-12, =, start, 0
-13, =, end, 4
-14, =, i, 0
-15, ifgoto, jg, 4, i, 27
-16, =[], t1, a, i
-17, ifgoto, jl, t1, pivot, 22
-18, =[], t2, a, i
-19, []=, start, b, t2
-20, +, start, start, 1
-21, jmp, 25
-22, =[], t2, a, i
-23, []=, end, b, t2
-24, -, end, end, 1
-25, +, i, i, 1
-26, jmp, 15
-27, []=, start, b, pivot
-28, =, j, 0
-29, ifgoto, jg, 4, j, 34
-30, =[], t1, b, i
-31, arg, asd, t1, , , 
-32, call, printf, , , , 
-33, jmp, 29
-34, exit
-35, string, asd, %d\n\0
+=, a1, 1
+=, a2, 2
+=, a3, 3
+=, a4, 4
+=, a0, 0
+[]=, a0, a, 3
+[]=, a1, a, 1
+[]=, a2, a, 7
+[]=, a3, a, 8
+[]=, a4, a, 2
+=[], pivot, a, a0
+=, start, 0
+=, end, 4
+=, i, 0
+label, sita
+ifgoto, jg, 4, i, ram
+=[], t1, a, i
+ifgoto, jl, t1, pivot, sham
+=[], t2, a, i
+[]=, start, b, t2
++, start, start, 1
+jmp, gita
+label, sham
+=[], t2, a, i
+[]=, end, b, t2
+-, end, end, 1
+label, gita
++, i, i, 1
+jmp, sita
+label, ram
+[]=, start, b, pivot
+=, j, 0
+label, lll
+ifgoto, jg, 4, j, mota
+=[], t1, b, i
+arg, asd, t1, , , 
+call, printf, , , , 
+jmp, lll
+label, mota
+exit
+string, asd, %d\n\0

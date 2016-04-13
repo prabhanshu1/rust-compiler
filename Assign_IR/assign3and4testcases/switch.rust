@@ -1,0 +1,13 @@
+fn main(na : i32 , argv : **char ){
+	let wflg : i32 = 6;
+	let dflg : i32 = 6;
+	let tflg : i32 = 6;
+	let c : char ;
+
+	match c{
+		'w' | 'W' => wflg = 1,
+		't' | 'T' => tflg = 1,
+		'd' => dflg = 1,
+	}
+
+}
