@@ -295,7 +295,7 @@ item_fn
 : FN IDENTIFIER fn_decl inner_attrs_and_block  
 {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]="func"+$2.s;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;  
   $$.code=new (node);$$.code.value="jmp, "+$$.mp["after"];$$.code.next=new(node);$$.code.next.value="label, "+$$.mp["begin"] + ", " + $$.mp["funargs"];$$.code.next.next=new(node);$$.code.next.next=$4.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$.mp["after"];
-
+if($2.s=="main") {pp:=list_end(&$$.code);pp.next=new(node);pp.next.value="exit";}
 }
 ;
 
@@ -364,7 +364,7 @@ lit
 | LIT_INT_UNSUFFIXED
 | FLOAT  
 | LIT_FLOAT_UNSUFFIXED   
-| LITERAL_STR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }   
+| LITERAL_STR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="string, "+$$.mp["value"]+", "+($1.s[1:])[0:len($1.s)-2]+"\\n\\0"; }   
 | LITERAL_CHAR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }   
 | TRUE    {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", 1"; }   
 | FALSE   {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", 0"; }   
@@ -401,11 +401,11 @@ expr_stmt
 
 expr_return
 : RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';' // incomplete
-| RETURN ';'                   {$$.code=new(node);$$.code.value="return";}
-| RETURN lit ';'               {$$.code=$2.code; p:=list_end(&$$.code);p.next=new(node);p.next.value="return, "+$2.mp["value"];}
+| RETURN ';'                   {$$.code=new(node);$$.code.value="ret";}
+| RETURN lit ';'               {$$.code=$2.code; p:=list_end(&$$.code);p.next=new(node);p.next.value="ret, "+$2.mp["value"];}
 | RETURN IDENTIFIER ';'        {$$.code=new(node); $2.mp =symtab.Find_id($2.s);
    if($2.mp ==nil){log.Fatal("Returning undefined identifier; ");};
-   $$.code.value="return, "+$2.mp["value"];
+   $$.code.value="ret, "+$2.mp["value"];
  }
 ;
 
@@ -581,7 +581,9 @@ let   // incomplete for array and struct => both have $4.map != nil;;
                 }
               }
             }else{
-            p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+               if($5.mp["isfunc"]=="true"){p.next.value="=ret, "+$3.mp["value"]+", "}else{
+                  p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+               }
           }
 
           }else {
@@ -602,7 +604,9 @@ let   // incomplete for array and struct => both have $4.map != nil;;
                 }
               }
             }else{
-            $$.code.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+               if($5.mp["isfunc"]=="true"){$$.code.value="=ret, "+$3.mp["value"]+", "}else{
+              $$.code.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+            }
           }
                       
           }
@@ -744,7 +748,7 @@ maybe_size
 
 maybe_exprs
 : exprs {$$.code=$1.code;$$.mp=$1.mp;}
-| /* empty */ 
+| /* empty */ {$$.code=nil;$$.mp=nil;}
 ;
 
 exprs
@@ -785,10 +789,10 @@ hole
 }
 
 
-| IDENTIFIER '.' hole {
- p:=symtab.Find_id($1.s+"_"+$3.mp["value"]);
+| round_exp '.' hole {
+ p:=symtab.Find_id($1.mp["value"]+"_"+$3.mp["value"]);
   if(p==nil){
-    $1.mp=symtab.Make_entry($1.s+"_"+$3.mp["value"]);
+    $1.mp=symtab.Make_entry($1.mp["value"]+"_"+$3.mp["value"]);
     $$.mp=$1.mp;  
   }else{$$.mp=p;}
 
@@ -797,7 +801,7 @@ hole
 ;
 
 assignment
-: hole '=' round_exp  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p);q.next=new(node);if($1.mp["value2"]=="") {q.next.value="=, "+$1.mp["value"]+", "+$3.mp["value"];}else{q.next.value="[]=, "+$1.mp["value2"]+", "+$1.mp["value"] +", "+$3.mp["value"];}}
+: hole '=' round_exp  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p);q.next=new(node);if($1.mp["value2"]=="") { if($3.mp["isfunc"]=="true"){q.next.value="=ret, "+$1.mp["value"]+", "}else{q.next.value="=, "+$1.mp["value"]+", "+$3.mp["value"];}}else{q.next.value="[]=, "+$1.mp["value2"]+", "+$1.mp["value"] +", "+$3.mp["value"];}}
 
 | hole OP_ADDEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="+, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 | hole OP_SUBEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="-, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
@@ -1082,7 +1086,8 @@ $$.code=$1.code;p:=list_end(&$1.code);
    }
 | func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND  {
     $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
-  q.next.value="push, "+$3.mp["args"];q.next.next=new(node);q.next.next.value="call, " + $1.mp["value"]+ ", ";
+  q.next.value="arg, "+$3.mp["args"] + ", , , ";q.next.next=new(node);q.next.next.value="call, " + $1.mp["value"]+ ", " + ", ";
+  $$.mp["isfunc"]="true";
 }
 
 | CONTINUE     

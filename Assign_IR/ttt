@@ -1,0 +1,14 @@
+
+fn main(){
+let mut y : i32 = 5;
+y=y+1;
+printf("asd");
+y=shit();
+printf("mtoa %d",y);
+}
+
+fn shit() -> i32 {
+printf("Abhimanyu");
+return 1;
+}
+
