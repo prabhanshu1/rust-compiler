@@ -5,6 +5,7 @@ import "fmt"
 import "log"
   /* import "os" */
 import "strconv"
+import "strings"
   var line = 0
   var temp_num=0;
  var label_num=0;
@@ -255,7 +256,7 @@ func itob(a int64)bool {
 // RETURN needs to be lower-precedence than tokens that start
 // prefix_exprs
 
-%right '=' '!' OP_SHLEQ OP_SHREQ  OP_ADDEQ OP_OREQ OP_ANDEQ  OP_MULEQ OP_DIVEQ OP_MODEQ OP_XOREQ 
+%right '=' '!'  OP_SHLEQ OP_SHREQ  OP_ADDEQ OP_OREQ OP_ANDEQ  OP_MULEQ OP_DIVEQ OP_MODEQ OP_XOREQ 
 %left OP_EQEQ OP_NOTEQ
 %left '<' '>' OP_GEQ OP_LEQ
 %left '|' 
@@ -268,32 +269,34 @@ func itob(a int64)bool {
 
 
 
-
 %start Code
 
 %%
 
 /// println, print macro support => standard macros
 
-Code : rust {print_ircode($1.code)}   
+Code : rust {print_ircode($1.code);}   
 ;
 
 rust
-: STRUCT IDENTIFIER struct_expr rust  
+: STRUCT IDENTIFIER marker_1 struct_expr rust  {$$.code=$4.code;p:=list_end(&$$.code);p.next=$5.code;}
 | item_or_view_item rust  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$2.code;}
 | USE func_identifier ';' rust 
 |  
 ;
 
+marker_1:   {  fmt.Println("in rust _marker "+$0.s);$$.mp=symtab.Make_entry($0.s);$$.mp["type"]="struct"; }
 
 item_or_view_item
-: item_fn {$$.code=$1.code}
+: item_fn {$$.code=$1.code;}
 ;
 
 item_fn
 : FN IDENTIFIER fn_decl inner_attrs_and_block  
-{$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]=$2.s;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;  
-  $$.code=new (node);$$.code.value="jmp, "+$$.mp["after"];$$.code.next=new(node);$$.code.next.value="label, "+$$.mp["begin"];$$.code.next.next=new(node);p:=copy_nodes($4.code,$$.code.next.next);p.next=new(node);p.next.value="label, "+$$.mp["after"];}
+{$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]="func"+$2.s;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;  
+  $$.code=new (node);$$.code.value="jmp, "+$$.mp["after"];$$.code.next=new(node);$$.code.next.value="label, "+$$.mp["begin"] + ", " + $$.mp["funargs"];$$.code.next.next=new(node);$$.code.next.next=$4.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$.mp["after"];
+
+}
 ;
 
 fn_decl
@@ -370,7 +373,7 @@ lit
 ;
 
 maybe_stmts
-: stmts       {$$.code=$1.code; }           
+: stmts       {$$.code=$1.code;}           
 | /* empty */                  
 ;
 
@@ -437,7 +440,7 @@ maybe_guard
 
 expr_if 
 : IF exp block  {  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;
-
+   fmt.Println("printing exp $2.mp", $2.mp);
   if($2.mp==nil) {log.Fatal("Bad If   block;;;")};
 
   $$.code=new(node);p:=$$.code;
@@ -462,12 +465,12 @@ expr_if
 ;
 
 block_or_if
-: block   {   $$.mp=$1.mp;$$.code=$1.code; } 
+: block   {  $$.mp=$1.mp;$$.code=$1.code; } 
 | expr_if {   $$.mp=$1.mp;$$.code=$1.code; }
 ;
 
 block
-: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {$$.code=$2.code;$$.mp=$2.mp;}  
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY { $$.code=$2.code;$$.mp=$2.mp;}  
 ;
 
 expr_while
@@ -528,6 +531,7 @@ $$.code=$3.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$
 
 let   // incomplete for array and struct => both have $4.map != nil;;
 : LET maybe_mut pat  maybe_ty_ascription maybe_init_expr   {
+  fmt.Println("in let",$4.mp,$5.s);
   if($3.mp==nil) {log.Fatal("Variable name not present in let");}
     if($4.mp==nil){ 
     if($4.s!=""){
@@ -547,11 +551,31 @@ let   // incomplete for array and struct => both have $4.map != nil;;
        
       }
     } else{ /* let y = 5 */
+      fmt.Println("FFFFFFFFFFFFFFFFFFF")
+        print_ircode($5.code)
+        fmt.Println("FFFFFFFFFFFFFFFFFFF")
       if($5.mp==nil) {log.Fatal("incomplete let expression  ;");}
       $3.mp["type"]=$5.mp["type"];
       $$.code=new(node);$$.code=$5.code; p:=list_end(&$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+              print_ircode($5.code)
+        fmt.Println("FFFFFFFFFFFFFFFFFFF")
     }
-        }
+    }else{
+
+      if($4.mp["type"]!="struct") {log.Fatal("struct "+$4.mp["value"]+"not defined prior to use;");}
+    str_slice := strings.Split($5.s, ",");
+      $$.code=$5.code;p:=list_end(&$$.code);
+    temp:=symtab.Make_entry($3.mp["value"]+"_"+str_slice[0]);
+      for i := 0; i < len(str_slice); i+=2 {
+        
+        temp=symtab.Make_entry($3.mp["value"]+"_"+str_slice[i]);
+        p.next=new(node);p.next.value="=, "+temp["value"]+", "+str_slice[i+1];
+        p=p.next;
+	}
+      fmt.Println("in let, elssssss",$5.s);
+      print_ircode($$.code);
+            fmt.Println("in let, elssssss",$5.s);
+    }
 
 }
 ;
@@ -562,18 +586,22 @@ maybe_ty_ascription
 ;
 
 maybe_init_expr
-: '=' expr   {$$.code=$2.code; $$.mp=$2.mp;}
-| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  
-| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  
-| OPEQ_INT  opeq_ops  {
+: '=' expr   { fmt.Println("jjdddlsddd");$$.code=$2.code; $$.mp=$2.mp;}
+| '='  struct_init ';' { fmt.Println("jjdddlsddddqqqqqq");$$.code=$2.code;$$.s=$2.s;}  //struct
+
+| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  { fmt.Println("jjdddlsdddww");}//array
+
+| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ { fmt.Println("jjdddlsdddeeeeeee");}//array  
+
+| OPEQ_INT  opeq_ops  { fmt.Println("jjdddlsdddyyyyyyyy");
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
   $$.code=new(node);$$.code=$2.code;p:=list_end(&$$.code);
   p.next=new(node);p.next.value=$2.mp["op"]+", "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];
   $$.mp["type"]="int";
 }
 
-| OPEQ_FLOAT opeq_ops 
-| /* empty */ {$$.s=""}
+| OPEQ_FLOAT opeq_ops  {fmt.Println("jjdddlsdddiiiii");}
+| /* empty */ {$$.s="" ;fmt.Println("jjdddlsdddmmmmm");}
 ;
 
 pats_or
@@ -597,7 +625,8 @@ range_di
 
 pat
 : IDENTIFIER {
- $1.mp =symtab.Find_id($1.s);
+
+  $1.mp =symtab.Find_id($1.s);
   if($1.mp==nil){
     $1.mp=symtab.Make_entry($1.s);}
 $$.mp=$1.mp;}
@@ -608,6 +637,9 @@ tys
 : ty  
 | tys ',' ty  
 ;
+
+
+
 
 ty
 : path  {if($1.code==nil) {$$.s=$1.s;} else{ $$.code=$1.code;$$.mp=$1.mp; } }
@@ -625,19 +657,19 @@ maybe_mut
 
 
 var_types
-: VAR_TYPE  {if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}  else{$$.s="str";}}
+: VAR_TYPE  {$$.mp=nil; if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}  else{$$.s="str";}  }
 
 | IDENTIFIER {
- $1.mp =symtab.Find_id($1.s);
-  if($1.mp==nil){
-    log.Fatal("var_type not defined,")}  
-  }//maybe incomplete
 
-
+  $$.mp =symtab.Find_id($1.s);
+  fmt.Println("in var_type",$$.mp);
+  if($$.mp==nil){
+     log.Fatal("var_type not defined,")}  
+  }
 
 path
-: var_types {$$.s=$1.s;}
-| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ {$$.s="Array_"+$2.s+"_"+$3.s}
+: var_types {$$.s=$1.s; $$.mp=$1.mp;}
+| SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ {$$.s="Array_"+$2.s+"_"+$3.s;}
 ;
 
 maybe_size
@@ -680,9 +712,9 @@ hole
   }else{$$.mp=p;}
 }
 
-| IDENTIFIER '.' hole  //incomplete
+| IDENTIFIER '.' IDENTIFIER {fmt.Println("KKKKKKKKKKKKKKKKKKKKKKKK",$1.s,$3.mp["value"])} //incomplete
 
-
+;
 
 assignment
 : hole '=' expr  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p);q.next=new(node);if($1.mp["value2"]=="") {q.next.value="=, "+$1.mp["value"]+", "+$3.mp["value"];}else{q.next.value="[]=, "+$1.mp["value2"]+", "+$1.mp["value"] +", "+$3.mp["value"];}}
@@ -730,7 +762,7 @@ opeq_ops
 | '>' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]=">";} 
 | '<' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="<";} 
 | '%' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="%";} 
-| '.' expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]=".";} //incorrect 
+| '.' expr {fmt.Println("LLLLLLLLLLLLLLLL");$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]=".";} //incorrect 
 | OP_RSHIFT expr 
 | OP_LSHIFT expr 
 | OP_ANDAND expr {$$.code=$2.code;$$.mp=$2.mp; $$.mp["op"]="&&";} //incorrect
@@ -740,8 +772,8 @@ opeq_ops
 ;
 
 expr 
-: round_exp {$$.code=$1.code;$$.mp=$1.mp;}
-| assignment {$$.code=$1.code;$$.mp=$1.mp;}
+: round_exp {fmt.Println("hello in expr");$$.code=$1.code;$$.mp=$1.mp;}
+| assignment {fmt.Println("sadsad");$$.code=$1.code;$$.mp=$1.mp;}
 ;
 
 //$$struct remaining
@@ -750,6 +782,7 @@ exp
 : lit {$$.mp=$1.mp;$$.code=$1.code;}
 
 | IDENTIFIER     {
+   fmt.Println("jjdddlsvvvvvvv");
  p:=symtab.Find_id($1.s);
   if(p==nil){
     $1.mp=symtab.Make_entry($1.s);
@@ -908,9 +941,10 @@ exp
    }
 
 | round_exp '.' round_exp   //incorrect 
-{
-  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&p.next);  q.next=new(node);
-  q.next.value="., "+$$.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"];
+{fmt.Println("in a.b");
+  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code; q:=list_end(&$$.code);  q.next=new(node);
+  q.next.value="=, "+$$.mp["value"]+", "+$1.mp["value"]+"_"+$3.mp["value"];
+  
    }
 | round_exp OP_RSHIFT round_exp   //incorrect
     {
@@ -975,8 +1009,8 @@ $$.code=$1.code;p:=list_end(&$1.code);
 ;
 
 round_exp 
-: SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND  {$$.mp=$1.mp;$$.code=$1.code;}
-| exp {$$.mp=$1.mp;$$.code=$1.code;}
+: exp { fmt.Println("jjdddlsdddddcccccc");$$.mp=$1.mp;$$.code=$1.code;}
+|  SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND  {$$.mp=$1.mp;$$.code=$1.code;}
 ;
 
 func_identifier 
@@ -1005,20 +1039,42 @@ func_identifier
 ;
 
 struct_expr
-: SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY 
+: SYM_OPEN_CURLY field_exprs default_field_expr SYM_CLOSE_CURLY  {
+
+  
+} 
 ;
 
-field_inits
-: field_init 
-| field_inits ',' field_init 
+field_exprs
+: field_expr 
+| field_exprs ',' field_expr 
 ;
 
-field_init
-: maybe_mut IDENTIFIER ':' expr 
+field_expr
+: maybe_mut IDENTIFIER ':' path  {}
 ;
 
-default_field_init
+default_field_expr
 : ','	
 | ',' OP_DOTDOT expr 
 | /* empty */ 
 ;
+
+struct_init
+: IDENTIFIER SYM_OPEN_CURLY field_inits SYM_CLOSE_CURLY   {
+  $$.s=$3.s;$$.code=$3.code;
+  
+}
+;
+
+field_inits
+: field_init          {$$.s=$1.s;$$.code=$1.code;}
+| field_inits ',' field_init { $$.s=$1.s+","+$3.s;$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code; }
+;
+
+field_init
+: IDENTIFIER ':'  exp {$$.s=$1.s+","+$3.mp["value"];$$.code=$3.code;}
+;
+
+
+
