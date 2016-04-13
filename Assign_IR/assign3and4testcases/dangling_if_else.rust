@@ -1,0 +1,18 @@
+fn main(){
+	let i : i32 = 0;
+	for ( i=0; i<3 ;i+=1){
+
+	a[i]=i+1;
+	}
+
+	if i<4 {
+		a[i]=a[i]+1;
+	}
+	if i>1 {
+		a[i]=a[i]-1;
+	}else{
+		a[i] = 1;
+	}
+
+
+}
