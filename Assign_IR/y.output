@@ -6,7 +6,7 @@ state 0
 	FN  shift 7
 	STRUCT  shift 3
 	USE  shift 5
-	.  reduce 5 (src line 287)
+	.  reduce 5 (src line 285)
 
 	Code  goto 1
 	rust  goto 2
@@ -23,7 +23,7 @@ state 1
 state 2
 	Code:  rust.    (1)
 
-	.  reduce 1 (src line 280)
+	.  reduce 1 (src line 278)
 
 
 state 3
@@ -40,7 +40,7 @@ state 4
 	FN  shift 7
 	STRUCT  shift 3
 	USE  shift 5
-	.  reduce 5 (src line 287)
+	.  reduce 5 (src line 285)
 
 	rust  goto 9
 	item_or_view_item  goto 4
@@ -57,7 +57,7 @@ state 5
 state 6
 	item_or_view_item:  item_fn.    (6)
 
-	.  reduce 6 (src line 291)
+	.  reduce 6 (src line 289)
 
 
 state 7
@@ -78,7 +78,7 @@ state 8
 state 9
 	rust:  item_or_view_item rust.    (3)
 
-	.  reduce 3 (src line 285)
+	.  reduce 3 (src line 283)
 
 
 state 10
@@ -95,7 +95,7 @@ state 11
 
 	SYM_COLCOL  shift 16
 	'!'  shift 17
-	.  reduce 192 (src line 857)
+	.  reduce 192 (src line 853)
 
 
 state 12
@@ -114,7 +114,7 @@ state 13
 	FN  shift 7
 	STRUCT  shift 3
 	USE  shift 5
-	.  reduce 5 (src line 287)
+	.  reduce 5 (src line 285)
 
 	rust  goto 21
 	item_or_view_item  goto 4
@@ -125,7 +125,7 @@ state 14
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 24
 	field_inits  goto 22
@@ -138,7 +138,7 @@ state 15
 	FN  shift 7
 	STRUCT  shift 3
 	USE  shift 5
-	.  reduce 5 (src line 287)
+	.  reduce 5 (src line 285)
 
 	rust  goto 26
 	item_or_view_item  goto 4
@@ -155,7 +155,7 @@ state 16
 state 17
 	func_identifier:  IDENTIFIER '!'.    (194)
 
-	.  reduce 194 (src line 873)
+	.  reduce 194 (src line 869)
 
 
 state 18
@@ -171,7 +171,7 @@ state 19
 	ret_ty: .    (18)
 
 	OP_INSIDE  shift 31
-	.  reduce 18 (src line 327)
+	.  reduce 18 (src line 325)
 
 	ret_ty  goto 30
 
@@ -180,7 +180,7 @@ state 20
 	maybe_args_general: .    (11)
 
 	IDENTIFIER  shift 36
-	.  reduce 11 (src line 311)
+	.  reduce 11 (src line 309)
 
 	maybe_args_general  goto 32
 	args_general  goto 33
@@ -190,7 +190,7 @@ state 20
 state 21
 	rust:  STRUCT IDENTIFIER struct_expr rust.    (2)
 
-	.  reduce 2 (src line 283)
+	.  reduce 2 (src line 281)
 
 
 state 22
@@ -199,14 +199,14 @@ state 22
 	default_field_init: .    (201)
 
 	','  shift 38
-	.  reduce 201 (src line 898)
+	.  reduce 201 (src line 894)
 
 	default_field_init  goto 37
 
 state 23
 	field_inits:  field_init.    (196)
 
-	.  reduce 196 (src line 886)
+	.  reduce 196 (src line 882)
 
 
 state 24
@@ -219,25 +219,25 @@ state 24
 state 25
 	maybe_mut:  MUT.    (107)
 
-	.  reduce 107 (src line 629)
+	.  reduce 107 (src line 618)
 
 
 state 26
 	rust:  USE func_identifier ';' rust.    (4)
 
-	.  reduce 4 (src line 286)
+	.  reduce 4 (src line 284)
 
 
 state 27
 	func_identifier:  IDENTIFIER SYM_COLCOL func_identifier.    (193)
 
-	.  reduce 193 (src line 866)
+	.  reduce 193 (src line 862)
 
 
 state 28
 	item_fn:  FN IDENTIFIER fn_decl inner_attrs_and_block.    (7)
 
-	.  reduce 7 (src line 295)
+	.  reduce 7 (src line 293)
 
 
 state 29
@@ -245,7 +245,7 @@ state 29
 	maybe_inner_attrs: .    (21)
 
 	SHEBANG  shift 43
-	.  reduce 21 (src line 336)
+	.  reduce 21 (src line 334)
 
 	maybe_inner_attrs  goto 40
 	inner_attrs  goto 41
@@ -254,7 +254,7 @@ state 29
 state 30
 	fn_decl:  fn_args ret_ty.    (8)
 
-	.  reduce 8 (src line 301)
+	.  reduce 8 (src line 299)
 
 
 state 31
@@ -289,13 +289,13 @@ state 33
 	args_general:  args_general.',' arg_general 
 
 	','  shift 57
-	.  reduce 10 (src line 309)
+	.  reduce 10 (src line 307)
 
 
 state 34
 	args_general:  arg_general.    (12)
 
-	.  reduce 12 (src line 314)
+	.  reduce 12 (src line 312)
 
 
 state 35
@@ -308,7 +308,7 @@ state 35
 state 36
 	pat:  IDENTIFIER.    (98)
 
-	.  reduce 98 (src line 606)
+	.  reduce 98 (src line 595)
 
 
 state 37
@@ -325,9 +325,9 @@ state 38
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	SYM_CLOSE_CURLY  reduce 199 (src line 895)
+	SYM_CLOSE_CURLY  reduce 199 (src line 891)
 	OP_DOTDOT  shift 61
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 24
 	field_init  goto 60
@@ -371,7 +371,7 @@ state 40
 	WHILE  shift 81
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 42 (src line 377)
+	.  reduce 42 (src line 375)
 
 	item_or_view_item  goto 67
 	func_identifier  goto 93
@@ -400,14 +400,14 @@ state 41
 	inner_attrs:  inner_attrs.inner_attr 
 
 	SHEBANG  shift 43
-	.  reduce 20 (src line 334)
+	.  reduce 20 (src line 332)
 
 	inner_attr  goto 110
 
 state 42
 	inner_attrs:  inner_attr.    (22)
 
-	.  reduce 22 (src line 339)
+	.  reduce 22 (src line 337)
 
 
 state 43
@@ -420,13 +420,13 @@ state 43
 state 44
 	ret_ty:  OP_INSIDE '!'.    (15)
 
-	.  reduce 15 (src line 323)
+	.  reduce 15 (src line 321)
 
 
 state 45
 	ret_ty:  OP_INSIDE ty.    (16)
 
-	.  reduce 16 (src line 325)
+	.  reduce 16 (src line 323)
 
 
 state 46
@@ -452,7 +452,7 @@ state 46
 state 47
 	ty:  path.    (101)
 
-	.  reduce 101 (src line 620)
+	.  reduce 101 (src line 609)
 
 
 state 48
@@ -477,7 +477,7 @@ state 49
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 117
 
@@ -486,7 +486,7 @@ state 50
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 118
 
@@ -495,14 +495,14 @@ state 51
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 119
 
 state 52
 	path:  var_types.    (111)
 
-	.  reduce 111 (src line 639)
+	.  reduce 111 (src line 628)
 
 
 state 53
@@ -517,19 +517,19 @@ state 53
 state 54
 	var_types:  VAR_TYPE.    (109)
 
-	.  reduce 109 (src line 635)
+	.  reduce 109 (src line 624)
 
 
 state 55
 	var_types:  IDENTIFIER.    (110)
 
-	.  reduce 110 (src line 637)
+	.  reduce 110 (src line 626)
 
 
 state 56
 	fn_args:  SYM_OPEN_ROUND maybe_args_general SYM_CLOSE_ROUND.    (9)
 
-	.  reduce 9 (src line 305)
+	.  reduce 9 (src line 303)
 
 
 state 57
@@ -561,13 +561,13 @@ state 58
 state 59
 	struct_expr:  SYM_OPEN_CURLY field_inits default_field_init SYM_CLOSE_CURLY.    (195)
 
-	.  reduce 195 (src line 882)
+	.  reduce 195 (src line 878)
 
 
 state 60
 	field_inits:  field_inits ',' field_init.    (197)
 
-	.  reduce 197 (src line 888)
+	.  reduce 197 (src line 884)
 
 
 state 61
@@ -677,7 +677,7 @@ state 64
 	WHILE  shift 81
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 41 (src line 375)
+	.  reduce 41 (src line 373)
 
 	item_or_view_item  goto 67
 	func_identifier  goto 93
@@ -702,7 +702,7 @@ state 64
 state 65
 	stmts:  stmt.    (44)
 
-	.  reduce 44 (src line 382)
+	.  reduce 44 (src line 380)
 
 
 state 66
@@ -722,7 +722,7 @@ state 67
 state 68
 	stmt:  expr_stmt.    (47)
 
-	.  reduce 47 (src line 388)
+	.  reduce 47 (src line 386)
 
 
 state 69
@@ -737,44 +737,44 @@ state 70
 	maybe_mut: .    (108)
 
 	MUT  shift 25
-	.  reduce 108 (src line 631)
+	.  reduce 108 (src line 620)
 
 	maybe_mut  goto 130
 
 state 71
 	expr_stmt:  expr_match.    (49)
 
-	.  reduce 49 (src line 393)
+	.  reduce 49 (src line 391)
 
 
 state 72
 	expr_stmt:  expr_if.    (50)
 
-	.  reduce 50 (src line 395)
+	.  reduce 50 (src line 393)
 
 
 state 73
 	expr_stmt:  expr_while.    (51)
 
-	.  reduce 51 (src line 396)
+	.  reduce 51 (src line 394)
 
 
 state 74
 	expr_stmt:  expr_loop.    (52)
 
-	.  reduce 52 (src line 397)
+	.  reduce 52 (src line 395)
 
 
 state 75
 	expr_stmt:  expr_for.    (53)
 
-	.  reduce 53 (src line 398)
+	.  reduce 53 (src line 396)
 
 
 state 76
 	expr_stmt:  expr_return.    (54)
 
-	.  reduce 54 (src line 399)
+	.  reduce 54 (src line 397)
 
 
 state 77
@@ -812,13 +812,13 @@ state 77
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 158 (src line 731)
+	.  reduce 158 (src line 727)
 
 
 state 78
 	expr:  assignment.    (159)
 
-	.  reduce 159 (src line 733)
+	.  reduce 159 (src line 729)
 
 
 state 79
@@ -991,7 +991,7 @@ state 85
 state 86
 	round_exp:  exp.    (191)
 
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 
 state 87
@@ -1036,7 +1036,7 @@ state 87
 state 88
 	exp:  lit.    (160)
 
-	.  reduce 160 (src line 738)
+	.  reduce 160 (src line 734)
 
 
 state 89
@@ -1051,29 +1051,29 @@ state 89
 	func_identifier:  IDENTIFIER.'!' 
 
 	SYM_OPEN_SQ  shift 177
-	SYM_OPEN_ROUND  reduce 192 (src line 857)
-	OPEQ_INT  reduce 121 (src line 668)
-	OPEQ_FLOAT  reduce 121 (src line 668)
-	OP_ADDEQ  reduce 121 (src line 668)
-	OP_SUBEQ  reduce 121 (src line 668)
-	OP_MULEQ  reduce 121 (src line 668)
-	OP_DIVEQ  reduce 121 (src line 668)
-	OP_MODEQ  reduce 121 (src line 668)
-	OP_EQEQ  reduce 121 (src line 668)
-	OP_NOTEQ  reduce 121 (src line 668)
-	OP_LEQ  reduce 121 (src line 668)
-	OP_GEQ  reduce 121 (src line 668)
+	SYM_OPEN_ROUND  reduce 192 (src line 853)
+	OPEQ_INT  reduce 121 (src line 657)
+	OPEQ_FLOAT  reduce 121 (src line 657)
+	OP_ADDEQ  reduce 121 (src line 657)
+	OP_SUBEQ  reduce 121 (src line 657)
+	OP_MULEQ  reduce 121 (src line 657)
+	OP_DIVEQ  reduce 121 (src line 657)
+	OP_MODEQ  reduce 121 (src line 657)
+	OP_EQEQ  reduce 121 (src line 657)
+	OP_NOTEQ  reduce 121 (src line 657)
+	OP_LEQ  reduce 121 (src line 657)
+	OP_GEQ  reduce 121 (src line 657)
 	SYM_COLCOL  shift 16
-	'='  reduce 121 (src line 668)
+	'='  reduce 121 (src line 657)
 	'!'  shift 17
-	OP_SHLEQ  reduce 121 (src line 668)
-	OP_SHREQ  reduce 121 (src line 668)
-	OP_OREQ  reduce 121 (src line 668)
-	OP_ANDEQ  reduce 121 (src line 668)
-	OP_XOREQ  reduce 121 (src line 668)
+	OP_SHLEQ  reduce 121 (src line 657)
+	OP_SHREQ  reduce 121 (src line 657)
+	OP_OREQ  reduce 121 (src line 657)
+	OP_ANDEQ  reduce 121 (src line 657)
+	OP_XOREQ  reduce 121 (src line 657)
 	'.'  shift 178
 	':'  shift 179
-	.  reduce 161 (src line 741)
+	.  reduce 161 (src line 737)
 
 
 state 90
@@ -1181,7 +1181,7 @@ state 94
 	exp:  CONTINUE.IDENTIFIER 
 
 	IDENTIFIER  shift 184
-	.  reduce 184 (src line 844)
+	.  reduce 184 (src line 840)
 
 
 state 95
@@ -1195,7 +1195,7 @@ state 95
 state 96
 	exp:  block.    (187)
 
-	.  reduce 187 (src line 847)
+	.  reduce 187 (src line 843)
 
 
 state 97
@@ -1203,73 +1203,73 @@ state 97
 	exp:  BREAK.IDENTIFIER 
 
 	IDENTIFIER  shift 186
-	.  reduce 188 (src line 848)
+	.  reduce 188 (src line 844)
 
 
 state 98
 	lit:  LIT_CHAR.    (30)
 
-	.  reduce 30 (src line 359)
+	.  reduce 30 (src line 357)
 
 
 state 99
 	lit:  LIT_INT.    (31)
 
-	.  reduce 31 (src line 361)
+	.  reduce 31 (src line 359)
 
 
 state 100
 	lit:  LIT_UINT.    (32)
 
-	.  reduce 32 (src line 362)
+	.  reduce 32 (src line 360)
 
 
 state 101
 	lit:  LIT_INT_UNSUFFIXED.    (33)
 
-	.  reduce 33 (src line 363)
+	.  reduce 33 (src line 361)
 
 
 state 102
 	lit:  FLOAT.    (34)
 
-	.  reduce 34 (src line 364)
+	.  reduce 34 (src line 362)
 
 
 state 103
 	lit:  LIT_FLOAT_UNSUFFIXED.    (35)
 
-	.  reduce 35 (src line 365)
+	.  reduce 35 (src line 363)
 
 
 state 104
 	lit:  LITERAL_STR.    (36)
 
-	.  reduce 36 (src line 366)
+	.  reduce 36 (src line 364)
 
 
 state 105
 	lit:  LITERAL_CHAR.    (37)
 
-	.  reduce 37 (src line 367)
+	.  reduce 37 (src line 365)
 
 
 state 106
 	lit:  TRUE.    (38)
 
-	.  reduce 38 (src line 368)
+	.  reduce 38 (src line 366)
 
 
 state 107
 	lit:  FALSE.    (39)
 
-	.  reduce 39 (src line 369)
+	.  reduce 39 (src line 367)
 
 
 state 108
 	lit:  VAR_TYPE.    (40)
 
-	.  reduce 40 (src line 370)
+	.  reduce 40 (src line 368)
 
 
 state 109
@@ -1304,7 +1304,7 @@ state 109
 	WHILE  shift 81
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 42 (src line 377)
+	.  reduce 42 (src line 375)
 
 	item_or_view_item  goto 67
 	func_identifier  goto 93
@@ -1331,7 +1331,7 @@ state 109
 state 110
 	inner_attrs:  inner_attrs inner_attr.    (23)
 
-	.  reduce 23 (src line 341)
+	.  reduce 23 (src line 339)
 
 
 state 111
@@ -1345,7 +1345,7 @@ state 111
 state 112
 	ret_ty:  OP_INSIDE SYM_OPEN_ROUND SYM_CLOSE_ROUND.    (17)
 
-	.  reduce 17 (src line 326)
+	.  reduce 17 (src line 324)
 
 
 state 113
@@ -1360,7 +1360,7 @@ state 113
 state 114
 	tys:  ty.    (99)
 
-	.  reduce 99 (src line 615)
+	.  reduce 99 (src line 604)
 
 
 state 115
@@ -1384,7 +1384,7 @@ state 115
 state 116
 	ty:  '~' ty.    (102)
 
-	.  reduce 102 (src line 622)
+	.  reduce 102 (src line 611)
 
 
 state 117
@@ -1443,62 +1443,62 @@ state 120
 	maybe_size: .    (114)
 
 	';'  shift 196
-	.  reduce 114 (src line 646)
+	.  reduce 114 (src line 635)
 
 	maybe_size  goto 195
 
 state 121
 	args_general:  args_general ',' arg_general.    (13)
 
-	.  reduce 13 (src line 316)
+	.  reduce 13 (src line 314)
 
 
 state 122
 	arg_general:  pat ':' ty.    (14)
 
-	.  reduce 14 (src line 319)
+	.  reduce 14 (src line 317)
 
 
 state 123
 	default_field_init:  ',' OP_DOTDOT expr.    (200)
 
-	.  reduce 200 (src line 897)
+	.  reduce 200 (src line 893)
 
 
 state 124
 	field_init:  maybe_mut IDENTIFIER ':' expr.    (198)
 
-	.  reduce 198 (src line 891)
+	.  reduce 198 (src line 887)
 
 
 state 125
 	inner_attrs_and_block:  SYM_OPEN_CURLY maybe_inner_attrs maybe_stmts SYM_CLOSE_CURLY.    (19)
 
-	.  reduce 19 (src line 330)
+	.  reduce 19 (src line 328)
 
 
 state 126
 	stmts:  stmts stmt.    (43)
 
-	.  reduce 43 (src line 380)
+	.  reduce 43 (src line 378)
 
 
 state 127
 	stmt:  let ';'.    (45)
 
-	.  reduce 45 (src line 385)
+	.  reduce 45 (src line 383)
 
 
 state 128
 	stmt:  item_or_view_item ';'.    (46)
 
-	.  reduce 46 (src line 387)
+	.  reduce 46 (src line 385)
 
 
 state 129
 	stmt:  expr ';'.    (48)
 
-	.  reduce 48 (src line 389)
+	.  reduce 48 (src line 387)
 
 
 state 130
@@ -2019,7 +2019,7 @@ state 148
 	round_exp:  exp.    (191)
 
 	SYM_OPEN_CURLY  shift 109
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 	block  goto 215
 
@@ -2032,11 +2032,11 @@ state 149
 	func_identifier:  IDENTIFIER.'!' 
 
 	SYM_OPEN_SQ  shift 216
-	SYM_OPEN_ROUND  reduce 192 (src line 857)
+	SYM_OPEN_ROUND  reduce 192 (src line 853)
 	SYM_COLCOL  shift 16
 	'!'  shift 17
 	':'  shift 179
-	.  reduce 161 (src line 741)
+	.  reduce 161 (src line 737)
 
 
 state 150
@@ -2081,14 +2081,14 @@ state 151
 	round_exp:  exp.    (191)
 
 	SYM_OPEN_CURLY  shift 109
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 	block  goto 217
 
 state 152
 	expr_loop:  LOOP block.    (74)
 
-	.  reduce 74 (src line 486)
+	.  reduce 74 (src line 477)
 
 
 state 153
@@ -2097,7 +2097,7 @@ state 153
 	round_exp:  exp.    (191)
 
 	IN  shift 218
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 
 state 154
@@ -2125,7 +2125,7 @@ state 154
 	UNSAFE  shift 95
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 120 (src line 665)
+	.  reduce 120 (src line 654)
 
 	func_identifier  goto 93
 	lit  goto 88
@@ -2160,7 +2160,7 @@ state 155
 	UNSAFE  shift 95
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 116 (src line 651)
+	.  reduce 116 (src line 640)
 
 	func_identifier  goto 93
 	lit  goto 88
@@ -2176,7 +2176,7 @@ state 155
 state 156
 	expr_return:  RETURN ';'.    (56)
 
-	.  reduce 56 (src line 404)
+	.  reduce 56 (src line 402)
 
 
 state 157
@@ -2762,7 +2762,7 @@ state 175
 	'*'  shift 249
 	'/'  shift 248
 	'%'  shift 252
-	.  reduce 157 (src line 728)
+	.  reduce 157 (src line 724)
 
 	opeq_ops  goto 242
 
@@ -2786,7 +2786,7 @@ state 176
 	'*'  shift 249
 	'/'  shift 248
 	'%'  shift 252
-	.  reduce 157 (src line 728)
+	.  reduce 157 (src line 724)
 
 	opeq_ops  goto 259
 
@@ -2873,7 +2873,7 @@ state 180
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 164 (src line 756)
+	.  reduce 164 (src line 752)
 
 
 state 181
@@ -2906,7 +2906,7 @@ state 181
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 165 (src line 757)
+	.  reduce 165 (src line 753)
 
 
 state 182
@@ -2939,7 +2939,7 @@ state 182
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 166 (src line 758)
+	.  reduce 166 (src line 754)
 
 
 state 183
@@ -2966,7 +2966,7 @@ state 183
 	UNSAFE  shift 95
 	'!'  shift 90
 	'&'  shift 91
-	.  reduce 116 (src line 651)
+	.  reduce 116 (src line 640)
 
 	func_identifier  goto 93
 	lit  goto 88
@@ -2982,19 +2982,19 @@ state 183
 state 184
 	exp:  CONTINUE IDENTIFIER.    (185)
 
-	.  reduce 185 (src line 845)
+	.  reduce 185 (src line 841)
 
 
 state 185
 	exp:  UNSAFE block.    (186)
 
-	.  reduce 186 (src line 846)
+	.  reduce 186 (src line 842)
 
 
 state 186
 	exp:  BREAK IDENTIFIER.    (189)
 
-	.  reduce 189 (src line 849)
+	.  reduce 189 (src line 845)
 
 
 state 187
@@ -3018,7 +3018,7 @@ state 189
 
 	SYM_OPEN_ROUND  shift 268
 	'='  shift 267
-	.  reduce 25 (src line 349)
+	.  reduce 25 (src line 347)
 
 
 state 190
@@ -3041,25 +3041,25 @@ state 190
 state 191
 	ty:  SYM_OPEN_ROUND tys SYM_CLOSE_ROUND.    (106)
 
-	.  reduce 106 (src line 626)
+	.  reduce 106 (src line 615)
 
 
 state 192
 	ty:  '*' maybe_mut ty.    (103)
 
-	.  reduce 103 (src line 623)
+	.  reduce 103 (src line 612)
 
 
 state 193
 	ty:  '&' maybe_mut ty.    (104)
 
-	.  reduce 104 (src line 624)
+	.  reduce 104 (src line 613)
 
 
 state 194
 	ty:  OP_POWER maybe_mut ty.    (105)
 
-	.  reduce 105 (src line 625)
+	.  reduce 105 (src line 614)
 
 
 state 195
@@ -3081,7 +3081,7 @@ state 197
 	maybe_ty_ascription: .    (80)
 
 	':'  shift 273
-	.  reduce 80 (src line 568)
+	.  reduce 80 (src line 557)
 
 	maybe_ty_ascription  goto 272
 
@@ -3107,7 +3107,7 @@ state 198
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 167 (src line 759)
+	.  reduce 167 (src line 755)
 
 
 state 199
@@ -3132,7 +3132,7 @@ state 199
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 168 (src line 764)
+	.  reduce 168 (src line 760)
 
 
 state 200
@@ -3165,7 +3165,7 @@ state 200
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 169 (src line 769)
+	.  reduce 169 (src line 765)
 
 
 state 201
@@ -3200,7 +3200,7 @@ state 201
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 170 (src line 773)
+	.  reduce 170 (src line 769)
 
 
 state 202
@@ -3234,7 +3234,7 @@ state 202
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 171 (src line 778)
+	.  reduce 171 (src line 774)
 
 
 state 203
@@ -3256,7 +3256,7 @@ state 203
 	exp:  round_exp.OP_OROR round_exp 
 	exp:  round_exp.OP_POWER round_exp 
 
-	.  reduce 172 (src line 782)
+	.  reduce 172 (src line 778)
 
 
 state 204
@@ -3278,7 +3278,7 @@ state 204
 	exp:  round_exp.OP_OROR round_exp 
 	exp:  round_exp.OP_POWER round_exp 
 
-	.  reduce 173 (src line 787)
+	.  reduce 173 (src line 783)
 
 
 state 205
@@ -3314,7 +3314,7 @@ state 205
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 174 (src line 792)
+	.  reduce 174 (src line 788)
 
 
 state 206
@@ -3350,7 +3350,7 @@ state 206
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 175 (src line 798)
+	.  reduce 175 (src line 794)
 
 
 state 207
@@ -3372,7 +3372,7 @@ state 207
 	exp:  round_exp.OP_OROR round_exp 
 	exp:  round_exp.OP_POWER round_exp 
 
-	.  reduce 176 (src line 804)
+	.  reduce 176 (src line 800)
 
 
 state 208
@@ -3397,7 +3397,7 @@ state 208
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 177 (src line 809)
+	.  reduce 177 (src line 805)
 
 
 state 209
@@ -3425,7 +3425,7 @@ state 209
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 178 (src line 814)
+	.  reduce 178 (src line 810)
 
 
 state 210
@@ -3453,7 +3453,7 @@ state 210
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 179 (src line 819)
+	.  reduce 179 (src line 815)
 
 
 state 211
@@ -3481,7 +3481,7 @@ state 211
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 180 (src line 823)
+	.  reduce 180 (src line 819)
 
 
 state 212
@@ -3509,7 +3509,7 @@ state 212
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 181 (src line 830)
+	.  reduce 181 (src line 826)
 
 
 state 213
@@ -3537,7 +3537,7 @@ state 213
 	'*'  shift 137
 	'/'  shift 136
 	'%'  shift 140
-	.  reduce 182 (src line 835)
+	.  reduce 182 (src line 831)
 
 
 state 214
@@ -3571,7 +3571,7 @@ state 215
 	expr_if:  IF exp block.ELSE block_or_if 
 
 	ELSE  shift 283
-	.  reduce 68 (src line 434)
+	.  reduce 68 (src line 432)
 
 
 state 216
@@ -3608,7 +3608,7 @@ state 216
 state 217
 	expr_while:  WHILE exp block.    (73)
 
-	.  reduce 73 (src line 481)
+	.  reduce 73 (src line 472)
 
 
 state 218
@@ -3654,7 +3654,7 @@ state 219
 state 220
 	maybe_assignment:  assignment.    (119)
 
-	.  reduce 119 (src line 663)
+	.  reduce 119 (src line 652)
 
 
 state 221
@@ -3669,127 +3669,127 @@ state 222
 	exprs:  exprs.',' expr 
 
 	','  shift 291
-	.  reduce 115 (src line 649)
+	.  reduce 115 (src line 638)
 
 
 state 223
 	exprs:  expr.    (117)
 
-	.  reduce 117 (src line 654)
+	.  reduce 117 (src line 643)
 
 
 state 224
 	expr_return:  RETURN lit ';'.    (57)
 
-	.  reduce 57 (src line 405)
+	.  reduce 57 (src line 403)
 
 
 state 225
 	expr_return:  RETURN IDENTIFIER ';'.    (58)
 
-	.  reduce 58 (src line 406)
+	.  reduce 58 (src line 404)
 
 
 state 226
 	round_exp:  SYM_OPEN_ROUND round_exp SYM_CLOSE_ROUND.    (190)
 
-	.  reduce 190 (src line 852)
+	.  reduce 190 (src line 848)
 
 
 state 227
 	assignment:  hole '=' expr.    (124)
 
-	.  reduce 124 (src line 679)
+	.  reduce 124 (src line 675)
 
 
 state 228
 	assignment:  hole OP_ADDEQ expr.    (125)
 
-	.  reduce 125 (src line 682)
+	.  reduce 125 (src line 678)
 
 
 state 229
 	assignment:  hole OP_SUBEQ expr.    (126)
 
-	.  reduce 126 (src line 683)
+	.  reduce 126 (src line 679)
 
 
 state 230
 	assignment:  hole OP_LEQ expr.    (127)
 
-	.  reduce 127 (src line 684)
+	.  reduce 127 (src line 680)
 
 
 state 231
 	assignment:  hole OP_GEQ expr.    (128)
 
-	.  reduce 128 (src line 685)
+	.  reduce 128 (src line 681)
 
 
 state 232
 	assignment:  hole OP_MULEQ expr.    (129)
 
-	.  reduce 129 (src line 686)
+	.  reduce 129 (src line 682)
 
 
 state 233
 	assignment:  hole OP_DIVEQ expr.    (130)
 
-	.  reduce 130 (src line 687)
+	.  reduce 130 (src line 683)
 
 
 state 234
 	assignment:  hole OP_MODEQ expr.    (131)
 
-	.  reduce 131 (src line 688)
+	.  reduce 131 (src line 684)
 
 
 state 235
 	assignment:  hole OP_ANDEQ expr.    (132)
 
-	.  reduce 132 (src line 689)
+	.  reduce 132 (src line 685)
 
 
 state 236
 	assignment:  hole OP_SHLEQ expr.    (133)
 
-	.  reduce 133 (src line 690)
+	.  reduce 133 (src line 686)
 
 
 state 237
 	assignment:  hole OP_SHREQ expr.    (134)
 
-	.  reduce 134 (src line 691)
+	.  reduce 134 (src line 687)
 
 
 state 238
 	assignment:  hole OP_OREQ expr.    (135)
 
-	.  reduce 135 (src line 692)
+	.  reduce 135 (src line 688)
 
 
 state 239
 	assignment:  hole OP_XOREQ expr.    (136)
 
-	.  reduce 136 (src line 693)
+	.  reduce 136 (src line 689)
 
 
 state 240
 	assignment:  hole OP_EQEQ expr.    (137)
 
-	.  reduce 137 (src line 694)
+	.  reduce 137 (src line 690)
 
 
 state 241
 	assignment:  hole OP_NOTEQ expr.    (138)
 
-	.  reduce 138 (src line 695)
+	.  reduce 138 (src line 691)
 
 
 state 242
 	assignment:  hole OPEQ_INT opeq_ops.    (139)
 
-	.  reduce 139 (src line 696)
+	.  reduce 139 (src line 692)
 
 
 state 243
@@ -4339,7 +4339,7 @@ state 258
 state 259
 	assignment:  hole OPEQ_FLOAT opeq_ops.    (140)
 
-	.  reduce 140 (src line 704)
+	.  reduce 140 (src line 700)
 
 
 state 260
@@ -4385,7 +4385,7 @@ state 260
 state 261
 	hole:  IDENTIFIER '.' hole.    (123)
 
-	.  reduce 123 (src line 677)
+	.  reduce 123 (src line 673)
 
 
 state 262
@@ -4395,13 +4395,13 @@ state 262
 
 	SYM_OPEN_SQ  shift 309
 	'.'  shift 178
-	.  reduce 121 (src line 668)
+	.  reduce 121 (src line 657)
 
 
 state 263
 	exp:  IDENTIFIER ':' struct_expr.    (163)
 
-	.  reduce 163 (src line 755)
+	.  reduce 163 (src line 751)
 
 
 state 264
@@ -4414,13 +4414,13 @@ state 264
 state 265
 	block:  SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY.    (72)
 
-	.  reduce 72 (src line 474)
+	.  reduce 72 (src line 466)
 
 
 state 266
 	inner_attr:  SHEBANG '[' meta_item ']'.    (24)
 
-	.  reduce 24 (src line 344)
+	.  reduce 24 (src line 342)
 
 
 state 267
@@ -4453,19 +4453,19 @@ state 268
 state 269
 	tys:  tys ',' ty.    (100)
 
-	.  reduce 100 (src line 617)
+	.  reduce 100 (src line 606)
 
 
 state 270
 	path:  SYM_OPEN_SQ var_types maybe_size SYM_CLOSE_SQ.    (112)
 
-	.  reduce 112 (src line 641)
+	.  reduce 112 (src line 630)
 
 
 state 271
 	maybe_size:  ';' LIT_INT.    (113)
 
-	.  reduce 113 (src line 644)
+	.  reduce 113 (src line 633)
 
 
 state 272
@@ -4475,7 +4475,7 @@ state 272
 	OPEQ_INT  shift 316
 	OPEQ_FLOAT  shift 317
 	'='  shift 315
-	.  reduce 86 (src line 584)
+	.  reduce 86 (src line 573)
 
 	maybe_init_expr  goto 314
 
@@ -4509,7 +4509,7 @@ state 274
 state 275
 	match_clauses:  match_clause.    (61)
 
-	.  reduce 61 (src line 414)
+	.  reduce 61 (src line 412)
 
 
 state 276
@@ -4521,32 +4521,32 @@ state 276
 
 	IF  shift 323
 	'|'  shift 322
-	.  reduce 67 (src line 430)
+	.  reduce 67 (src line 428)
 
 	maybe_guard  goto 321
 
 state 277
 	pats_or:  pat.    (87)
 
-	.  reduce 87 (src line 587)
+	.  reduce 87 (src line 576)
 
 
 state 278
 	pats_or:  lit.    (88)
 
-	.  reduce 88 (src line 589)
+	.  reduce 88 (src line 578)
 
 
 state 279
 	pats_or:  '_'.    (89)
 
-	.  reduce 89 (src line 590)
+	.  reduce 89 (src line 579)
 
 
 state 280
 	pats_or:  range_tri.    (90)
 
-	.  reduce 90 (src line 591)
+	.  reduce 90 (src line 580)
 
 
 state 281
@@ -4554,7 +4554,7 @@ state 281
 	range_tri:  LIT_INT.OP_DOTDOTDOT LIT_INT 
 
 	OP_DOTDOTDOT  shift 324
-	.  reduce 31 (src line 361)
+	.  reduce 31 (src line 359)
 
 
 state 282
@@ -4562,7 +4562,7 @@ state 282
 	range_tri:  LITERAL_CHAR.OP_DOTDOTDOT LITERAL_CHAR 
 
 	OP_DOTDOTDOT  shift 325
-	.  reduce 37 (src line 367)
+	.  reduce 37 (src line 365)
 
 
 state 283
@@ -4620,7 +4620,7 @@ state 285
 	round_exp:  exp.    (191)
 
 	SYM_OPEN_CURLY  shift 109
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 	block  goto 330
 
@@ -4637,7 +4637,7 @@ state 287
 	range_di:  LIT_INT.OP_DOTDOT LIT_INT 
 
 	OP_DOTDOT  shift 332
-	.  reduce 31 (src line 361)
+	.  reduce 31 (src line 359)
 
 
 state 288
@@ -4645,7 +4645,7 @@ state 288
 	range_di:  LITERAL_CHAR.OP_DOTDOT LITERAL_CHAR 
 
 	OP_DOTDOT  shift 333
-	.  reduce 37 (src line 367)
+	.  reduce 37 (src line 365)
 
 
 state 289
@@ -4723,121 +4723,121 @@ state 291
 state 292
 	opeq_ops:  '+' expr.    (141)
 
-	.  reduce 141 (src line 711)
+	.  reduce 141 (src line 707)
 
 
 state 293
 	opeq_ops:  '-' expr.    (142)
 
-	.  reduce 142 (src line 713)
+	.  reduce 142 (src line 709)
 
 
 state 294
 	opeq_ops:  '&' expr.    (143)
 
-	.  reduce 143 (src line 714)
+	.  reduce 143 (src line 710)
 
 
 state 295
 	opeq_ops:  '|' expr.    (144)
 
-	.  reduce 144 (src line 715)
+	.  reduce 144 (src line 711)
 
 
 state 296
 	opeq_ops:  '^' expr.    (145)
 
-	.  reduce 145 (src line 716)
+	.  reduce 145 (src line 712)
 
 
 state 297
 	opeq_ops:  '/' expr.    (146)
 
-	.  reduce 146 (src line 717)
+	.  reduce 146 (src line 713)
 
 
 state 298
 	opeq_ops:  '*' expr.    (147)
 
-	.  reduce 147 (src line 718)
+	.  reduce 147 (src line 714)
 
 
 state 299
 	opeq_ops:  '>' expr.    (148)
 
-	.  reduce 148 (src line 719)
+	.  reduce 148 (src line 715)
 
 
 state 300
 	opeq_ops:  '<' expr.    (149)
 
-	.  reduce 149 (src line 720)
+	.  reduce 149 (src line 716)
 
 
 state 301
 	opeq_ops:  '%' expr.    (150)
 
-	.  reduce 150 (src line 721)
+	.  reduce 150 (src line 717)
 
 
 state 302
 	opeq_ops:  '.' expr.    (151)
 
-	.  reduce 151 (src line 722)
+	.  reduce 151 (src line 718)
 
 
 state 303
 	opeq_ops:  OP_RSHIFT expr.    (152)
 
-	.  reduce 152 (src line 723)
+	.  reduce 152 (src line 719)
 
 
 state 304
 	opeq_ops:  OP_LSHIFT expr.    (153)
 
-	.  reduce 153 (src line 724)
+	.  reduce 153 (src line 720)
 
 
 state 305
 	opeq_ops:  OP_ANDAND expr.    (154)
 
-	.  reduce 154 (src line 725)
+	.  reduce 154 (src line 721)
 
 
 state 306
 	opeq_ops:  OP_OROR expr.    (155)
 
-	.  reduce 155 (src line 726)
+	.  reduce 155 (src line 722)
 
 
 state 307
 	opeq_ops:  OP_POWER expr.    (156)
 
-	.  reduce 156 (src line 727)
+	.  reduce 156 (src line 723)
 
 
 state 308
 	hole:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (122)
 	exp:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (162)
 
-	OPEQ_INT  reduce 122 (src line 676)
-	OPEQ_FLOAT  reduce 122 (src line 676)
-	OP_ADDEQ  reduce 122 (src line 676)
-	OP_SUBEQ  reduce 122 (src line 676)
-	OP_MULEQ  reduce 122 (src line 676)
-	OP_DIVEQ  reduce 122 (src line 676)
-	OP_MODEQ  reduce 122 (src line 676)
-	OP_EQEQ  reduce 122 (src line 676)
-	OP_NOTEQ  reduce 122 (src line 676)
-	OP_LEQ  reduce 122 (src line 676)
-	OP_GEQ  reduce 122 (src line 676)
-	'='  reduce 122 (src line 676)
-	OP_SHLEQ  reduce 122 (src line 676)
-	OP_SHREQ  reduce 122 (src line 676)
-	OP_OREQ  reduce 122 (src line 676)
-	OP_ANDEQ  reduce 122 (src line 676)
-	OP_XOREQ  reduce 122 (src line 676)
-	.  reduce 162 (src line 749)
+	OPEQ_INT  reduce 122 (src line 665)
+	OPEQ_FLOAT  reduce 122 (src line 665)
+	OP_ADDEQ  reduce 122 (src line 665)
+	OP_SUBEQ  reduce 122 (src line 665)
+	OP_MULEQ  reduce 122 (src line 665)
+	OP_DIVEQ  reduce 122 (src line 665)
+	OP_MODEQ  reduce 122 (src line 665)
+	OP_EQEQ  reduce 122 (src line 665)
+	OP_NOTEQ  reduce 122 (src line 665)
+	OP_LEQ  reduce 122 (src line 665)
+	OP_GEQ  reduce 122 (src line 665)
+	'='  reduce 122 (src line 665)
+	OP_SHLEQ  reduce 122 (src line 665)
+	OP_SHREQ  reduce 122 (src line 665)
+	OP_OREQ  reduce 122 (src line 665)
+	OP_ANDEQ  reduce 122 (src line 665)
+	OP_XOREQ  reduce 122 (src line 665)
+	.  reduce 162 (src line 745)
 
 
 state 309
@@ -4874,13 +4874,13 @@ state 309
 state 310
 	exp:  func_identifier SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND.    (183)
 
-	.  reduce 183 (src line 839)
+	.  reduce 183 (src line 835)
 
 
 state 311
 	meta_item:  IDENTIFIER '=' lit.    (26)
 
-	.  reduce 26 (src line 351)
+	.  reduce 26 (src line 349)
 
 
 state 312
@@ -4895,13 +4895,13 @@ state 312
 state 313
 	meta_seq:  meta_item.    (28)
 
-	.  reduce 28 (src line 355)
+	.  reduce 28 (src line 353)
 
 
 state 314
 	let:  LET maybe_mut pat maybe_ty_ascription maybe_init_expr.    (78)
 
-	.  reduce 78 (src line 538)
+	.  reduce 78 (src line 528)
 
 
 state 315
@@ -4961,7 +4961,7 @@ state 316
 	'*'  shift 249
 	'/'  shift 248
 	'%'  shift 252
-	.  reduce 157 (src line 728)
+	.  reduce 157 (src line 724)
 
 	opeq_ops  goto 342
 
@@ -4985,20 +4985,20 @@ state 317
 	'*'  shift 249
 	'/'  shift 248
 	'%'  shift 252
-	.  reduce 157 (src line 728)
+	.  reduce 157 (src line 724)
 
 	opeq_ops  goto 343
 
 state 318
 	maybe_ty_ascription:  ':' ty.    (79)
 
-	.  reduce 79 (src line 566)
+	.  reduce 79 (src line 555)
 
 
 state 319
 	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY.    (59)
 
-	.  reduce 59 (src line 409)
+	.  reduce 59 (src line 407)
 
 
 state 320
@@ -5108,37 +5108,37 @@ state 325
 state 326
 	expr_if:  IF exp block ELSE block_or_if.    (69)
 
-	.  reduce 69 (src line 448)
+	.  reduce 69 (src line 445)
 
 
 state 327
 	block_or_if:  block.    (70)
 
-	.  reduce 70 (src line 466)
+	.  reduce 70 (src line 458)
 
 
 state 328
 	block_or_if:  expr_if.    (71)
 
-	.  reduce 71 (src line 471)
+	.  reduce 71 (src line 463)
 
 
 state 329
 	exp:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (162)
 
-	.  reduce 162 (src line 749)
+	.  reduce 162 (src line 745)
 
 
 state 330
 	expr_for:  FOR exp IN exp block.    (75)
 
-	.  reduce 75 (src line 491)
+	.  reduce 75 (src line 482)
 
 
 state 331
 	expr_for:  FOR exp IN range_di block.    (76)
 
-	.  reduce 76 (src line 506)
+	.  reduce 76 (src line 497)
 
 
 state 332
@@ -5160,19 +5160,19 @@ state 334
 	round_exp:  exp.    (191)
 
 	';'  shift 355
-	.  reduce 191 (src line 854)
+	.  reduce 191 (src line 850)
 
 
 state 335
 	expr_return:  RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';'.    (55)
 
-	.  reduce 55 (src line 402)
+	.  reduce 55 (src line 400)
 
 
 state 336
 	exprs:  exprs ',' expr.    (118)
 
-	.  reduce 118 (src line 656)
+	.  reduce 118 (src line 645)
 
 
 state 337
@@ -5217,7 +5217,7 @@ state 337
 state 338
 	meta_item:  IDENTIFIER SYM_OPEN_ROUND meta_seq SYM_CLOSE_ROUND.    (27)
 
-	.  reduce 27 (src line 352)
+	.  reduce 27 (src line 350)
 
 
 state 339
@@ -5231,7 +5231,7 @@ state 339
 state 340
 	maybe_init_expr:  '=' expr.    (81)
 
-	.  reduce 81 (src line 571)
+	.  reduce 81 (src line 560)
 
 
 state 341
@@ -5273,25 +5273,25 @@ state 341
 state 342
 	maybe_init_expr:  OPEQ_INT opeq_ops.    (84)
 
-	.  reduce 84 (src line 575)
+	.  reduce 84 (src line 564)
 
 
 state 343
 	maybe_init_expr:  OPEQ_FLOAT opeq_ops.    (85)
 
-	.  reduce 85 (src line 583)
+	.  reduce 85 (src line 572)
 
 
 state 344
 	expr_match:  MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY.    (60)
 
-	.  reduce 60 (src line 411)
+	.  reduce 60 (src line 409)
 
 
 state 345
 	match_clauses:  match_clauses ',' match_clause.    (62)
 
-	.  reduce 62 (src line 416)
+	.  reduce 62 (src line 414)
 
 
 state 346
@@ -5345,49 +5345,49 @@ state 346
 state 347
 	pats_or:  pats_or '|' pat.    (91)
 
-	.  reduce 91 (src line 592)
+	.  reduce 91 (src line 581)
 
 
 state 348
 	pats_or:  pats_or '|' lit.    (92)
 
-	.  reduce 92 (src line 593)
+	.  reduce 92 (src line 582)
 
 
 state 349
 	pats_or:  pats_or '|' range_tri.    (93)
 
-	.  reduce 93 (src line 594)
+	.  reduce 93 (src line 583)
 
 
 state 350
 	maybe_guard:  IF expr.    (66)
 
-	.  reduce 66 (src line 428)
+	.  reduce 66 (src line 426)
 
 
 state 351
 	range_tri:  LIT_INT OP_DOTDOTDOT LIT_INT.    (94)
 
-	.  reduce 94 (src line 597)
+	.  reduce 94 (src line 586)
 
 
 state 352
 	range_tri:  LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR.    (95)
 
-	.  reduce 95 (src line 599)
+	.  reduce 95 (src line 588)
 
 
 state 353
 	range_di:  LIT_INT OP_DOTDOT LIT_INT.    (96)
 
-	.  reduce 96 (src line 601)
+	.  reduce 96 (src line 590)
 
 
 state 354
 	range_di:  LITERAL_CHAR OP_DOTDOT LITERAL_CHAR.    (97)
 
-	.  reduce 97 (src line 603)
+	.  reduce 97 (src line 592)
 
 
 state 355
@@ -5395,7 +5395,7 @@ state 355
 	maybe_assignment: .    (120)
 
 	IDENTIFIER  shift 262
-	.  reduce 120 (src line 665)
+	.  reduce 120 (src line 654)
 
 	maybe_assignment  goto 363
 	assignment  goto 220
@@ -5404,13 +5404,13 @@ state 355
 state 356
 	hole:  IDENTIFIER SYM_OPEN_SQ round_exp SYM_CLOSE_SQ.    (122)
 
-	.  reduce 122 (src line 676)
+	.  reduce 122 (src line 665)
 
 
 state 357
 	meta_seq:  meta_seq ',' meta_item.    (29)
 
-	.  reduce 29 (src line 357)
+	.  reduce 29 (src line 355)
 
 
 state 358
@@ -5459,25 +5459,25 @@ state 359
 	'/'  shift 136
 	'%'  shift 140
 	';'  shift 365
-	.  reduce 158 (src line 731)
+	.  reduce 158 (src line 727)
 
 
 state 360
 	match_clause:  pats_or maybe_guard OP_FAT_ARROW match_body.    (63)
 
-	.  reduce 63 (src line 419)
+	.  reduce 63 (src line 417)
 
 
 state 361
 	match_body:  expr.    (64)
 
-	.  reduce 64 (src line 423)
+	.  reduce 64 (src line 421)
 
 
 state 362
 	match_body:  expr_stmt.    (65)
 
-	.  reduce 65 (src line 425)
+	.  reduce 65 (src line 423)
 
 
 state 363
@@ -5490,7 +5490,7 @@ state 363
 state 364
 	maybe_init_expr:  '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ.    (82)
 
-	.  reduce 82 (src line 573)
+	.  reduce 82 (src line 562)
 
 
 state 365
@@ -5518,13 +5518,13 @@ state 367
 state 368
 	expr_for:  FOR SYM_OPEN_ROUND maybe_assignment ';' exp ';' maybe_assignment SYM_CLOSE_ROUND block.    (77)
 
-	.  reduce 77 (src line 523)
+	.  reduce 77 (src line 514)
 
 
 state 369
 	maybe_init_expr:  '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ.    (83)
 
-	.  reduce 83 (src line 574)
+	.  reduce 83 (src line 563)
 
 
 161 terminals, 61 nonterminals

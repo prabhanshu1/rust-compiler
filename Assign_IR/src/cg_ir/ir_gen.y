@@ -3,6 +3,7 @@ package main
 import "../Assign_IR/src/symtable"
 import "fmt"
 import "log"
+import "strings"
   /* import "os" */
 import "strconv"
   var line = 0
@@ -533,21 +534,39 @@ let
       if($5.mp!=nil){
           /*let mut y:i32 = expr */
           if($5.mp["type"]!=$4.s) {log.Fatal("Type mismatch in let ;;");}
-          $3.mp["type"]=$5.mp["type"];
+          $3.mp["type"]=$2.s+$5.mp["type"];
           $$.code=new(node);
           if($5.code!=nil) {
           p:=copy_nodes($5.code,$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
           }else {
+            if $5.mp["Array"] == "true" {
+                p2:=&$$.code;
+              if $5.mp["args"]!="" {
+                s2 := strings.Split($5.mp["args"], ", ")
+                for i := 0; i < $5.n; i++ {
+                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+s2[i];
+                  (*p2).next=new(node)
+                  p2=&((*p2).next.code)
+                }
+              }else{
+                for i := 0; i < $5.n; i++ {
+                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+$5.mp["value"];
+                  (*p2).next=new(node)
+                  p2=&((*p2).next.code)
+                }
+              }
+            }else{
             $$.code.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
+          }
                       
           }
       } else{/*let  y:i32 */
-        $3.mp["type"]=$4.s;
+        $3.mp["type"]=$2.s+$4.s;
        
       }
     } else{ /* let y = 5 */
       if($5.mp==nil) {log.Fatal("incomplete let expression  ;");}
-      $3.mp["type"]=$5.mp["type"];
+      $3.mp["type"]=$2.s+$5.mp["type"];
       $$.code=new(node);$$.code=$5.code; p:=list_end(&$$.code);p.next=new(node);p.next.value="=, "+$3.mp["value"]+", "+$5.mp["value"];
     }
         }
@@ -562,8 +581,8 @@ maybe_ty_ascription
 
 maybe_init_expr
 : '=' expr   {$$.code=$2.code; $$.mp=$2.mp;}
-| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  
-| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  
+| '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  {$$.code=$2.code; $$.mp=$3.mp;$$.mp["Array"]="true";$$.n=$3.n;}
+| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ  {$$.code=$3.code; $$.mp=$3.mp;$$.mp["Array"]="true";$$.n=$5.n;}
 | OPEQ_INT  opeq_ops  {
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
   $$.code=new(node);$$.code=$2.code;p:=list_end(&$$.code);
@@ -609,16 +628,16 @@ tys
 ;
 
 ty
-: path  {if($1.code==nil) {$$.s=$1.s;} else{ $$.code=$1.code;$$.mp=$1.mp; } }
-| '~' ty
-| '*' maybe_mut ty  
-| '&' maybe_mut ty
-| OP_POWER maybe_mut ty
+: path  { $$.s=$1.s; }
+| '~' ty { $$.s="~" + $2.s; }
+| '*' maybe_mut ty  { $$.s="*" + $2.s + $3.s; }
+| '&' maybe_mut ty { $$.s="&" + $2.s + $3.s; }
+| OP_POWER maybe_mut ty { $$.s="**" + $2.s + $3.s; }
 | SYM_OPEN_ROUND tys SYM_CLOSE_ROUND  
 ;
 
 maybe_mut
-: MUT   {$$.s=$1.s;}
+: MUT   {$$.s=$1.s+"_";}
 | /* empty */  {$$.s="";}
 ;
 
@@ -649,9 +668,9 @@ maybe_exprs
 ;
 
 exprs
-: expr {$$.code=$1.code;$$.mp["args"]=$1.mp["value"] +", ";}
-| exprs ',' expr   {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code;   
-  $$.mp["args"]=$1.mp["args"]+$3.mp["value"] + ", ";
+: expr {$$.code=$1.code;$$.mp["args"]=$1.mp["value"] +", ";$$.n=1;$$.mp["type"]=$1.mp["type"];}
+| exprs ',' expr   { $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]=$1.mp["type"];$$.code=$1.code;  p:=list_end(&$$.code);  p.next=$3.code;   
+  $$.mp["args"]=$1.mp["args"]+$3.mp["value"] + ", ";$$.n=$1.n+1;$$.mp["type"]="Array_"+$1.mp["type"]+"_"+strconv.Itoa($$.n);
 }
 ;
 
@@ -677,6 +696,7 @@ hole
     $$.mp=$1.mp;  
   }else{$$.mp=p;}
 }
+
 
 | IDENTIFIER '.' hole  //incomplete
 

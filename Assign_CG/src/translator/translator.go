@@ -5,7 +5,6 @@ import (
 	"../model"
 	//"fmt"
 	"strconv"
-	"../runtime"
 )
 
 func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leader []int) {
@@ -188,6 +187,10 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				// remove $
 				data = append(data, "movl "+r2+","+r1)
 
+			case "=ret":
+				// remove $
+				data = append(data, "movl "+"%eax"+","+src1)
+
 			case "addof":
 
 
@@ -236,6 +239,21 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			case "label":
 				data = append(data, src1+":")
+				if src1[0:4]=="func" {
+					data = append(data, src1+":")
+					data = append(data, "pushl %ebp")
+					data = append(data, "movl %esp,%ebp")
+
+					s := strings.Split(src2, "_")
+					for ii := 0; ii < len(s); ii++ {
+						if s[ii]=="" {
+							break;
+						}
+						r1, fresh, Old_Variable = cg_getreg.Getreg(j-leader[i], s[ii], &table, &Ref_Map)
+						Load_and_Store(fresh, Old_Variable, &data, &r2, s[ii], &Ref_Map)
+						data = append(data, "popl " + r1)
+					}
+				}
 
 			case "ret":
 				if src1 != "" {
@@ -243,6 +261,8 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 					Load_and_Store(fresh, Old_Variable, &data, &r1, src1, &Ref_Map)
 
 				}
+				data = append(data, "movl %ebp,%esp")
+				data = append(data, "popl %ebp")
 				//Free_reg_at_end(&data, &Ref_Map)
 
 				data = append(data, "ret")
