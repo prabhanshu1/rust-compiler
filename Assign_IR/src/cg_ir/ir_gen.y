@@ -358,16 +358,15 @@ lit
 : LIT_CHAR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }   
 | LIT_INT    {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+strconv.Itoa($1.n); }   
 | LIT_UINT   {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+strconv.Itoa($1.n); }   
-| LIT_INT_UNSUFFIXED  
+| LIT_INT_UNSUFFIXED
 | FLOAT  
-| LIT_FLOAT_UNSUFFIXED  
+| LIT_FLOAT_UNSUFFIXED   
 | LITERAL_STR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }   
 | LITERAL_CHAR  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }   
 | TRUE    {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", 1"; }   
 | FALSE   {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="int";$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", 0"; }   
 | VAR_TYPE   {if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}  else{$$.s="str";}
-{$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["type"]="str";$$.mp["value"]=$1.s;$$.code=new(node);$$.code.value="=, "+$$.mp["value"]+", "+$1.s; }
-  }
+  }  //maybe incomplete
 ;
 
 maybe_stmts
@@ -376,37 +375,44 @@ maybe_stmts
 ;
 
 stmts
-: stmts stmt {$$.code=$1.code;p:=list_end(&$1.code);p.next=$2.code;}                 
+: stmts stmt {$$.code=$1.code;p:=list_end(&$$.code);p.next=$2.code;}                 
 | stmt    {$$.code=$1.code;}              
 ;
 
 stmt
 : let ';' {$$.code=$1.code;}                 
-| item_or_view_item ';'                  
-| expr_stmt                      
+| item_or_view_item ';'         //incomplete                  
+| expr_stmt  {$$.code=$1.code;}                   
 | expr ';'   {$$.code=$1.code;$$.mp=$1.mp; }
 ;
 
 // Things that can be an expr or a stmt, no semi required.
 expr_stmt
-: expr_match  
-| expr_if   
-| expr_while  
-| expr_loop  
-| expr_for  
-| expr_return  
+: expr_match  {$$.code=$1.code;}
+| expr_if   {$$.code=$1.code;}
+| expr_while  {$$.code=$1.code;}
+| expr_loop  {$$.code=$1.code;}
+| expr_for  {$$.code=$1.code;}
+| expr_return  {$$.code=$1.code;}
 ;
 
 expr_return
-: RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';' 
-| RETURN ';' 
-| RETURN lit ';'   
-| RETURN IDENTIFIER ';' 
+: RETURN SYM_OPEN_ROUND maybe_exprs SYM_CLOSE_ROUND ';' // incomplete
+| RETURN ';'                   {$$.code=new(node);$$.code.value="return";}
+| RETURN lit ';'               {$$.code=$2.code; p:=list_end(&$$.code);p.next=new(node);p.next.value="return, "+$2.mp["value"];}
+| RETURN IDENTIFIER ';'        {$$.code=new(node); $2.mp =symtab.Find_id($2.s);
+   if($2.mp ==nil){log.Fatal("Returning undefined identifier; ");};
+   $$.code.value="return, "+$2.mp["value"];
+ }
 ;
 
 expr_match
-: MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY  
-| MATCH IDENTIFIER SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY 
+: MATCH exp SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY   {
+
+  $$.code=$2.code;p:=list_end(&$$.code);p.next=$4.code;
+  
+ }
+| MATCH exp SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY 
 ;
 
 match_clauses
@@ -456,17 +462,12 @@ expr_if
 ;
 
 block_or_if
-: block   {   $$.mp=$1.mp;$$.code=$1.code;   
-  
-
- } 
-| expr_if {   $$.mp=$1.mp;$$.code=$1.code;}
+: block   {   $$.mp=$1.mp;$$.code=$1.code; } 
+| expr_if {   $$.mp=$1.mp;$$.code=$1.code; }
 ;
 
 block
-: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {$$.code=$2.code; 
-
-}  
+: SYM_OPEN_CURLY maybe_stmts SYM_CLOSE_CURLY {$$.code=$2.code;$$.mp=$2.mp;}  
 ;
 
 expr_while
@@ -525,7 +526,7 @@ $$.code=$3.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$
 }
 ;
 
-let
+let   // incomplete for array and struct => both have $4.map != nil;;
 : LET maybe_mut pat  maybe_ty_ascription maybe_init_expr   {
   if($3.mp==nil) {log.Fatal("Variable name not present in let");}
     if($4.mp==nil){ 
@@ -625,13 +626,14 @@ maybe_mut
 
 var_types
 : VAR_TYPE  {if($1.s=="i8")||($1.s=="i16")||($1.s=="i32")||($1.s=="i64")||($1.s=="isize")||($1.s=="u8")||($1.s=="u16")||($1.s=="u32")||($1.s=="u64")||($1.s=="usize"){$$.s="int";}  else{$$.s="str";}}
+
 | IDENTIFIER {
  $1.mp =symtab.Find_id($1.s);
   if($1.mp==nil){
-    $1.mp=symtab.Make_entry($1.s);}
-$$.mp=$1.mp;
- $$.s=$1.s;
-  }  //maybe incomplete
+    log.Fatal("var_type not defined,")}  
+  }//maybe incomplete
+
+
 
 path
 : var_types {$$.s=$1.s;}
