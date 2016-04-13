@@ -546,7 +546,7 @@ let   // incomplete for array and struct => both have $4.map != nil;;
           if($5.code!=nil) {
           p:=copy_nodes($5.code,$$.code);p.next=new(node);
           if $5.mp["Array"] == "true" {
-                p2:=&p;
+                p2:=&p.next;
               if $5.mp["args"]!="" {
                 s2 := strings.Split($5.mp["args"], ", ")
                 for i := 0; i < $5.n; i++ {
@@ -633,12 +633,16 @@ maybe_init_expr
 
 | '=' SYM_OPEN_SQ exprs SYM_CLOSE_SQ  { fmt.Println("jjdddlsdddww");$$.code=$3.code;$$.mp=$3.mp;$$.n=$3.n;}//array
 
-| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ { fmt.Println("jjdddlsdddeeeeeee");$$.code=$3.code;$$.mp=$3.mp;$$.n=$5.n;$$.mp["Array"]="true"}//array  
+| '=' SYM_OPEN_SQ round_exp ';' LIT_INT SYM_CLOSE_SQ { fmt.Println("jjdddlsdddeeeeeee");$$.code=$3.code;$$.mp=$3.mp;$$.n=$5.n;$$.mp["Array"]="true";$$.mp["type"]="Array_"+$$.mp["type"]+"_"+strconv.Itoa($$.n)}//array  
 
 | OPEQ_INT  opeq_ops  { fmt.Println("jjdddlsdddyyyyyyyy");
   $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
-  $$.code=new(node);$$.code=$2.code;p:=list_end(&$$.code);
-  p.next=new(node);p.next.value=$2.mp["op"]+", "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];
+  $$.code=new(node);$$.code=$2.code;p:=list_end(&$$.code);p.next=new(node);
+    if $2.mp["op"] == "" {
+    p.next.value="="+", "+$$.mp["value"]+", "+strconv.Itoa($1.n);
+  }else{
+    p.next.value=$2.mp["op"]+", "+$$.mp["value"]+", "+strconv.Itoa($1.n)+", "+$2.mp["value"];
+  }
   $$.mp["type"]="int";
 }
 
@@ -731,8 +735,10 @@ exprs
   if len($1.mp["type"])>5 && ($1.mp["type"])[0:5]=="Array" {
     sss:=strings.Split($1.mp["type"],"_");
     $1.mp["type"]=sss[1];
+
   }
   $$.n=$1.n+1;$$.mp["type"]="Array_"+$1.mp["type"]+"_"+strconv.Itoa($$.n); fmt.Println("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",$$.mp["args"]);$$.mp["Array"]="true";
+
 }
 ;
 

@@ -1647,7 +1647,7 @@ yydefault:
 							p := copy_nodes(yyDollar[5].code, yyVAL.code)
 							p.next = new(node)
 							if yyDollar[5].mp["Array"] == "true" {
-								p2 := &p
+								p2 := &p.next
 								if yyDollar[5].mp["args"] != "" {
 									s2 := strings.Split(yyDollar[5].mp["args"], ", ")
 									for i := 0; i < yyDollar[5].n; i++ {
@@ -1785,6 +1785,7 @@ yydefault:
 			yyVAL.mp = yyDollar[3].mp
 			yyVAL.n = yyDollar[5].n
 			yyVAL.mp["Array"] = "true"
+			yyVAL.mp["type"] = "Array_" + yyVAL.mp["type"] + "_" + strconv.Itoa(yyVAL.n)
 		}
 	case 86:
 		yyDollar = yyS[yypt-2 : yypt+1]
@@ -1797,25 +1798,29 @@ yydefault:
 			yyVAL.code = yyDollar[2].code
 			p := list_end(&yyVAL.code)
 			p.next = new(node)
-			p.next.value = yyDollar[2].mp["op"] + ", " + yyVAL.mp["value"] + ", " + strconv.Itoa(yyDollar[1].n) + ", " + yyDollar[2].mp["value"]
+			if yyDollar[2].mp["op"] == "" {
+				p.next.value = "=" + ", " + yyVAL.mp["value"] + ", " + strconv.Itoa(yyDollar[1].n)
+			} else {
+				p.next.value = yyDollar[2].mp["op"] + ", " + yyVAL.mp["value"] + ", " + strconv.Itoa(yyDollar[1].n) + ", " + yyDollar[2].mp["value"]
+			}
 			yyVAL.mp["type"] = "int"
 		}
 	case 87:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:642
+		//line ./src/cg_ir/ir_gen.y:646
 		{
 			fmt.Println("jjdddlsdddiiiii")
 		}
 	case 88:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:643
+		//line ./src/cg_ir/ir_gen.y:647
 		{
 			yyVAL.s = ""
 			fmt.Println("jjdddlsdddmmmmm")
 		}
 	case 98:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:661
+		//line ./src/cg_ir/ir_gen.y:665
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -1824,7 +1829,7 @@ yydefault:
 		}
 	case 99:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:662
+		//line ./src/cg_ir/ir_gen.y:666
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -1833,7 +1838,7 @@ yydefault:
 		}
 	case 100:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:666
+		//line ./src/cg_ir/ir_gen.y:670
 		{
 
 			yyDollar[1].mp = symtab.Find_id(yyDollar[1].s)
@@ -1844,49 +1849,49 @@ yydefault:
 		}
 	case 103:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:684
+		//line ./src/cg_ir/ir_gen.y:688
 		{
 			yyVAL.s = yyDollar[1].s
 		}
 	case 104:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:685
+		//line ./src/cg_ir/ir_gen.y:689
 		{
 			yyVAL.s = "~" + yyDollar[2].s
 		}
 	case 105:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:686
+		//line ./src/cg_ir/ir_gen.y:690
 		{
 			yyVAL.s = "*" + yyDollar[2].s + yyDollar[3].s
 		}
 	case 106:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:687
+		//line ./src/cg_ir/ir_gen.y:691
 		{
 			yyVAL.s = "&" + yyDollar[2].s + yyDollar[3].s
 		}
 	case 107:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:688
+		//line ./src/cg_ir/ir_gen.y:692
 		{
 			yyVAL.s = "**" + yyDollar[2].s + yyDollar[3].s
 		}
 	case 109:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:693
+		//line ./src/cg_ir/ir_gen.y:697
 		{
 			yyVAL.s = yyDollar[1].s + "_"
 		}
 	case 110:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:694
+		//line ./src/cg_ir/ir_gen.y:698
 		{
 			yyVAL.s = ""
 		}
 	case 111:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:699
+		//line ./src/cg_ir/ir_gen.y:703
 		{
 			yyVAL.mp = nil
 			if (yyDollar[1].s == "i8") || (yyDollar[1].s == "i16") || (yyDollar[1].s == "i32") || (yyDollar[1].s == "i64") || (yyDollar[1].s == "isize") || (yyDollar[1].s == "u8") || (yyDollar[1].s == "u16") || (yyDollar[1].s == "u32") || (yyDollar[1].s == "u64") || (yyDollar[1].s == "usize") {
@@ -1897,7 +1902,7 @@ yydefault:
 		}
 	case 112:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:701
+		//line ./src/cg_ir/ir_gen.y:705
 		{
 
 			yyVAL.mp = symtab.Find_id(yyDollar[1].s)
@@ -1908,33 +1913,33 @@ yydefault:
 		}
 	case 113:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:710
+		//line ./src/cg_ir/ir_gen.y:714
 		{
 			yyVAL.s = yyDollar[1].s
 			yyVAL.mp = yyDollar[1].mp
 		}
 	case 114:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:711
+		//line ./src/cg_ir/ir_gen.y:715
 		{
 			yyVAL.s = "Array_" + yyDollar[2].s + "_" + yyDollar[3].s
 		}
 	case 115:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:715
+		//line ./src/cg_ir/ir_gen.y:719
 		{
 			yyVAL.s = strconv.Itoa(yyDollar[2].n)
 		}
 	case 117:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:720
+		//line ./src/cg_ir/ir_gen.y:724
 		{
 			yyVAL.code = yyDollar[1].code
 			yyVAL.mp = yyDollar[1].mp
 		}
 	case 119:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:725
+		//line ./src/cg_ir/ir_gen.y:729
 		{
 			yyVAL.code = yyDollar[1].code
 			yyVAL.mp["args"] = yyDollar[1].mp["value"] + ", "
@@ -1943,7 +1948,7 @@ yydefault:
 		}
 	case 120:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:726
+		//line ./src/cg_ir/ir_gen.y:730
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -1955,22 +1960,24 @@ yydefault:
 			if len(yyDollar[1].mp["type"]) > 5 && (yyDollar[1].mp["type"])[0:5] == "Array" {
 				sss := strings.Split(yyDollar[1].mp["type"], "_")
 				yyDollar[1].mp["type"] = sss[1]
+
 			}
 			yyVAL.n = yyDollar[1].n + 1
 			yyVAL.mp["type"] = "Array_" + yyDollar[1].mp["type"] + "_" + strconv.Itoa(yyVAL.n)
 			fmt.Println("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL", yyVAL.mp["args"])
 			yyVAL.mp["Array"] = "true"
+
 		}
 	case 121:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:738
+		//line ./src/cg_ir/ir_gen.y:744
 		{
 			yyVAL.code = yyDollar[1].code
 			yyVAL.mp = yyDollar[1].mp
 		}
 	case 123:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:743
+		//line ./src/cg_ir/ir_gen.y:749
 		{
 			p := symtab.Find_id(yyDollar[1].s)
 			if p == nil {
@@ -1982,7 +1989,7 @@ yydefault:
 		}
 	case 124:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:750
+		//line ./src/cg_ir/ir_gen.y:756
 		{
 			p := symtab.Find_id(yyDollar[1].s)
 			if p == nil {
@@ -1995,7 +2002,7 @@ yydefault:
 		}
 	case 125:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:760
+		//line ./src/cg_ir/ir_gen.y:766
 		{
 			p := symtab.Find_id(yyDollar[1].s + "_" + yyDollar[3].mp["value"])
 			if p == nil {
@@ -2008,7 +2015,7 @@ yydefault:
 		}
 	case 126:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:772
+		//line ./src/cg_ir/ir_gen.y:778
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2023,7 +2030,7 @@ yydefault:
 		}
 	case 127:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:774
+		//line ./src/cg_ir/ir_gen.y:780
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2034,7 +2041,7 @@ yydefault:
 		}
 	case 128:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:775
+		//line ./src/cg_ir/ir_gen.y:781
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2045,7 +2052,7 @@ yydefault:
 		}
 	case 129:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:777
+		//line ./src/cg_ir/ir_gen.y:783
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2056,7 +2063,7 @@ yydefault:
 		}
 	case 130:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:778
+		//line ./src/cg_ir/ir_gen.y:784
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2067,7 +2074,7 @@ yydefault:
 		}
 	case 131:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:779
+		//line ./src/cg_ir/ir_gen.y:785
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2078,7 +2085,7 @@ yydefault:
 		}
 	case 132:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:780
+		//line ./src/cg_ir/ir_gen.y:786
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2089,7 +2096,7 @@ yydefault:
 		}
 	case 135:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:785
+		//line ./src/cg_ir/ir_gen.y:791
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2100,7 +2107,7 @@ yydefault:
 		}
 	case 136:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:786
+		//line ./src/cg_ir/ir_gen.y:792
 		{
 			yyVAL.code = yyDollar[1].code
 			p := list_end(&yyVAL.code)
@@ -2111,7 +2118,7 @@ yydefault:
 		}
 	case 139:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:791
+		//line ./src/cg_ir/ir_gen.y:797
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2129,7 +2136,7 @@ yydefault:
 		}
 	case 141:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:812
+		//line ./src/cg_ir/ir_gen.y:818
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2137,7 +2144,7 @@ yydefault:
 		}
 	case 142:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:813
+		//line ./src/cg_ir/ir_gen.y:819
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2145,7 +2152,7 @@ yydefault:
 		}
 	case 143:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:814
+		//line ./src/cg_ir/ir_gen.y:820
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2153,7 +2160,7 @@ yydefault:
 		}
 	case 144:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:815
+		//line ./src/cg_ir/ir_gen.y:821
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2161,7 +2168,7 @@ yydefault:
 		}
 	case 145:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:816
+		//line ./src/cg_ir/ir_gen.y:822
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2169,7 +2176,7 @@ yydefault:
 		}
 	case 146:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:817
+		//line ./src/cg_ir/ir_gen.y:823
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2177,7 +2184,7 @@ yydefault:
 		}
 	case 147:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:818
+		//line ./src/cg_ir/ir_gen.y:824
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2185,7 +2192,7 @@ yydefault:
 		}
 	case 148:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:819
+		//line ./src/cg_ir/ir_gen.y:825
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2193,7 +2200,7 @@ yydefault:
 		}
 	case 149:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:820
+		//line ./src/cg_ir/ir_gen.y:826
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2201,7 +2208,7 @@ yydefault:
 		}
 	case 150:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:821
+		//line ./src/cg_ir/ir_gen.y:827
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2209,7 +2216,7 @@ yydefault:
 		}
 	case 151:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:822
+		//line ./src/cg_ir/ir_gen.y:828
 		{
 			fmt.Println("LLLLLLLLLLLLLLLL")
 			yyVAL.code = yyDollar[2].code
@@ -2218,7 +2225,7 @@ yydefault:
 		}
 	case 154:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:825
+		//line ./src/cg_ir/ir_gen.y:831
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2226,7 +2233,7 @@ yydefault:
 		}
 	case 155:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:826
+		//line ./src/cg_ir/ir_gen.y:832
 		{
 			yyVAL.code = yyDollar[2].code
 			yyVAL.mp = yyDollar[2].mp
@@ -2234,13 +2241,13 @@ yydefault:
 		}
 	case 157:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:828
+		//line ./src/cg_ir/ir_gen.y:834
 		{
 			yyVAL.s = ""
 		}
 	case 158:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:832
+		//line ./src/cg_ir/ir_gen.y:838
 		{
 			fmt.Println("hello in expr")
 			yyVAL.code = yyDollar[1].code
@@ -2248,7 +2255,7 @@ yydefault:
 		}
 	case 159:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:833
+		//line ./src/cg_ir/ir_gen.y:839
 		{
 			fmt.Println("sadsad")
 			yyVAL.code = yyDollar[1].code
@@ -2256,14 +2263,14 @@ yydefault:
 		}
 	case 160:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:839
+		//line ./src/cg_ir/ir_gen.y:845
 		{
 			yyVAL.mp = yyDollar[1].mp
 			yyVAL.code = yyDollar[1].code
 		}
 	case 161:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:841
+		//line ./src/cg_ir/ir_gen.y:847
 		{
 			fmt.Println("jjdddlsvvvvvvv")
 			p := symtab.Find_id(yyDollar[1].s)
@@ -2277,7 +2284,7 @@ yydefault:
 		}
 	case 162:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:851
+		//line ./src/cg_ir/ir_gen.y:857
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2287,12 +2294,12 @@ yydefault:
 		}
 	case 164:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:858
+		//line ./src/cg_ir/ir_gen.y:864
 		{
 		}
 	case 167:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:862
+		//line ./src/cg_ir/ir_gen.y:868
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2306,7 +2313,7 @@ yydefault:
 		}
 	case 168:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:867
+		//line ./src/cg_ir/ir_gen.y:873
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2320,7 +2327,7 @@ yydefault:
 		}
 	case 169:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:872
+		//line ./src/cg_ir/ir_gen.y:878
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2334,7 +2341,7 @@ yydefault:
 		}
 	case 170:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:876
+		//line ./src/cg_ir/ir_gen.y:882
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2348,7 +2355,7 @@ yydefault:
 		}
 	case 171:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:881
+		//line ./src/cg_ir/ir_gen.y:887
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2362,7 +2369,7 @@ yydefault:
 		}
 	case 172:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:885
+		//line ./src/cg_ir/ir_gen.y:891
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2376,7 +2383,7 @@ yydefault:
 		}
 	case 173:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:890
+		//line ./src/cg_ir/ir_gen.y:896
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2390,7 +2397,7 @@ yydefault:
 		}
 	case 174:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:895
+		//line ./src/cg_ir/ir_gen.y:901
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2429,7 +2436,7 @@ yydefault:
 		}
 	case 175:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:921
+		//line ./src/cg_ir/ir_gen.y:927
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2468,7 +2475,7 @@ yydefault:
 		}
 	case 176:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:946
+		//line ./src/cg_ir/ir_gen.y:952
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2507,7 +2514,7 @@ yydefault:
 		}
 	case 177:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:970
+		//line ./src/cg_ir/ir_gen.y:976
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2546,7 +2553,7 @@ yydefault:
 		}
 	case 178:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:995
+		//line ./src/cg_ir/ir_gen.y:1001
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2560,7 +2567,7 @@ yydefault:
 		}
 	case 179:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1001
+		//line ./src/cg_ir/ir_gen.y:1007
 		{
 			fmt.Println("in a.b")
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
@@ -2576,7 +2583,7 @@ yydefault:
 		}
 	case 180:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1007
+		//line ./src/cg_ir/ir_gen.y:1013
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2590,7 +2597,7 @@ yydefault:
 		}
 	case 181:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1011
+		//line ./src/cg_ir/ir_gen.y:1017
 		{ //incorrect
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2604,7 +2611,7 @@ yydefault:
 		}
 	case 182:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1015
+		//line ./src/cg_ir/ir_gen.y:1021
 		{
 
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
@@ -2647,7 +2654,7 @@ yydefault:
 		}
 	case 183:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1034
+		//line ./src/cg_ir/ir_gen.y:1040
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2691,13 +2698,13 @@ yydefault:
 		}
 	case 184:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1052
+		//line ./src/cg_ir/ir_gen.y:1058
 		{ //incorrect
 
 		}
 	case 185:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1055
+		//line ./src/cg_ir/ir_gen.y:1061
 		{
 			yyVAL.mp = symtab.Make_entry("temp" + strconv.Itoa(temp_num))
 			temp_num += 1
@@ -2713,24 +2720,24 @@ yydefault:
 		}
 	case 189:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1063
+		//line ./src/cg_ir/ir_gen.y:1069
 		{
 			yyVAL.mp = yyDollar[1].mp
 			yyVAL.code = yyDollar[1].code
 		}
 	case 190:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1064
+		//line ./src/cg_ir/ir_gen.y:1070
 		{
 		}
 	case 191:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1065
+		//line ./src/cg_ir/ir_gen.y:1071
 		{
 		}
 	case 192:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1069
+		//line ./src/cg_ir/ir_gen.y:1075
 		{
 			fmt.Println("jjdddlsdddddcccccc")
 			yyVAL.mp = yyDollar[1].mp
@@ -2738,14 +2745,14 @@ yydefault:
 		}
 	case 193:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1070
+		//line ./src/cg_ir/ir_gen.y:1076
 		{
 			yyVAL.mp = yyDollar[1].mp
 			yyVAL.code = yyDollar[1].code
 		}
 	case 194:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1074
+		//line ./src/cg_ir/ir_gen.y:1080
 		{
 			p := symtab.Find_id(yyDollar[1].s)
 			if p == nil {
@@ -2758,7 +2765,7 @@ yydefault:
 		}
 	case 195:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1082
+		//line ./src/cg_ir/ir_gen.y:1088
 		{
 			p := symtab.Find_id(yyDollar[1].s + "_" + yyDollar[3].s)
 			if p == nil {
@@ -2770,7 +2777,7 @@ yydefault:
 		}
 	case 196:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1089
+		//line ./src/cg_ir/ir_gen.y:1095
 		{
 			p := symtab.Find_id(yyDollar[1].s + "_")
 			if p == nil {
@@ -2782,18 +2789,18 @@ yydefault:
 		}
 	case 197:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1099
+		//line ./src/cg_ir/ir_gen.y:1105
 		{
 
 		}
 	case 200:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1111
+		//line ./src/cg_ir/ir_gen.y:1117
 		{
 		}
 	case 204:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1121
+		//line ./src/cg_ir/ir_gen.y:1127
 		{
 			yyVAL.s = yyDollar[3].s
 			yyVAL.code = yyDollar[3].code
@@ -2801,14 +2808,14 @@ yydefault:
 		}
 	case 205:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1128
+		//line ./src/cg_ir/ir_gen.y:1134
 		{
 			yyVAL.s = yyDollar[1].s
 			yyVAL.code = yyDollar[1].code
 		}
 	case 206:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1129
+		//line ./src/cg_ir/ir_gen.y:1135
 		{
 			yyVAL.s = yyDollar[1].s + "," + yyDollar[3].s
 			yyVAL.code = yyDollar[1].code
@@ -2817,7 +2824,7 @@ yydefault:
 		}
 	case 207:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./src/cg_ir/ir_gen.y:1133
+		//line ./src/cg_ir/ir_gen.y:1139
 		{
 			yyVAL.s = yyDollar[1].s + "," + yyDollar[3].mp["value"]
 			yyVAL.code = yyDollar[3].code
