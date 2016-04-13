@@ -410,26 +410,45 @@ expr_return
 ;
 
 expr_match
-: MATCH exp SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY   {
-
-  $$.code=$2.code;p:=list_end(&$$.code);p.next=$4.code;
+: MATCH exp marker_2 SYM_OPEN_CURLY match_clauses SYM_CLOSE_CURLY ','  {
+  $$.code=$2.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);q.next=$5.code;
   
  }
-| MATCH exp SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY 
+;
+
+marker_2
+:  {  $$.mp=symtab.Make_entry("case_exp");$$.code=new(node);
+   $$.code.value="=, "+$$.mp["cae_exp"]+", "+$0.mp["value"];
+  $$.mp["after_match"]="label"+strconv.Itoa(label_num);label_num+=1;
+}
 ;
 
 match_clauses
-: match_clause  
-| match_clauses ',' match_clause 
+: match_clause   {$$.code=$1.code;}
+| match_clauses ',' match_clause  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;}
 ;
 
 match_clause
-: pats_or maybe_guard OP_FAT_ARROW match_body 
+: pats_or maybe_guard OP_FAT_ARROW match_body  {
+  
+ temp:=symtab.Find_id("case_exp");
+  if ($$.s=="_") {
+    $$.code=$4.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="lable"+$$.mp["after_match"];
+  }
+  
+  if($$.code==nil) {
+    $$.code=new(node);$$.code.value="ifgoto, jne, "+temp["value"]+", "+$1.mp["value"]+", label"+strconv.Itoa(label_num);
+    $$.code.next=$4.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="jmp, "+temp["after_match"];
+    p.next.next=new(node);p.next.next.value="label, "+strconv.Itoa(label_num);
+  }
+  
+  
+ } 
 ;
 
 match_body
-: expr   
-| expr_stmt 
+: expr    {$$.code=$1.code;$$.mp=$1.mp;}
+| expr_stmt  {$$.code=$1.code;$$.mp=$1.mp;}
 ;
 
 maybe_guard
@@ -605,18 +624,18 @@ maybe_init_expr
 ;
 
 pats_or
-: pat  
-| lit 
-| '_' 
-| range_tri 
-| pats_or '|' pat  
+: pat  {$$.mp=$1.mp;$$.code=nil;$$.s="";}
+| lit {$$.code=$1.code;$$.mp=$1.mp;$$.s="";}
+| '_' {$$.s="_";}
+| range_tri  {$$.code=$1.code;$$.mp=$1.mp;}
+| pats_or '|' pat  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;}
 | pats_or '|' lit   
 | pats_or '|' range_tri   
 ;
 
 range_tri
-: LIT_INT OP_DOTDOTDOT LIT_INT   
-| LITERAL_CHAR OP_DOTDOTDOT LITERAL_CHAR  
+: lit OP_DOTDOTDOT lit  {$$.code=$1.code; p:=list_end(&$$.code);p.next=$3.code;}   
+
 
 range_di
 : LIT_INT OP_DOTDOT LIT_INT  {$$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;;$$.mp["start"]=strconv.Itoa($1.n);$$.mp["end"]=strconv.Itoa($3.n);}
