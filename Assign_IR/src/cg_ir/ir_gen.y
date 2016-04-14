@@ -411,6 +411,7 @@ expr_return
 
 expr_match
 : MATCH exp marker_2 SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY  {
+  fmt.Println("in expr _math",$2.mp);
   $$.code=$2.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);q.next=$5.code;
  r:=list_end(&$$.code); r.next=new(node);
   r.next.value="label, "+$3.mp["after_match"];
@@ -443,9 +444,16 @@ match_clause
     $$.code=new(node);$$.code.value="ifgoto, jne, "+temp["value"]+", "+$1.mp["value"]+", label"+strconv.Itoa(label_num);
     $$.code.next=$4.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="jmp, "+temp["after_match"];
     p.next.next=new(node);p.next.next.value="label, "+"label"+strconv.Itoa(label_num);label_num+=1;
-      }
+      }else{
+    if($$.s==""){
+      $$.code=$1.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="ifgoto, jne, "+temp["value"]+", "+$1.mp["value"]+", label"+strconv.Itoa(label_num);
+    p.next.next=$4.code;q:=list_end(&$$.code);q.next=new(node);q.next.value="jmp, "+temp["after_match"];
+    q.next.next=new(node);q.next.next.value="label, "+"label"+strconv.Itoa(label_num);label_num+=1;
+      
+    }
   }
   
+  }
  } 
 ;
 
@@ -774,6 +782,7 @@ maybe_assignment
 
 hole
 : IDENTIFIER   {
+
  p:=symtab.Find_id($1.s);
   if(p==nil){
     $1.mp=symtab.Make_entry($1.s);
@@ -804,13 +813,13 @@ hole
 assignment
 : hole '=' round_exp  {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p);q.next=new(node);if($1.mp["value2"]=="") { if($3.mp["isfunc"]=="true"){q.next.value="=ret, "+$1.mp["value"]+", "}else{q.next.value="=, "+$1.mp["value"]+", "+$3.mp["value"];}}else{q.next.value="[]=, "+$1.mp["value2"]+", "+$1.mp["value"] +", "+$3.mp["value"];}}
 
-| hole OP_ADDEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="+, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
-| hole OP_SUBEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="-, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_ADDEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="+, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_SUBEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="-, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 
-| hole OP_MULEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="*, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
-| hole OP_DIVEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="/, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
-| hole OP_MODEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="%, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
-| hole OP_ANDEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="&, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_MULEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="*, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_DIVEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="/, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_MODEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="%, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
+| hole OP_ANDEQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);;q.next=new(node);q.next.value="&, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 
 | hole OP_SHLEQ round_exp 
 | hole OP_SHREQ round_exp 
@@ -819,12 +828,13 @@ assignment
 | hole OP_XOREQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="^, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 
 | hole OP_EQEQ round_exp  {
+   fmt.Println("in hole ddhhdhh");   
  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
  $$.mp["true"]="label"+strconv.Itoa(label_num);
  label_num+=1;
  $$.mp["after"]="label"+strconv.Itoa(label_num);
  label_num+=1;
-   
+ fmt.Println("in hole ddhhdhh");   
   $$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);
   q.next=new(node); q.next.value="ifgoto, je, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
   q.next.next=new(node);r:=q.next.next;r.value="=, "+$$.mp["value"]+", 0";
