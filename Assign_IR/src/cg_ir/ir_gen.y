@@ -411,7 +411,6 @@ expr_return
 
 expr_match
 : MATCH exp marker_2 SYM_OPEN_CURLY match_clauses ',' SYM_CLOSE_CURLY  {
-  fmt.Println("in expr _math",$2.mp);
   $$.code=$2.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);q.next=$5.code;
  r:=list_end(&$$.code); r.next=new(node);
   r.next.value="label, "+$3.mp["after_match"];
@@ -580,13 +579,21 @@ let   // incomplete for array and struct => both have $4.map != nil;;
               if $5.mp["args"]!="" {
                 s2 := strings.Split($5.mp["args"], ", ")
                 for i := 0; i < $5.n; i++ {
-                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+s2[i];
+                  ppp:=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+                  (*p2).value="=, "+ppp["value"]+ ", "+ strconv.Itoa(i) ;
+                  (*p2).next=new(node)
+                  p2=&((*p2).next)
+                  (*p2).value="[]=, "+ppp["value"]+", "+$3.mp["value"] +", "+s2[i];
                   (*p2).next=new(node)
                   p2=&((*p2).next)
                 }
               }else{
                 for i := 0; i < $5.n; i++ {
-                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+$5.mp["value"];
+                  ppp:=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+                  (*p2).value="=, "+ppp["value"]+ ", "+ strconv.Itoa(i) ;
+                  (*p2).next=new(node)
+                  p2=&((*p2).next)
+                  (*p2).value="[]=, "+ppp["value"]+", "+$3.mp["value"] +", "+$5.mp["value"];
                   (*p2).next=new(node)
                   p2=&((*p2).next)
                 }
@@ -603,13 +610,21 @@ let   // incomplete for array and struct => both have $4.map != nil;;
               if $5.mp["args"]!="" {
                 s2 := strings.Split($5.mp["args"], ", ")
                 for i := 0; i < $5.n; i++ {
-                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+s2[i];
+                  ppp:=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+                  (*p2).value="=, "+ppp["value"]+ ", "+ strconv.Itoa(i) ;
+                  (*p2).next=new(node)
+                  p2=&((*p2).next)
+                  (*p2).value="[]=, "+ppp["value"]+", "+$3.mp["value"] +", "+s2[i];
                   (*p2).next=new(node)
                   p2=&((*p2).next)
                 }
               }else{
                 for i := 0; i < $5.n; i++ {
-                  (*p2).value="[]=, "+strconv.Itoa(i)+", "+$3.mp["value"] +", "+$5.mp["value"];
+                  ppp:=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
+                  (*p2).value="=, "+ppp["value"]+ ", "+ strconv.Itoa(i) ;
+                  (*p2).next=new(node)
+                  p2=&((*p2).next)
+                  (*p2).value="[]=, "+ppp["value"]+", "+$3.mp["value"] +", "+$5.mp["value"];
                   (*p2).next=new(node)
                   p2=&((*p2).next)
                 }
@@ -828,13 +843,11 @@ assignment
 | hole OP_XOREQ round_exp {$$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&p.next);;q.next=new(node);q.next.value="^, "+$1.mp["value"]+", "+$1.mp["value"]+", "+$3.mp["value"]; }
 
 | hole OP_EQEQ round_exp  {
-   fmt.Println("in hole ddhhdhh");   
  $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;
  $$.mp["true"]="label"+strconv.Itoa(label_num);
  label_num+=1;
  $$.mp["after"]="label"+strconv.Itoa(label_num);
  label_num+=1;
- fmt.Println("in hole ddhhdhh");   
   $$.code=$1.code;p:=list_end(&$$.code);p.next=$3.code;q:=list_end(&$$.code);
   q.next=new(node); q.next.value="ifgoto, je, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
   q.next.next=new(node);r:=q.next.next;r.value="=, "+$$.mp["value"]+", 0";
@@ -905,7 +918,7 @@ opeq_ops
 ;
 
 expr 
-: round_exp {$$.code=$1.code;$$.mp=$1.mp;fmt.Println($$.mp)}
+: round_exp {$$.code=$1.code;$$.mp=$1.mp;}
 | assignment {$$.code=$1.code;$$.mp=$1.mp;}
 ;
 

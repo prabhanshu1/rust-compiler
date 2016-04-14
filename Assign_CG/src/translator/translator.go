@@ -230,9 +230,9 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				Load_and_Store(fresh, Old_Variable, &data, &r2, src2, &Ref_Map)
 
 				////fmt.Println("XXXXXXXXXXXXXX",src1,"YYY",src2,"YYY",r1,"YYY",r2)
-				/*				if fresh==2 {
+								if fresh==2 {
 								r1,r2=r2,r1
-							}*/
+							}
 				Free_reg_at_end(&data, &Ref_Map)
 				data = append(data, "cmpl "+r1+","+r2)
 				data = append(data, dest+" "+jmp)
