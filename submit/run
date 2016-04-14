@@ -1,9 +1,0 @@
-cd Assign_IR
-make
-
-./y < $1 >> temp
-cd ../Assign_CG
-make
-bin/codegen ../Assign_IR/temp > temp.s
-g++ -m32 temp.s -lm
-./a.out

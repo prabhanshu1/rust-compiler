@@ -1,8 +1,0 @@
-fn foo() -> i32 {
-	return 0;
-}
-
-fn main(){
-	let i : i32 = 0;
-	i=foo();
-}
