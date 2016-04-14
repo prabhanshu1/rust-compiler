@@ -1,0 +1,6 @@
+make -C ASSIGN_IR
+make -C ASSIGN_CG
+./Assign_IR/y < $1 >temp
+./Assign_CG/bin/codegen temp >temp.s
+gcc -m32 -lm temp.s -o  out
+./out
