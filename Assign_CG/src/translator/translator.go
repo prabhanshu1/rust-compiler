@@ -3,6 +3,7 @@ package translator
 import (
 	"../cg_getreg"
 	"../model"
+	"strings"
 	//"fmt"
 	"strconv"
 )
@@ -66,7 +67,6 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 	(*Code).Global_Section = data
 
 	data = (*Code).Main_Code
-	data = append(data, "main:")
 
 	for i := 0; i < leader_count; i++ {
 		table := make([]model.Ref_Table, leader[i+1]-leader[i]+2)
@@ -189,7 +189,7 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 
 			case "=ret":
 				// remove $
-				data = append(data, "movl "+"%eax"+","+src1)
+				data = append(data, "movl "+"%eax"+","+dest)
 
 			case "addof":
 
@@ -238,9 +238,13 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 				data = append(data, dest+" "+jmp)
 
 			case "label":
-				data = append(data, src1+":")
+				
 				if src1[0:4]=="func" {
-					data = append(data, src1+":")
+					if src1=="funcmain" {
+						data = append(data, "main:")
+					}else{
+						data = append(data, src1[4:]+":")
+					}
 					data = append(data, "pushl %ebp")
 					data = append(data, "movl %esp,%ebp")
 
@@ -253,6 +257,8 @@ func Translate(Code *model.Final_Code, instructions []*model.Instr_struct, leade
 						Load_and_Store(fresh, Old_Variable, &data, &r2, s[ii], &Ref_Map)
 						data = append(data, "popl " + r1)
 					}
+				}else{
+					data = append(data, src1+":")
 				}
 
 			case "ret":

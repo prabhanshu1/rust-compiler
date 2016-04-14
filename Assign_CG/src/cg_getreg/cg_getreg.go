@@ -108,7 +108,7 @@ func Getreg_Force(data *[]string, pos int, str string, table *[]model.Ref_Table,
 		return (*Ref_Map).VtoR[str], 0, ""
 	} else {
 		if (*Ref_Map).VtoR[str] != "" {
-			*data = append(*data, "movl "+str+" ,"+(*Ref_Map).VtoR[str])
+			*data = append(*data, "movl "+(*Ref_Map).VtoR[str] + ","+str)
 			model.Set_Reg_Map(Ref_Map, (*Ref_Map).VtoR[str], "")
 		}
 		return model.Registers[reg], 1, (*Ref_Map).RtoV[model.Registers[reg]]

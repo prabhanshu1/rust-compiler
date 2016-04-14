@@ -1,0 +1,22 @@
+1, =, j, 1
+2, =, sum, 0
+3, =, i, 0
+4, =, j, 1
+5, jmp, 17
+6, label, D7
+7, =, tmp2, 10
+8, %, D2, j, tmp2
+9, ifgoto, jne, 0, D2, 14
+10, arg, asd, j, , 
+11, call, printf, , 
+12, =, sdf, 0
+13, jmp, 15
+14, +, sum, sum, i
+15, +, i, i, 1
+16, *, j, 2, i
+17, ifgoto, jg, 99, i, 6
+18, arg, asd, sum, , 
+19, call, printf, , 
+20, =, D6, 0
+21, exit
+22, string, asd, %d\n\0
