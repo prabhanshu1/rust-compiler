@@ -540,11 +540,11 @@ $$.code=$2.code;q:=list_end(&$$.code);q.next=new(node);
 | FOR SYM_OPEN_ROUND maybe_assignment ';' expr ';' maybe_assignment SYM_CLOSE_ROUND block  {
 
 $$.mp=symtab.Make_entry("temp"+strconv.Itoa(temp_num));temp_num+=1;$$.mp["begin"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1;$$.mp["after"]="label"+strconv.Itoa(label_num);label_num+=1;label_num+=1; 
-$$.code=$3.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$.mp["begin"];;p.next.next=$5.code;q:=list_end(&p);q.next=new(node);
+$$.code=$3.code;p:=list_end(&$$.code);p.next=new(node);p.next.value="label, "+$$.mp["begin"];;p.next.next=$5.code;q:=list_end(&$$.code);q.next=new(node);
  q.next.value="ifgoto, je, 0, "+$5.mp["value"]+", "+$$.mp["after"];
 
- q.next.next=$9.code;s:=list_end(&q);
- s.next=$7.code;t:=list_end(&s);t.next=new(node);
+ q.next.next=$9.code;s:=list_end(&$$.code);
+ s.next=$7.code;t:=list_end(&$$.code);t.next=new(node);
  t.next.value="jmp, "+$$.mp["begin"]; u:=t.next;u.next=new(node);
  u.next.value="label, "+$$.mp["after"];
 
@@ -895,7 +895,7 @@ opeq_ops
 ;
 
 expr 
-: round_exp {$$.code=$1.code;$$.mp=$1.mp;}
+: round_exp {$$.code=$1.code;$$.mp=$1.mp;fmt.Println($$.mp)}
 | assignment {$$.code=$1.code;$$.mp=$1.mp;}
 ;
 
@@ -991,7 +991,7 @@ exp
       q.next=new(node);
       if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
      // if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-    q.next.value="ifgoto, jle, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    q.next.value="ifgoto, jl, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
     r:=new(node);
     q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
     r.next.value="jmp, "+$$.mp["after"];
@@ -1017,7 +1017,7 @@ exp
       q.next=new(node);
       if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
       //if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-    q.next.value="ifgoto, jge, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    q.next.value="ifgoto, jg, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
     r:=new(node);
     q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
     r.next.value="jmp, "+$$.mp["after"];
@@ -1042,7 +1042,7 @@ exp
       q.next=new(node);
       if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
       //if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-    q.next.value="ifgoto, jg, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    q.next.value="ifgoto, jge, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
     r:=new(node);
     q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
     r.next.value="jmp, "+$$.mp["after"];
@@ -1067,7 +1067,7 @@ exp
       q.next=new(node);
       if($1.mp==nil)||($3.mp==nil) {log.Fatal("variable not declared")};
       //if($3.mp["type"]!=$1.mp["type"]) {log.Fatal("Type Mismatch")};
-    q.next.value="ifgoto, jl, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
+    q.next.value="ifgoto, jle, "+$1.mp["value"]+", "+$3.mp["value"]+", "+$$.mp["true"];
     r:=new(node);
     q.next.next=r;r.value="=, "+$$.mp["value"]+", "+"0";r.next=new(node);
     r.next.value="jmp, "+$$.mp["after"];
